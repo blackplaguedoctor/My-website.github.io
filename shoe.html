@@ -30,7 +30,6 @@
             padding-bottom: 60px;
         }
 
-        /* Top Header Navigation */
         header {
             background: rgba(16, 20, 30, 0.95);
             backdrop-filter: blur(12px);
@@ -61,7 +60,6 @@
             color: var(--accent-cyan);
         }
 
-        /* Working Nav Bar Links */
         .nav-links {
             display: flex;
             align-items: center;
@@ -126,7 +124,6 @@
             padding: 0 20px;
         }
 
-        /* Hero Banner */
         .hero {
             background: linear-gradient(135deg, #10141e 0%, #06080d 100%);
             border: 1px solid var(--border-color);
@@ -159,7 +156,6 @@
             letter-spacing: 1px;
         }
 
-        /* Aircraft Cards Layout */
         .grid-3 {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
@@ -255,7 +251,7 @@
             </nav>
 
             <div class="nav-controls">
-                <div class="plane-counter" id="planeCounter">Showing 18 Aircraft</div>
+                <div class="plane-counter" id="planeCounter">Showing 68 Aircraft</div>
                 <div class="search-box">
                     <input type="text" id="searchInput" onkeyup="filterCards()" placeholder="Search aircraft or specs...">
                 </div>
@@ -274,10 +270,7 @@
         <div class="grid-3" id="planeGrid">
 
             <div class="card" data-category="commercial">
-                <div class="card-header">
-                    <span class="card-type">Commercial</span>
-                    <span class="origin-flag">🇪🇺 EU</span>
-                </div>
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇪🇺 EU</span></div>
                 <h3>Airbus A350-1000</h3>
                 <div class="card-subtitle">Airbus • Ultra Long-Haul Twinjet</div>
                 <ul class="card-details">
@@ -288,10 +281,7 @@
             </div>
 
             <div class="card" data-category="commercial">
-                <div class="card-header">
-                    <span class="card-type">Commercial</span>
-                    <span class="origin-flag">🇺🇸 USA</span>
-                </div>
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇺🇸 USA</span></div>
                 <h3>Boeing 777X (777-9)</h3>
                 <div class="card-subtitle">Boeing • Folding Wingtip Twinjet</div>
                 <ul class="card-details">
@@ -302,10 +292,7 @@
             </div>
 
             <div class="card" data-category="commercial">
-                <div class="card-header">
-                    <span class="card-type">Commercial</span>
-                    <span class="origin-flag">🇬🇧 / 🇫🇷 UK & FR</span>
-                </div>
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇬🇧 / 🇫🇷 UK & FR</span></div>
                 <h3>Aérospatiale/BAC Concorde</h3>
                 <div class="card-subtitle">Concorde • Supersonic Passenger Jet</div>
                 <ul class="card-details">
@@ -316,10 +303,7 @@
             </div>
 
             <div class="card" data-category="commercial">
-                <div class="card-header">
-                    <span class="card-type">Commercial</span>
-                    <span class="origin-flag">🇨🇳 China</span>
-                </div>
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇨🇳 China</span></div>
                 <h3>COMAC C919</h3>
                 <div class="card-subtitle">COMAC • Narrow-Body Airliner</div>
                 <ul class="card-details">
@@ -330,10 +314,7 @@
             </div>
 
             <div class="card" data-category="military">
-                <div class="card-header">
-                    <span class="card-type">Military</span>
-                    <span class="origin-flag">🇺🇸 USA</span>
-                </div>
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇺🇸 USA</span></div>
                 <h3>Lockheed Martin F-35 Lightning II</h3>
                 <div class="card-subtitle">Lockheed Martin • 5th-Gen Stealth Multi-Role</div>
                 <ul class="card-details">
@@ -344,10 +325,7 @@
             </div>
 
             <div class="card" data-category="military">
-                <div class="card-header">
-                    <span class="card-type">Military</span>
-                    <span class="origin-flag">🇺🇸 USA</span>
-                </div>
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇺🇸 USA</span></div>
                 <h3>Northrop Grumman B-2 Spirit</h3>
                 <div class="card-subtitle">Northrop Grumman • Stealth Flying Wing Bomber</div>
                 <ul class="card-details">
@@ -358,10 +336,7 @@
             </div>
 
             <div class="card" data-category="military">
-                <div class="card-header">
-                    <span class="card-type">Military</span>
-                    <span class="origin-flag">🇫🇷 France</span>
-                </div>
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇫🇷 France</span></div>
                 <h3>Dassault Rafale</h3>
                 <div class="card-subtitle">Dassault Aviation • Twin-Engine Canard Delta</div>
                 <ul class="card-details">
@@ -372,10 +347,7 @@
             </div>
 
             <div class="card" data-category="military">
-                <div class="card-header">
-                    <span class="card-type">Military</span>
-                    <span class="origin-flag">🇸🇪 Sweden</span>
-                </div>
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇸🇪 Sweden</span></div>
                 <h3>Saab JAS 39 Gripen E</h3>
                 <div class="card-subtitle">Saab • Light Multi-Role Fighter</div>
                 <ul class="card-details">
@@ -386,10 +358,7 @@
             </div>
 
             <div class="card" data-category="historical">
-                <div class="card-header">
-                    <span class="card-type">Historical</span>
-                    <span class="origin-flag">🇬🇧 UK</span>
-                </div>
+                <div class="card-header"><span class="card-type">Historical</span><span class="origin-flag">🇬🇧 UK</span></div>
                 <h3>Supermarine Spitfire</h3>
                 <div class="card-subtitle">Supermarine • WWII Fighter Aircraft</div>
                 <ul class="card-details">
@@ -400,10 +369,7 @@
             </div>
 
             <div class="card" data-category="historical">
-                <div class="card-header">
-                    <span class="card-type">Historical</span>
-                    <span class="origin-flag">🇺🇸 USA</span>
-                </div>
+                <div class="card-header"><span class="card-type">Historical</span><span class="origin-flag">🇺🇸 USA</span></div>
                 <h3>North American P-51 Mustang</h3>
                 <div class="card-subtitle">North American • Long-Range WWII Escort</div>
                 <ul class="card-details">
@@ -414,10 +380,7 @@
             </div>
 
             <div class="card" data-category="historical">
-                <div class="card-header">
-                    <span class="card-type">Historical</span>
-                    <span class="origin-flag">🇺🇸 USA</span>
-                </div>
+                <div class="card-header"><span class="card-type">Historical</span><span class="origin-flag">🇺🇸 USA</span></div>
                 <h3>Wright Flyer</h3>
                 <div class="card-subtitle">Wright Brothers • First Powered Airplane</div>
                 <ul class="card-details">
@@ -428,10 +391,7 @@
             </div>
 
             <div class="card" data-category="cargo">
-                <div class="card-header">
-                    <span class="card-type">Cargo / Heavy</span>
-                    <span class="origin-flag">🇺🇦 Ukraine</span>
-                </div>
+                <div class="card-header"><span class="card-type">Cargo / Heavy</span><span class="origin-flag">🇺🇦 Ukraine</span></div>
                 <h3>Antonov An-124 Ruslan</h3>
                 <div class="card-subtitle">Antonov • Heavy Strategic Transport</div>
                 <ul class="card-details">
@@ -442,10 +402,7 @@
             </div>
 
             <div class="card" data-category="cargo">
-                <div class="card-header">
-                    <span class="card-type">Cargo / Heavy</span>
-                    <span class="origin-flag">🇺🇸 USA</span>
-                </div>
+                <div class="card-header"><span class="card-type">Cargo / Heavy</span><span class="origin-flag">🇺🇸 USA</span></div>
                 <h3>Lockheed C-5M Super Galaxy</h3>
                 <div class="card-subtitle">Lockheed Martin • Intercontinental Airlifter</div>
                 <ul class="card-details">
@@ -456,10 +413,7 @@
             </div>
 
             <div class="card" data-category="cargo">
-                <div class="card-header">
-                    <span class="card-type">Cargo / Special</span>
-                    <span class="origin-flag">🇪🇺 EU</span>
-                </div>
+                <div class="card-header"><span class="card-type">Cargo / Special</span><span class="origin-flag">🇪🇺 EU</span></div>
                 <h3>Airbus BelugaXL (A330-743L)</h3>
                 <div class="card-subtitle">Airbus • Oversized Cargo Transporter</div>
                 <ul class="card-details">
@@ -470,38 +424,29 @@
             </div>
 
             <div class="card" data-category="experimental">
-                <div class="card-header">
-                    <span class="card-type">Experimental</span>
-                    <span class="origin-flag">🇺🇸 USA</span>
-                </div>
+                <div class="card-header"><span class="card-type">Experimental</span><span class="origin-flag">🇺🇸 USA</span></div>
                 <h3>North American X-15</h3>
                 <div class="card-subtitle">USAF / NASA • Hypersonic Rocket Plane</div>
                 <ul class="card-details">
                     <li><span>Max Speed:</span> <strong>Mach 6.7 (7,274 km/h)</strong></li>
-                    <li><span>Highest Altitude:</span> <strong>354,200 ft (107.9 km)</strong></li>
+                    <li><span>Highest Altitude:</span> <strong>354,200 ft</strong></li>
                     <li><span>First Flight:</span> <strong>1959</strong></li>
                 </ul>
             </div>
 
             <div class="card" data-category="experimental">
-                <div class="card-header">
-                    <span class="card-type">Experimental</span>
-                    <span class="origin-flag">🇺🇸 USA</span>
-                </div>
+                <div class="card-header"><span class="card-type">Experimental</span><span class="origin-flag">🇺🇸 USA</span></div>
                 <h3>Bell X-1</h3>
                 <div class="card-subtitle">Bell Aircraft • First Sound Barrier Aircraft</div>
                 <ul class="card-details">
                     <li><span>Max Speed:</span> <strong>Mach 1.45 (1,541 km/h)</strong></li>
-                    <li><span>Achievement:</span> <strong>Broke Sound Barrier (1947)</strong></li>
+                    <li><span>Achievement:</span> <strong>Broke Sound Barrier</strong></li>
                     <li><span>First Flight:</span> <strong>1946</strong></li>
                 </ul>
             </div>
 
             <div class="card" data-category="experimental">
-                <div class="card-header">
-                    <span class="card-type">Experimental</span>
-                    <span class="origin-flag">🇺🇸 USA</span>
-                </div>
+                <div class="card-header"><span class="card-type">Experimental</span><span class="origin-flag">🇺🇸 USA</span></div>
                 <h3>NASA / Grumman X-29</h3>
                 <div class="card-subtitle">Grumman • Forward-Swept Wing Demonstrator</div>
                 <ul class="card-details">
@@ -512,10 +457,7 @@
             </div>
 
             <div class="card" data-category="experimental">
-                <div class="card-header">
-                    <span class="card-type">VTOL Tiltrotor</span>
-                    <span class="origin-flag">🇺🇸 USA</span>
-                </div>
+                <div class="card-header"><span class="card-type">VTOL Tiltrotor</span><span class="origin-flag">🇺🇸 USA</span></div>
                 <h3>Bell Boeing V-22 Osprey</h3>
                 <div class="card-subtitle">Bell / Boeing • Multi-Role Tiltrotor</div>
                 <ul class="card-details">
@@ -525,52 +467,506 @@
                 </ul>
             </div>
 
-        </div>
+            <div class="card" data-category="commercial">
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇪🇺 EU</span></div>
+                <h3>Airbus A320neo</h3>
+                <div class="card-subtitle">Airbus • Single-Aisle Best-Seller</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.82 (871 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>6,500 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2014</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="commercial">
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Boeing 737 MAX 8</h3>
+                <div class="card-subtitle">Boeing • Modern Narrow-Body Airliner</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.79 (839 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>6,570 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2016</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="commercial">
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇪🇺 EU</span></div>
+                <h3>Airbus A380-800</h3>
+                <div class="card-subtitle">Airbus • Double-Decker Widebody</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.85 (903 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>14,800 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2005</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="commercial">
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Boeing 747-8 Intercontinental</h3>
+                <div class="card-subtitle">Boeing • Queen of the Skies Jumbo Jet</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.855 (914 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>14,310 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2011</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="commercial">
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇧🇷 Brazil</span></div>
+                <h3>Embraer E190-E2</h3>
+                <div class="card-subtitle">Embraer • Advanced Regional Jet</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.82 (870 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>5,278 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2016</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="commercial">
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇨🇦 Canada</span></div>
+                <h3>Bombardier Global 7500</h3>
+                <div class="card-subtitle">Bombardier • Ultra Long-Range Business Jet</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.925 (982 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>14,260 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2016</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="commercial">
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Gulfstream G650ER</h3>
+                <div class="card-subtitle">Gulfstream • Executive Business Jet</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.925 (982 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>13,890 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2014</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="commercial">
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Cessna Citation X+</h3>
+                <div class="card-subtitle">Textron Aviation • Fast Business Jet</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.935 (1,127 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>6,413 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2012</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="commercial">
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇫🇷 / 🇮🇹 FR & IT</span></div>
+                <h3>ATR 72-600</h3>
+                <div class="card-subtitle">ATR • Turboprop Regional Airliner</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>510 km/h</strong></li>
+                    <li><span>Range:</span> <strong>1,528 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2009</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="commercial">
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇫🇷 France</span></div>
+                <h3>Dassault Falcon 8X</h3>
+                <div class="card-subtitle">Dassault Aviation • Trijet Business Jet</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.90 (956 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>11,945 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2015</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="commercial">
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇷🇺 Russia</span></div>
+                <h3>Tupolev Tu-204</h3>
+                <div class="card-subtitle">Tupolev • Narrow-Body Jetliner</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>850 km/h</strong></li>
+                    <li><span>Range:</span> <strong>5,800 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1989</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="commercial">
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇷🇺 Russia</span></div>
+                <h3>Sukhoi Superjet 100</h3>
+                <div class="card-subtitle">UAC • Regional Jetliner</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>870 km/h</strong></li>
+                    <li><span>Range:</span> <strong>4,578 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2008</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="commercial">
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇨🇦 Canada</span></div>
+                <h3>De Havilland Dash 8-400</h3>
+                <div class="card-subtitle">De Havilland • High-Speed Turboprop</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>667 km/h</strong></li>
+                    <li><span>Range:</span> <strong>2,040 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1983</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="commercial">
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Boeing 767-300ER</h3>
+                <div class="card-subtitle">Boeing • Widebody Long-Haul Twinjet</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.80 (851 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>11,070 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1986</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="commercial">
+                <div class="card-header"><span class="card-type">Commercial</span><span class="origin-flag">🇪🇺 / 🇨🇦 EU & CA</span></div>
+                <h3>Airbus A220-300</h3>
+                <div class="card-subtitle">Airbus • Clean-Sheet Regional Airliner</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.82 (871 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>6,300 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2015</strong></li>
+                </ul>
+            </div>
 
-    </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Lockheed Martin F-22 Raptor</h3>
+                <div class="card-subtitle">Lockheed Martin • 5th-Gen Air Superiority Fighter</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 2.25 (2,410 km/h)</strong></li>
+                    <li><span>Combat Radius:</span> <strong>852 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1997</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇷🇺 Russia</span></div>
+                <h3>Sukhoi Su-57</h3>
+                <div class="card-subtitle">Sukhoi • 5th-Generation Multi-Role Fighter</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 2.0 (2,135 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>3,500 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2010</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇨🇳 China</span></div>
+                <h3>Chengdu J-20</h3>
+                <div class="card-subtitle">Chengdu • 5th-Generation Stealth Fighter</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 2.0 (2,100 km/h)</strong></li>
+                    <li><span>Combat Radius:</span> <strong>2,000 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2011</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇷🇺 Russia</span></div>
+                <h3>Mikoyan MiG-31 Foxhound</h3>
+                <div class="card-subtitle">Mikoyan • Supersonic Interceptor</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 2.83 (3,000 km/h)</strong></li>
+                    <li><span>Combat Radius:</span> <strong>1,450 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1975</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>McDonnell Douglas F-15E Strike Eagle</h3>
+                <div class="card-subtitle">Boeing • All-Weather Strike Fighter</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 2.5 (2,665 km/h)</strong></li>
+                    <li><span>Combat Radius:</span> <strong>1,270 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1986</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>General Dynamics F-16C Fighting Falcon</h3>
+                <div class="card-subtitle">Lockheed Martin • Multi-Role Fighter Jet</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 2.0 (2,120 km/h)</strong></li>
+                    <li><span>Combat Radius:</span> <strong>550 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1974</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇷🇺 Russia</span></div>
+                <h3>Sukhoi Su-35 Flanker-E</h3>
+                <div class="card-subtitle">Sukhoi • Heavy Air-Superiority Fighter</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 2.25 (2,400 km/h)</strong></li>
+                    <li><span>Combat Radius:</span> <strong>1,600 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2008</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇪🇺 EU</span></div>
+                <h3>Eurofighter Typhoon</h3>
+                <div class="card-subtitle">Eurofighter GmbH • Twin-Engine Canard Delta</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 2.0 (2,495 km/h)</strong></li>
+                    <li><span>Combat Radius:</span> <strong>1,389 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1994</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇷🇺 Russia</span></div>
+                <h3>Mikoyan MiG-29 Fulcrum</h3>
+                <div class="card-subtitle">Mikoyan • Frontline Air Superiority Fighter</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 2.25 (2,400 km/h)</strong></li>
+                    <li><span>Combat Radius:</span> <strong>700 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1977</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇨🇳 China</span></div>
+                <h3>Shenyang J-16</h3>
+                <div class="card-subtitle">Shenyang • Multi-Role Strike Fighter</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 2.0 (2,120 km/h)</strong></li>
+                    <li><span>Combat Radius:</span> <strong>1,500 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2012</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Fairchild Republic A-10 Thunderbolt II</h3>
+                <div class="card-subtitle">Fairchild Republic • Close Air Support Tank Killer</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>706 km/h</strong></li>
+                    <li><span>Combat Radius:</span> <strong>460 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1972</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Boeing B-52H Stratofortress</h3>
+                <div class="card-subtitle">Boeing • Long-Range Strategic Bomber</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>1,050 km/h</strong></li>
+                    <li><span>Combat Range:</span> <strong>16,232 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1952</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Rockwell B-1B Lancer</h3>
+                <div class="card-subtitle">Rockwell • Supersonic Variable-Sweep Bomber</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 1.25 (1,448 km/h)</strong></li>
+                    <li><span>Intercontinental Range:</span> <strong>11,998 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1974</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇷🇺 Russia</span></div>
+                <h3>Tupolev Tu-160 Blackjack</h3>
+                <div class="card-subtitle">Tupolev • Supersonic Strategic Heavy Bomber</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 2.05 (2,220 km/h)</strong></li>
+                    <li><span>Combat Range:</span> <strong>12,300 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1981</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Boeing E-3 Sentry AWACS</h3>
+                <div class="card-subtitle">Boeing • Airborne Early Warning & Control</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>855 km/h</strong></li>
+                    <li><span>Endurance:</span> <strong>8+ Hours Station Time</strong></li>
+                    <li><span>First Flight:</span> <strong>1975</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Lockheed U-2 Dragon Lady</h3>
+                <div class="card-subtitle">Lockheed • High-Altitude Reconnaissance</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>805 km/h</strong></li>
+                    <li><span>Service Ceiling:</span> <strong>70,000 ft</strong></li>
+                    <li><span>First Flight:</span> <strong>1955</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇪🇺 EU</span></div>
+                <h3>Panavia Tornado</h3>
+                <div class="card-subtitle">Panavia • Twin-Engine Variable-Sweep Attack Jet</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 2.2 (2,400 km/h)</strong></li>
+                    <li><span>Combat Radius:</span> <strong>1,390 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1974</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="military">
+                <div class="card-header"><span class="card-type">Military</span><span class="origin-flag">🇺 UK</span></div>
+                <h3>BAe Hawk T2</h3>
+                <div class="card-subtitle">BAE Systems • Advanced Jet Trainer</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 1.02 (1,028 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>2,522 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1974</strong></li>
+                </ul>
+            </div>
 
-    <footer>
-        <p>SKYVAULT &bull; Global Aerospace Data Center</p>
-    </footer>
+            <div class="card" data-category="historical">
+                <div class="card-header"><span class="card-type">Historical</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Boeing B-17 Flying Fortress</h3>
+                <div class="card-subtitle">Boeing • WWII Heavy Bomber</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>462 km/h</strong></li>
+                    <li><span>Combat Range:</span> <strong>3,219 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1935</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="historical">
+                <div class="card-header"><span class="card-type">Historical</span><span class="origin-flag">🇬🇧 UK</span></div>
+                <h3>Avro Lancaster</h3>
+                <div class="card-subtitle">Avro • WWII Heavy Bomber</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>462 km/h</strong></li>
+                    <li><span>Bomb Load:</span> <strong>10,000 kg</strong></li>
+                    <li><span>First Flight:</span> <strong>1941</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="historical">
+                <div class="card-header"><span class="card-type">Historical</span><span class="origin-flag">🇯🇵 Japan</span></div>
+                <h3>Mitsubishi A6M Zero</h3>
+                <div class="card-subtitle">Mitsubishi • WWII Carrier-Based Fighter</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>533 km/h</strong></li>
+                    <li><span>Range:</span> <strong>3,105 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1939</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="historical">
+                <div class="card-header"><span class="card-type">Historical</span><span class="origin-flag">🇩🇪 Germany</span></div>
+                <h3>Messerschmitt Bf 109</h3>
+                <div class="card-subtitle">Messerschmitt • WWII Fighter Aircraft</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>640 km/h</strong></li>
+                    <li><span>Range:</span> <strong>850 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1935</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="historical">
+                <div class="card-header"><span class="card-type">Historical</span><span class="origin-flag">🇩🇪 Germany</span></div>
+                <h3>Junkers Ju 87 Stuka</h3>
+                <div class="card-subtitle">Junkers • WWII Dive Bomber</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>410 km/h</strong></li>
+                    <li><span>Role:</span> <strong>Precision Dive Bombing</strong></li>
+                    <li><span>First Flight:</span> <strong>1935</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="historical">
+                <div class="card-header"><span class="card-type">Historical</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Douglas DC-3</h3>
+                <div class="card-subtitle">Douglas Aircraft • Revolutionary Airliner</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>370 km/h</strong></li>
+                    <li><span>Capacity:</span> <strong>21-32 Passengers</strong></li>
+                    <li><span>First Flight:</span> <strong>1935</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="historical">
+                <div class="card-header"><span class="card-type">Historical</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Ford Trimotor</h3>
+                <div class="card-subtitle">Ford Airplane • Early Civil Airliner</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>245 km/h</strong></li>
+                    <li><span>Configuration:</span> <strong>Tri-motor Propeller</strong></li>
+                    <li><span>First Flight:</span> <strong>1926</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="historical">
+                <div class="card-header"><span class="card-type">Historical</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Boeing B-29 Superfortress</h3>
+                <div class="card-subtitle">Boeing • Advanced WWII Strategic Bomber</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>574 km/h</strong></li>
+                    <li><span>Range:</span> <strong>5,230 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1942</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="historical">
+                <div class="card-header"><span class="card-type">Historical</span><span class="origin-flag">🇬🇧 UK</span></div>
+                <h3>De Havilland Mosquito</h3>
+                <div class="card-subtitle">De Havilland • WWII Wooden Multi-Role Bomber</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>668 km/h</strong></li>
+                    <li><span>Material:</span> <strong>Molded Plywood Composite</strong></li>
+                    <li><span>First Flight:</span> <strong>1940</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="historical">
+                <div class="card-header"><span class="card-type">Historical</span><span class="origin-flag">🇬🇧 UK</span></div>
+                <h3>Sopwith Camel</h3>
+                <div class="card-subtitle">Sopwith Aviation • WWI Fighter Biplane</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>185 km/h</strong></li>
+                    <li><span>Armament:</span> <strong>Twin Vickers Machine Guns</strong></li>
+                    <li><span>First Flight:</span> <strong>1916</strong></li>
+                </ul>
+            </div>
 
-    <script>
-        let currentCategory = 'all';
+            <div class="card" data-category="cargo">
+                <div class="card-header"><span class="card-type">Cargo / Heavy</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Boeing C-17 Globemaster III</h3>
+                <div class="card-subtitle">Boeing • Strategic Military Airlifter</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.74 (830 km/h)</strong></li>
+                    <li><span>Payload Capacity:</span> <strong>77,500 kg</strong></li>
+                    <li><span>First Flight:</span> <strong>1991</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="cargo">
+                <div class="card-header"><span class="card-type">Cargo / Heavy</span><span class="origin-flag">🇷🇺 Russia</span></div>
+                <h3>Ilyushin Il-76</h3>
+                <div class="card-subtitle">Ilyushin • Strategic Multi-Role Airlifter</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>850 km/h</strong></li>
+                    <li><span>Payload Capacity:</span> <strong>47,000 kg</strong></li>
+                    <li><span>First Flight:</span> <strong>1971</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="cargo">
+                <div class="card-header"><span class="card-type">Cargo / Heavy</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Lockheed C-130H Hercules</h3>
+                <div class="card-subtitle">Lockheed Martin • Tactical Military Transport</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>592 km/h</strong></li>
+                    <li><span>Payload Capacity:</span> <strong>20,000 kg</strong></li>
+                    <li><span>First Flight:</span> <strong>1954</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="cargo">
+                <div class="card-header"><span class="card-type">Cargo / Heavy</span><span class="origin-flag">🇺🇦 Ukraine</span></div>
+                <h3>Antonov An-225 Mriya</h3>
+                <div class="card-subtitle">Antonov • World's Largest Heavy Airlifter</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>850 km/h</strong></li>
+                    <li><span>Payload Capacity:</span> <strong>250,000 kg</strong></li>
+                    <li><span>First Flight:</span> <strong>1988</strong></li>
+                </ul>
+            </div>
 
-        function setCategory(category, buttonElement) {
-            currentCategory = category;
-
-            // Highlight active button in the top navigation bar
-            const navButtons = document.querySelectorAll('.nav-btn');
-            navButtons.forEach(btn => btn.classList.remove('active'));
-            if (buttonElement) {
-                buttonElement.classList.add('active');
-            }
-
-            filterCards();
-        }
-
-        function filterCards() {
-            const query = document.getElementById('searchInput').value.toLowerCase().trim();
-            const cards = document.querySelectorAll('.card');
-            let visibleCount = 0;
-
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                const category = card.getAttribute('data-category');
-
-                const matchesCategory = (currentCategory === 'all' || category === currentCategory);
-                const matchesSearch = text.includes(query);
-
-                if (matchesCategory && matchesSearch) {
-                    card.style.display = 'flex';
-                    visibleCount++;
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-
-            document.getElementById('planeCounter').textContent = `Showing ${visibleCount} Aircraft`;
-        }
-    </script>
-</body>
-</html>
+            <div class="card" data-category="experimental">
+                <div class="card-header"><span class="card-type">Experimental</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>NASA X-43 Scramjet</h3>
+                <div class="card-subtitle">NASA • Unmanned Hypersonic Aircraft</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 9.6 (10,240 km/h)</strong></li>
+                    <li><span>Engine Type:</span> <strong>Supersonic Combustion Ramjet</strong></li>
+                    <li><span>First Flight:</span> <strong>2001</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="experimental">
+                <div class="card-header"><span class="card-type">Experimental</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Lockheed Martin X-59 QueSST</h3>
+                <div class="card-subtitle">Lockheed Martin • Quiet Supersonic Transport</div>
+                <ul class="card-details">
+                    <li><span>Target Speed:</span> <strong>Mach 1.4 (1,489 km/h)</strong></li>
+                    <li><span>Feature:</span> <strong>Sonic Boom Suppressor</strong></li>
+                    <li><span>First Flight:</span> <strong>2024</strong></li>
+                </ul>
+            </div>
+            <div class="card" data-category="experimental">
+                <div class="card-header"><span class="card-type">Experimental</span><span class="origin-flag">🇺🇸 USA</span></div>
+                <h3>Bell X-2 Starbuster</h3>
+                <div class="card-subtitle">Bell Aircraft • High-Speed Rocket Plane</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 3.19 (3,370 km/h)</strong></li>
+                    <li><span>Max Altitude:</span> <strong>126,200 ft</strong></li>
+                    <li><span>First Flight:</span> <strong>1952</strong></li>
+                </ul>
