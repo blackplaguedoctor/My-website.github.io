@@ -3,167 +3,353 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex // F1 Database</title>
-    
+    <title>F1 2026 Complete Database</title>
+    <style>
+        :root {
+            --bg-dark: #0a0b0e;
+            --bg-card: #13151c;
+            --bg-hover: #1b1e28;
+            --accent-red: #e10600;
+            --text-main: #f1f3f5;
+            --text-muted: #8b95a5;
+            --border-color: #222632;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 50px;
+        }
+
+        header {
+            background: rgba(19, 21, 28, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 15px 30px;
+        }
+
+        .nav-container {
+            max-width: 1250px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+        }
+
+        .logo span {
+            color: var(--accent-red);
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 600;
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: var(--bg-hover);
+        }
+
+        .tab-btn.active {
+            color: var(--text-main) !important;
+            background: var(--accent-red) !important;
+        }
+
+        .search-box input {
+            background: #1a1d26;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            outline: none;
+            font-size: 0.85rem;
+            width: 220px;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Strict Display Toggle */
+        .tab-content {
+            display: none !important;
+        }
+
+        .tab-content.active {
+            display: block !important;
+        }
+
+        .section-header {
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .section-header h2 {
+            font-size: 1.6rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #3b4254;
+        }
+
+        .card-number {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 2rem;
+            font-weight: 900;
+            color: rgba(255, 255, 255, 0.08);
+        }
+
+        .round-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(225, 6, 0, 0.15);
+            color: var(--accent-red);
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 4px;
+        }
+
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: var(--accent-red);
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .card-details {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            list-style: none;
+        }
+
+        .card-details li {
+            margin-bottom: 6px;
+        }
+
+        .card-details strong {
+            color: var(--text-main);
+        }
+
+        .team-strip {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 50px;
+        }
+    </style>
 </head>
 <body>
 
-    <header class="navbar">
+    <header>
         <div class="nav-container">
-            <div class="logo">APEX <span class="accent-red">//</span> F1 WIKI</div>
-            <nav class="nav-links">
-                <a href="#drivers">Drivers</a>
-                <a href="#teams">Teams</a>
-                <a href="#circuits">Circuits</a>
-                <a href="#standings">Standings</a>
-            </nav>
-            <div class="search-box">
-                <input type="text" id="wikiSearch" placeholder="Search driver, team, track...">
+            <div class="logo">APEX <span>//</span> F1 2026 DB</div>
+            <div class="controls">
+                <button class="tab-btn active" onclick="showTab('drivers', this)">Drivers (22)</button>
+                <button class="tab-btn" onclick="showTab('teams', this)">Teams (11)</button>
+                <button class="tab-btn" onclick="showTab('tracks', this)">2026 Calendar (24)</button>
+                <div class="search-box">
+                    <input type="text" id="searchInput" onkeyup="filterCards()" placeholder="Search drivers, teams, tracks...">
+                </div>
             </div>
         </div>
     </header>
 
-    <section class="hero">
-        <div class="hero-content">
-            <span class="badge">Formula 1 Archive</span>
-            <h1>Pinnacle of Motorsport</h1>
-            <p>Comprehensive technical specs, telemetry insights, driver profiles, and circuit layouts.</p>
-        </div>
-    </section>
+    <div class="container">
 
-    <div class="main-container">
-
-        <main class="content-area">
-
-            <section id="drivers" class="wiki-section">
-                <div class="section-title">
-                    <h2>Featured Driver</h2>
-                    <span class="tag">Active Era</span>
-                </div>
-
-                <div class="article-card">
-                    <div class="article-header">
-                        <div>
-                            <h3>Max Verstappen</h3>
-                            <p class="subtext">Red Bull Racing • #1</p>
-                        </div>
-                        <div class="driver-number">01</div>
-                    </div>
-                    <p>Known for aggressive racecraft, exceptional wet-weather control, and relentless consistency. Multiple-time World Driver Champion driving for Red Bull Racing.</p>
-
-                    <div class="quick-stats-grid">
-                        <div class="stat-box">
-                            <span class="stat-value">3+</span>
-                            <span class="stat-label">World Titles</span>
-                        </div>
-                        <div class="stat-box">
-                            <span class="stat-value">50+</span>
-                            <span class="stat-label">Grand Prix Wins</span>
-                        </div>
-                        <div class="stat-box">
-                            <span class="stat-value">100+</span>
-                            <span class="stat-label">Podiums</span>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <section id="teams" class="wiki-section">
-                <div class="section-title">
-                    <h2>Constructor Grid</h2>
-                </div>
-
-                <div class="team-grid">
-                    <div class="team-card red-bull">
-                        <div class="team-color-strip rb-strip"></div>
-                        <h3>Red Bull Racing</h3>
-                        <p class="engine">Power Unit: Honda RBPT</p>
-                        <span class="base">Base: Milton Keynes, UK</span>
-                    </div>
-
-                    <div class="team-card ferrari">
-                        <div class="team-color-strip ferrari-strip"></div>
-                        <h3>Scuderia Ferrari</h3>
-                        <p class="engine">Power Unit: Ferrari</p>
-                        <span class="base">Base: Maranello, Italy</span>
-                    </div>
-
-                    <div class="team-card mercedes">
-                        <div class="team-color-strip merc-strip"></div>
-                        <h3>Mercedes-AMG F1</h3>
-                        <p class="engine">Power Unit: Mercedes</p>
-                        <span class="base">Base: Brackley, UK</span>
-                    </div>
-
-                    <div class="team-card mclaren">
-                        <div class="team-color-strip mcl-strip"></div>
-                        <h3>McLaren F1 Team</h3>
-                        <p class="engine">Power Unit: Mercedes</p>
-                        <span class="base">Base: Woking, UK</span>
-                    </div>
-                </div>
-            </section>
-
-            <section id="circuits" class="wiki-section">
-                <div class="section-title">
-                    <h2>Featured Circuit</h2>
-                </div>
-
-                <div class="circuit-card">
-                    <div class="circuit-info">
-                        <h3>Circuit de Spa-Francorchamps</h3>
-                        <p class="location">📍 Stavelot, Belgium</p>
-                        <ul class="circuit-specs">
-                            <li><strong>Length:</strong> 7.004 km (4.352 mi)</li>
-                            <li><strong>Turns:</strong> 19 (9 left, 10 right)</li>
-                            <li><strong>Lap Record:</strong> 1:46.286 (Valtteri Bottas, 2018)</li>
-                            <li><strong>Key Features:</strong> Eau Rouge, Raidillon, Kemmel Straight</li>
-                        </ul>
-                    </div>
-                </div>
-            </section>
-
-        </main>
-
-        <aside class="sidebar">
-            <div class="infobox">
-                <div class="infobox-header">Technical Regulations</div>
-                <div class="infobox-img">
-                    <span>🏎️ 1.6L V6 Turbo Hybrid</span>
-                </div>
-                
-                <div class="info-row">
-                    <span class="label">Engine Config</span>
-                    <span class="val">90° V6 Turbo</span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Displacement</span>
-                    <span class="val">1,600 cc</span>
-                </div>
-                <div class="info-row">
-                    <span class="label">RPM Limit</span>
-                    <span class="val">15,000 RPM</span>
-                </div>
-                <div class="info-row">
-                    <span class="label">Minimum Weight</span>
-                    <span class="val">798 kg</span>
-                </div>
-                <div class="info-row">
-                    <span class="label">ERS Output</span>
-                    <span class="val">~120 kW (160 bhp)</span>
-                </div>
+        <section id="drivers" class="tab-content active">
+            <div class="section-header">
+                <h2>Formula 1 Drivers — 2026 Roster</h2>
             </div>
-
-            <div class="chill-box">
-                💡 <strong>Track Note:</strong> Modern F1 cars generate enough downforce to theoretically drive upside down in a tunnel at 120+ mph!
+            <div class="grid-3">
+                <div class="card"><div class="card-number">#1</div><h3>Lando Norris</h3><div class="card-subtitle">McLaren F1 Team</div><ul class="card-details"><li><strong>Country:</strong> United Kingdom</li><li><strong>Status:</strong> World Champion</li></ul></div>
+                <div class="card"><div class="card-number">#81</div><h3>Oscar Piastri</h3><div class="card-subtitle">McLaren F1 Team</div><ul class="card-details"><li><strong>Country:</strong> Australia</li><li><strong>Status:</strong> Race Winner</li></ul></div>
+                <div class="card"><div class="card-number">#3</div><h3>Max Verstappen</h3><div class="card-subtitle">Red Bull Racing</div><ul class="card-details"><li><strong>Country:</strong> Netherlands</li><li><strong>Status:</strong> 4x Champion</li></ul></div>
+                <div class="card"><div class="card-number">#6</div><h3>Isack Hadjar</h3><div class="card-subtitle">Red Bull Racing</div><ul class="card-details"><li><strong>Country:</strong> France</li><li><strong>Status:</strong> Promoted Driver</li></ul></div>
+                <div class="card"><div class="card-number">#44</div><h3>Lewis Hamilton</h3><div class="card-subtitle">Scuderia Ferrari HP</div><ul class="card-details"><li><strong>Country:</strong> United Kingdom</li><li><strong>Status:</strong> 7x Champion</li></ul></div>
+                <div class="card"><div class="card-number">#16</div><h3>Charles Leclerc</h3><div class="card-subtitle">Scuderia Ferrari HP</div><ul class="card-details"><li><strong>Country:</strong> Monaco</li><li><strong>Status:</strong> Multi-Race Winner</li></ul></div>
+                <div class="card"><div class="card-number">#63</div><h3>George Russell</h3><div class="card-subtitle">Mercedes-AMG F1</div><ul class="card-details"><li><strong>Country:</strong> United Kingdom</li><li><strong>Status:</strong> Team Leader</li></ul></div>
+                <div class="card"><div class="card-number">#12</div><h3>Andrea Kimi Antonelli</h3><div class="card-subtitle">Mercedes-AMG F1</div><ul class="card-details"><li><strong>Country:</strong> Italy</li><li><strong>Status:</strong> Young Sensation</li></ul></div>
+                <div class="card"><div class="card-number">#14</div><h3>Fernando Alonso</h3><div class="card-subtitle">Aston Martin Aramco</div><ul class="card-details"><li><strong>Country:</strong> Spain</li><li><strong>Status:</strong> 2x Champion (Honda PU)</li></ul></div>
+                <div class="card"><div class="card-number">#18</div><h3>Lance Stroll</h3><div class="card-subtitle">Aston Martin Aramco</div><ul class="card-details"><li><strong>Country:</strong> Canada</li><li><strong>Status:</strong> Veteran Driver</li></ul></div>
+                <div class="card"><div class="card-number">#10</div><h3>Pierre Gasly</h3><div class="card-subtitle">Alpine F1 Team</div><ul class="card-details"><li><strong>Country:</strong> France</li><li><strong>Status:</strong> Race Winner (Merc PU)</li></ul></div>
+                <div class="card"><div class="card-number">#43</div><h3>Franco Colapinto</h3><div class="card-subtitle">Alpine F1 Team</div><ul class="card-details"><li><strong>Country:</strong> Argentina</li><li><strong>Status:</strong> Full-Time Seat</li></ul></div>
+                <div class="card"><div class="card-number">#55</div><h3>Carlos Sainz</h3><div class="card-subtitle">Williams Racing</div><ul class="card-details"><li><strong>Country:</strong> Spain</li><li><strong>Status:</strong> Multi-Race Winner</li></ul></div>
+                <div class="card"><div class="card-number">#23</div><h3>Alexander Albon</h3><div class="card-subtitle">Williams Racing</div><ul class="card-details"><li><strong>Country:</strong> Thailand</li><li><strong>Status:</strong> Team Anchor</li></ul></div>
+                <div class="card"><div class="card-number">#30</div><h3>Liam Lawson</h3><div class="card-subtitle">Racing Bulls (VCARB)</div><ul class="card-details"><li><strong>Country:</strong> New Zealand</li><li><strong>Status:</strong> Main Driver</li></ul></div>
+                <div class="card"><div class="card-number">#41</div><h3>Arvid Lindblad</h3><div class="card-subtitle">Racing Bulls (VCARB)</div><ul class="card-details"><li><strong>Country:</strong> United Kingdom</li><li><strong>Status:</strong> 2026 Grid Rookie</li></ul></div>
+                <div class="card"><div class="card-number">#31</div><h3>Esteban Ocon</h3><div class="card-subtitle">Haas F1 Team</div><ul class="card-details"><li><strong>Country:</strong> France</li><li><strong>Status:</strong> Race Winner</li></ul></div>
+                <div class="card"><div class="card-number">#87</div><h3>Oliver Bearman</h3><div class="card-subtitle">Haas F1 Team</div><ul class="card-details"><li><strong>Country:</strong> United Kingdom</li><li><strong>Status:</strong> Second-Year Driver</li></ul></div>
+                <div class="card"><div class="card-number">#27</div><h3>Nico Hülkenberg</h3><div class="card-subtitle">Audi F1 Team</div><ul class="card-details"><li><strong>Country:</strong> Germany</li><li><strong>Status:</strong> Factory Audi Driver</li></ul></div>
+                <div class="card"><div class="card-number">#5</div><h3>Gabriel Bortoleto</h3><div class="card-subtitle">Audi F1 Team</div><ul class="card-details"><li><strong>Country:</strong> Brazil</li><li><strong>Status:</strong> Factory Audi Driver</li></ul></div>
+                <div class="card"><div class="card-number">#11</div><h3>Sergio Pérez</h3><div class="card-subtitle">Cadillac F1 Team</div><ul class="card-details"><li><strong>Country:</strong> Mexico</li><li><strong>Status:</strong> Veteran Cadillac Lead</li></ul></div>
+                <div class="card"><div class="card-number">#77</div><h3>Valtteri Bottas</h3><div class="card-subtitle">Cadillac F1 Team</div><ul class="card-details"><li><strong>Country:</strong> Finland</li><li><strong>Status:</strong> Veteran Cadillac Lead</li></ul></div>
             </div>
-        </aside>
+        </section>
+
+        <section id="teams" class="tab-content">
+            <div class="section-header">
+                <h2>Constructor Grid — 2026 Teams</h2>
+            </div>
+            <div class="grid-3">
+                <div class="card"><div class="team-strip" style="background:#FF8000;"></div><h3>McLaren F1 Team</h3><div class="card-subtitle">Woking, UK</div><ul class="card-details"><li><strong>Engine:</strong> Mercedes</li><li><strong>2026 Drivers:</strong> Norris / Piastri</li></ul></div>
+                <div class="card"><div class="team-strip" style="background:#3671C6;"></div><h3>Red Bull Racing</h3><div class="card-subtitle">Milton Keynes, UK</div><ul class="card-details"><li><strong>Engine:</strong> Ford Red Bull Powertrains</li><li><strong>2026 Drivers:</strong> Verstappen / Hadjar</li></ul></div>
+                <div class="card"><div class="team-strip" style="background:#E8002D;"></div><h3>Scuderia Ferrari HP</h3><div class="card-subtitle">Maranello, Italy</div><ul class="card-details"><li><strong>Engine:</strong> Ferrari</li><li><strong>2026 Drivers:</strong> Hamilton / Leclerc</li></ul></div>
+                <div class="card"><div class="team-strip" style="background:#27F4D2;"></div><h3>Mercedes-AMG F1</h3><div class="card-subtitle">Brackley, UK</div><ul class="card-details"><li><strong>Engine:</strong> Mercedes</li><li><strong>2026 Drivers:</strong> Russell / Antonelli</li></ul></div>
+                <div class="card"><div class="team-strip" style="background:#229971;"></div><h3>Aston Martin Aramco</h3><div class="card-subtitle">Silverstone, UK</div><ul class="card-details"><li><strong>Engine:</strong> Honda Works</li><li><strong>2026 Drivers:</strong> Alonso / Stroll</li></ul></div>
+                <div class="card"><div class="team-strip" style="background:#0093CC;"></div><h3>Alpine F1 Team</h3><div class="card-subtitle">Enstone, UK</div><ul class="card-details"><li><strong>Engine:</strong> Mercedes</li><li><strong>2026 Drivers:</strong> Gasly / Colapinto</li></ul></div>
+                <div class="card"><div class="team-strip" style="background:#64C4FF;"></div><h3>Williams Racing</h3><div class="card-subtitle">Grove, UK</div><ul class="card-details"><li><strong>Engine:</strong> Mercedes</li><li><strong>2026 Drivers:</strong> Sainz / Albon</li></ul></div>
+                <div class="card"><div class="team-strip" style="background:#6692FF;"></div><h3>Racing Bulls (VCARB)</h3><div class="card-subtitle">Faenza, Italy</div><ul class="card-details"><li><strong>Engine:</strong> Ford Red Bull Powertrains</li><li><strong>2026 Drivers:</strong> Lawson / Lindblad</li></ul></div>
+                <div class="card"><div class="team-strip" style="background:#B6BABD;"></div><h3>Haas F1 Team</h3><div class="card-subtitle">Kannapolis, USA</div><ul class="card-details"><li><strong>Engine:</strong> Ferrari</li><li><strong>2026 Drivers:</strong> Ocon / Bearman</li></ul></div>
+                <div class="card"><div class="team-strip" style="background:#F10000;"></div><h3>Audi F1 Team</h3><div class="card-subtitle">Hinwil / Neuburg, Germany</div><ul class="card-details"><li><strong>Engine:</strong> Audi Power Unit</li><li><strong>2026 Drivers:</strong> Hülkenberg / Bortoleto</li></ul></div>
+                <div class="card"><div class="team-strip" style="background:#D4AF37;"></div><h3>Cadillac F1 Team</h3><div class="card-subtitle">Fishers, Indiana, USA</div><ul class="card-details"><li><strong>Engine:</strong> Ferrari (GM Power Unit)</li><li><strong>2026 Drivers:</strong> Pérez / Bottas</li></ul></div>
+            </div>
+        </section>
+
+        <section id="tracks" class="tab-content">
+            <div class="section-header">
+                <h2>2026 World Championship Calendar</h2>
+            </div>
+            <div class="grid-3">
+                <div class="card"><div class="round-badge">R01</div><h3>Albert Park Circuit</h3><div class="card-subtitle">📍 Melbourne, Australia</div><ul class="card-details"><li><strong>Length:</strong> 5.278 km</li><li><strong>Type:</strong> Street/Park</li></ul></div>
+                <div class="card"><div class="round-badge">R02</div><h3>Shanghai International Circuit</h3><div class="card-subtitle">📍 Shanghai, China</div><ul class="card-details"><li><strong>Length:</strong> 5.451 km</li><li><strong>Type:</strong> Permanent Track</li></ul></div>
+                <div class="card"><div class="round-badge">R03</div><h3>Suzuka International Circuit</h3><div class="card-subtitle">📍 Suzuka, Japan</div><ul class="card-details"><li><strong>Length:</strong> 5.807 km</li><li><strong>Type:</strong> Figure-8 Track</li></ul></div>
+                <div class="card"><div class="round-badge">R04</div><h3>Bahrain International Circuit</h3><div class="card-subtitle">📍 Sakhir, Bahrain</div><ul class="card-details"><li><strong>Length:</strong> 5.412 km</li><li><strong>Type:</strong> Night Race</li></ul></div>
+                <div class="card"><div class="round-badge">R05</div><h3>Jeddah Corniche Circuit</h3><div class="card-subtitle">📍 Jeddah, Saudi Arabia</div><ul class="card-details"><li><strong>Length:</strong> 6.174 km</li><li><strong>Type:</strong> High-Speed Street</li></ul></div>
+                <div class="card"><div class="round-badge">R06</div><h3>Miami International Autodrome</h3><div class="card-subtitle">📍 Miami, USA</div><ul class="card-details"><li><strong>Length:</strong> 5.412 km</li><li><strong>Type:</strong> Temporary Circuit</li></ul></div>
+                <div class="card"><div class="round-badge">R07</div><h3>Autodromo Enzo e Dino Ferrari</h3><div class="card-subtitle">📍 Imola, Italy</div><ul class="card-details"><li><strong>Length:</strong> 4.909 km</li><li><strong>Type:</strong> Historic European</li></ul></div>
+                <div class="card"><div class="round-badge">R08</div><h3>Circuit de Monaco</h3><div class="card-subtitle">📍 Monte Carlo, Monaco</div><ul class="card-details"><li><strong>Length:</strong> 3.337 km</li><li><strong>Type:</strong> Icon Street Track</li></ul></div>
+                <div class="card"><div class="round-badge">R09</div><h3>Circuit Gilles-Villeneuve</h3><div class="card-subtitle">📍 Montreal, Canada</div><ul class="card-details"><li><strong>Length:</strong> 4.361 km</li><li><strong>Type:</strong> Semi-Street Track</li></ul></div>
+                <div class="card"><div class="round-badge">R10</div><h3>Circuit de Barcelona-Catalunya</h3><div class="card-subtitle">📍 Montmeló, Spain</div><ul class="card-details"><li><strong>Length:</strong> 4.657 km</li><li><strong>Type:</strong> Permanent Circuit</li></ul></div>
+                <div class="card"><div class="round-badge">R11</div><h3>Red Bull Ring</h3><div class="card-subtitle">📍 Spielberg, Austria</div><ul class="card-details"><li><strong>Length:</strong> 4.318 km</li><li><strong>Type:</strong> High-Altitude Sprint</li></ul></div>
+                <div class="card"><div class="round-badge">R12</div><h3>Silverstone Circuit</h3><div class="card-subtitle">📍 Silverstone, UK</div><ul class="card-details"><li><strong>Length:</strong> 5.891 km</li><li><strong>Type:</strong> Home of F1</li></ul></div>
+                <div class="card"><div class="round-badge">R13</div><h3>Hungaroring</h3><div class="card-subtitle">📍 Mogyoród, Hungary</div><ul class="card-details"><li><strong>Length:</strong> 4.381 km</li><li><strong>Type:</strong> Technical Track</li></ul></div>
+                <div class="card"><div class="round-badge">R14</div><h3>Circuit de Spa-Francorchamps</h3><div class="card-subtitle">📍 Stavelot, Belgium</div><ul class="card-details"><li><strong>Length:</strong> 7.004 km</li><li><strong>Type:</strong> Ardennes High Speed</li></ul></div>
+                <div class="card"><div class="round-badge">R15</div><h3>Circuit Zandvoort</h3><div class="card-subtitle">📍 Zandvoort, Netherlands</div><ul class="card-details"><li><strong>Length:</strong> 4.259 km</li><li><strong>Type:</strong> Banked Corners</li></ul></div>
+                <div class="card"><div class="round-badge">R16</div><h3>Autodromo Nazionale Monza</h3><div class="card-subtitle">📍 Monza, Italy</div><ul class="card-details"><li><strong>Length:</strong> 5.793 km</li><li><strong>Type:</strong> Temple of Speed</li></ul></div>
+                <div class="card"><div class="round-badge">R17</div><h3>Baku City Circuit</h3><div class="card-subtitle">📍 Baku, Azerbaijan</div><ul class="card-details"><li><strong>Length:</strong> 6.003 km</li><li><strong>Type:</strong> Longest Straight</li></ul></div>
+                <div class="card"><div class="round-badge">R18</div><h3>Marina Bay Street Circuit</h3><div class="card-subtitle">📍 Singapore</div><ul class="card-details"><li><strong>Length:</strong> 4.940 km</li><li><strong>Type:</strong> Night Street Race</li></ul></div>
+                <div class="card"><div class="round-badge">R19</div><h3>Circuit of the Americas</h3><div class="card-subtitle">📍 Austin, USA</div><ul class="card-details"><li><strong>Length:</strong> 5.513 km</li><li><strong>Type:</strong> Undulating Track</li></ul></div>
+                <div class="card"><div class="round-badge">R20</div><h3>Autódromo Hermanos Rodríguez</h3><div class="card-subtitle">📍 Mexico City, Mexico</div><ul class="card-details"><li><strong>Length:</strong> 4.304 km</li><li><strong>Type:</strong> High Elevation</li></ul></div>
+                <div class="card"><div class="round-badge">R21</div><h3>Autódromo José Carlos Pace</h3><div class="card-subtitle">📍 São Paulo, Brazil</div><ul class="card-details"><li><strong>Length:</strong> 4.309 km</li><li><strong>Type:</strong> Interlagos Classic</li></ul></div>
+                <div class="card"><div class="round-badge">R22</div><h3>Las Vegas Strip Circuit</h3><div class="card-subtitle">📍 Las Vegas, USA</div><ul class="card-details"><li><strong>Length:</strong> 6.201 km</li><li><strong>Type:</strong> Strip Night Race</li></ul></div>
+                <div class="card"><div class="round-badge">R23</div><h3>Lusail International Circuit</h3><div class="card-subtitle">📍 Lusail, Qatar</div><ul class="card-details"><li><strong>Length:</strong> 5.419 km</li><li><strong>Type:</strong> Fast Sweeping Track</li></ul></div>
+                <div class="card"><div class="round-badge">R24</div><h3>Yas Marina Circuit</h3><div class="card-subtitle">📍 Abu Dhabi, UAE</div><ul class="card-details"><li><strong>Length:</strong> 5.281 km</li><li><strong>Type:</strong> Season Finale</li></ul></div>
+            </div>
+        </section>
 
     </div>
-<link rel="stylesheet" href="f1.css">
-    <footer>
-        <p>APEX F1 Wiki &bull; Community-curated motorsport database</p>
-    </footer>
-    <link rel="stylesheet" href="f1.css">
 
-<script src="f1.js"></script>
+    <footer>
+        <p>APEX F1 Archive &bull; Updated for the 2026 Season Regulations</p>
+    </footer>
+
+    <script>
+        function showTab(tabId, buttonElement) {
+            // Hide all tab sections
+            const sections = document.querySelectorAll('.tab-content');
+            sections.forEach(sec => sec.classList.remove('active'));
+
+            // Remove active class from all nav buttons
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // Activate chosen tab section and button
+            const selectedSection = document.getElementById(tabId);
+            if (selectedSection) {
+                selectedSection.classList.add('active');
+            }
+            buttonElement.classList.add('active');
+
+            // Reset search input on tab change
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.value = '';
+                filterCards();
+            }
+        }
+
+        function filterCards() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const activeTab = document.querySelector('.tab-content.active');
+            
+            if (activeTab) {
+                const cards = activeTab.querySelectorAll('.card');
+                cards.forEach(card => {
+                    const text = card.textContent.toLowerCase();
+                    card.style.display = text.includes(query) ? '' : 'none';
+                });
+            }
+        }
+    </script>
+</body>
+</html>

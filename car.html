@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CITY DRIFT // MULTI-MAP</title>
+    <style>
+        :root {
+            --bg-dark: #080b10;
+            --bg-card: #121721;
+            --accent-cyan: #00f0ff;
+            --accent-red: #ff2a5f;
+            --accent-yellow: #ffb703;
+            --text-main: #f0f6fc;
+            --border-color: #232b38;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .dashboard {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .stat-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .stat-box {
+            background: rgba(18, 23, 33, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-color);
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .stat-box span {
+            color: var(--accent-cyan);
+        }
+
+        .stat-box.high-score span {
+            color: var(--accent-yellow);
+        }
+
+        .control-panel {
+            pointer-events: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        button.ui-btn {
+            background: var(--bg-card);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        button.ui-btn:hover {
+            background: var(--border-color);
+            color: var(--accent-cyan);
+        }
+
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: #0d1117;
+        }
+
+        .modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(8, 11, 16, 0.88);
+            backdrop-filter: blur(10px);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+            text-align: center;
+        }
+
+        .modal h2 {
+            font-size: 1.8rem;
+            color: var(--accent-cyan);
+        }
+
+        .modal h2.danger {
+            color: var(--accent-red);
+        }
+
+        .option-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+        }
+
+        .option-group label {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+
+        select, input[type="color"] {
+            width: 100%;
+            padding: 10px;
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            border-radius: 8px;
+            outline: none;
+            font-weight: 600;
+        }
+
+        input[type="color"] {
+            height: 45px;
+            cursor: pointer;
+        }
+
+        .btn-action {
+            background: var(--accent-cyan);
+            color: #000;
+            border: none;
+            padding: 12px;
+            font-weight: 800;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 1rem;
+        }
+
+        .btn-action.danger {
+            background: var(--accent-red);
+            color: #fff;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+
+        .controls-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(18, 23, 33, 0.8);
+            backdrop-filter: blur(4px);
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: #8b949e;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        kbd {
+            background: #1f242d;
+            border: 1px solid var(--border-color);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <div class="stat-group">
+            <div class="stat-box">Speed: <span id="speedDisplay">0</span> km/h</div>
+            <div class="stat-box">Score: <span id="driftScore">0</span></div>
+            <div class="stat-box high-score">High Score: <span id="highScoreDisplay">0</span></div>
+        </div>
+        <div class="control-panel">
+            <button class="ui-btn" onclick="openGarage()">Garage & Maps</button>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <canvas id="driftCanvas"></canvas>
+    </div>
+
+    <div class="controls-hint">
+        <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Drive &bull; <kbd>SPACE</kbd> Handbrake &bull; Don't Crash!
+    </div>
+
+    <div class="modal" id="garageModal">
+        <div class="modal-content">
+            <h2>GARAGE & MAP SELECTOR</h2>
+
+            <div class="option-group">
+                <label>Select Map</label>
+                <select id="mapSelect">
+                    <option value="downtown">Downtown City Grid (Wide Avenues)</option>
+                    <option value="stadium">Stunt Stadium (Open Arena & Barrels)</option>
+                    <option value="touge">Touge Mountain Pass (Tight Curves)</option>
+                    <option value="industrial">Industrial Zone (Shipping Containers & Mazes)</option>
+                </select>
+            </div>
+
+            <div class="option-group">
+                <label>Select Vehicle</label>
+                <select id="carSelect">
+                    <option value="compact">City Hatchback (Easy Handling)</option>
+                    <option value="tuner">JDM Drift Spec (Balanced)</option>
+                    <option value="muscle">V8 Muscle Car (High Speed, Heavy Slide)</option>
+                    <option value="super">Hypercar (Ultra Fast & Sharp)</option>
+                    <option value="truck">Drift Truck (Heavy Weight & Wide turning)</option>
+                </select>
+            </div>
+
+            <div class="option-group">
+                <label>Vehicle Paint Color</label>
+                <input type="color" id="carColor" value="#00f0ff">
+            </div>
+
+            <button class="btn-action" onclick="closeGarage()">Save & Drive</button>
+        </div>
+    </div>
+
+    <div class="modal" id="gameOverModal">
+        <div class="modal-content">
+            <h2 class="danger">CRASHED!</h2>
+            <p style="color: #8b949e;">You hit an obstacle and lost your points.</p>
+            <div style="font-size: 1.2rem; font-weight: bold; margin: 10px 0;">
+                Final Score: <span id="finalScore" style="color: var(--accent-red);">0</span>
+            </div>
+            <button class="btn-action danger" onclick="restartGame()">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('driftCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        let currentMap = 'downtown';
+        let WORLD = { width: 4800, height: 4800 };
+
+        const CAR_PRESETS = {
+            compact: { width: 38, height: 20, maxSpeed: 8.5, accel: 0.16, steer: 0.07, grip: 0.92, handbrakeGrip: 0.82 },
+            tuner:   { width: 44, height: 22, maxSpeed: 10.5, accel: 0.19, steer: 0.065, grip: 0.90, handbrakeGrip: 0.80 },
+            muscle:  { width: 48, height: 24, maxSpeed: 12.0, accel: 0.23, steer: 0.052, grip: 0.87, handbrakeGrip: 0.75 },
+            super:   { width: 42, height: 20, maxSpeed: 14.0, accel: 0.26, steer: 0.08, grip: 0.93, handbrakeGrip: 0.83 },
+            truck:   { width: 54, height: 26, maxSpeed: 9.5,  accel: 0.15, steer: 0.048, grip: 0.89, handbrakeGrip: 0.78 }
+        };
+
+        let carColor = '#00f0ff';
+        let isDead = false;
+        let score = 0;
+        let highScore = localStorage.getItem('multiMapHighScore') || 0;
+        document.getElementById('highScoreDisplay').textContent = highScore;
+
+        const car = {
+            x: 350,
+            y: 350,
+            angle: 0,
+            speed: 0,
+            vx: 0,
+            vy: 0,
+            ...CAR_PRESETS.tuner
+        };
+
+        const camera = { x: car.x, y: car.y };
+        let skidMarks = [];
+        let particles = [];
+        let obstacles = [];
+        let props = [];
+        const keys = {};
+
+        document.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; });
+        document.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+
+        // Map Generator based on selection
+        function loadMap(mapName) {
+            currentMap = mapName;
+            obstacles = [];
+            props = [];
+
+            if (mapName === 'downtown') {
+                WORLD.width = 4800; WORLD.height = 4800;
+                let blockSize = 450, roadWidth = 280;
+                car.x = 350; car.y = 350;
+
+                for (let x = blockSize; x < WORLD.width - blockSize; x += blockSize + roadWidth) {
+                    for (let y = blockSize; y < WORLD.height - blockSize; y += blockSize + roadWidth) {
+                        if ((x + y) % 1460 === 0) continue;
+                        obstacles.push({ x: x, y: y, w: blockSize, h: blockSize, type: 'building' });
+                        props.push({ x: x - 20, y: y - 20, r: 8 }, { x: x + blockSize + 20, y: y - 20, r: 8 });
+                    }
+                }
+            } 
+            else if (mapName === 'stadium') {
+                WORLD.width = 3000; WORLD.height = 3000;
+                car.x = 1500; car.y = 1500;
+
+                // Open Arena with scattered stunt barrels & barriers
+                for (let i = 0; i < 40; i++) {
+                    obstacles.push({
+                        x: 400 + Math.random() * 2200,
+                        y: 400 + Math.random() * 2200,
+                        w: 50, h: 50, type: 'barrier'
+                    });
+                }
+            } 
+            else if (mapName === 'touge') {
+                WORLD.width = 5000; WORLD.height = 3000;
+                car.x = 300; car.y = 1500;
+
+                // Winding Mountain Pass Guardrails
+                for (let x = 200; x < WORLD.width - 200; x += 150) {
+                    let topY = 1100 + Math.sin(x * 0.003) * 600;
+                    let botY = 1900 + Math.cos(x * 0.003) * 600;
+                    obstacles.push({ x: x, y: topY - 100, w: 120, h: 80, type: 'rock' });
+                    obstacles.push({ x: x, y: botY, w: 120, h: 80, type: 'rock' });
+                }
+            } 
+            else if (mapName === 'industrial') {
+                WORLD.width = 3600; WORLD.height = 3600;
+                car.x = 300; car.y = 300;
+
+                // Shipping Container Maze
+                for (let x = 600; x < WORLD.width - 600; x += 450) {
+                    for (let y = 600; y < WORLD.height - 600; y += 450) {
+                        obstacles.push({
+                            x: x + (Math.random() * 60 - 30),
+                            y: y + (Math.random() * 60 - 30),
+                            w: 140, h: 70, type: 'container'
+                        });
+                    }
+                }
+            }
+        }
+        loadMap('downtown');
+
+        function updatePhysics() {
+            if (isDead) return;
+
+            const isAccelerating = keys['w'] || keys['arrowup'];
+            const isBraking = keys['s'] || keys['arrowdown'];
+            const isTurningLeft = keys['a'] || keys['arrowleft'];
+            const isTurningRight = keys['d'] || keys['arrowright'];
+            const isHandbrake = keys[' '] || keys['space'];
+
+            if (isAccelerating) {
+                if (car.speed < car.maxSpeed) car.speed += car.accel;
+            } else if (isBraking) {
+                if (car.speed > -3) car.speed -= car.accel;
+            } else {
+                if (car.speed > 0) car.speed = Math.max(0, car.speed - 0.04);
+                if (car.speed < 0) car.speed = Math.min(0, car.speed + 0.04);
+            }
+
+            if (Math.abs(car.speed) > 0.1) {
+                const dir = car.speed > 0 ? 1 : -1;
+                const speedRatio = Math.min(1.2, Math.abs(car.speed) / 5);
+                if (isTurningLeft) car.angle -= car.steer * dir * speedRatio;
+                if (isTurningRight) car.angle += car.steer * dir * speedRatio;
+            }
+
+            const forwardX = Math.cos(car.angle);
+            const forwardY = Math.sin(car.angle);
+
+            const activeGrip = isHandbrake ? car.handbrakeGrip : car.grip;
+            car.vx = car.vx * activeGrip + (forwardX * car.speed) * (1 - activeGrip);
+            car.vy = car.vy * activeGrip + (forwardY * car.speed) * (1 - activeGrip);
+
+            car.x += car.vx;
+            car.y += car.vy;
+
+            camera.x += (car.x - camera.x) * 0.1;
+            camera.y += (car.y - camera.y) * 0.1;
+
+            checkCollisions();
+
+            const lateralSpeed = Math.abs(-forwardY * car.vx + forwardX * car.vy);
+            const isDrifting = lateralSpeed > 1.6 && Math.abs(car.speed) > 2;
+
+            if (isDrifting || isHandbrake) {
+                skidMarks.push({ x: car.x, y: car.y, angle: car.angle, life: 1.0 });
+
+                particles.push({
+                    x: car.x - forwardX * 20 + (Math.random() - 0.5) * 10,
+                    y: car.y - forwardY * 20 + (Math.random() - 0.5) * 10,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    radius: Math.random() * 5 + 3,
+                    alpha: 0.5
+                });
+
+                score += Math.floor(lateralSpeed * 3);
+                document.getElementById('driftScore').textContent = score;
+
+                if (score > highScore) {
+                    highScore = score;
+                    localStorage.setItem('multiMapHighScore', highScore);
+                    document.getElementById('highScoreDisplay').textContent = highScore;
+                }
+            }
+
+            const speedKmh = Math.floor(Math.sqrt(car.vx * car.vx + car.vy * car.vy) * 18);
+            document.getElementById('speedDisplay').textContent = speedKmh;
+
+            skidMarks.forEach(sm => sm.life -= 0.003);
+            skidMarks = skidMarks.filter(sm => sm.life > 0);
+
+            particles.forEach(p => {
+                p.x += p.vx; p.y += p.vy;
+                p.radius += 0.2; p.alpha -= 0.015;
+            });
+            particles = particles.filter(p => p.alpha > 0);
+        }
+
+        function checkCollisions() {
+            const carRadius = car.height / 2;
+
+            if (car.x < 50 || car.x > WORLD.width - 50 || car.y < 50 || car.y > WORLD.height - 50) {
+                triggerGameOver();
+                return;
+            }
+
+            for (let obs of obstacles) {
+                if (car.x + carRadius > obs.x &&
+                    car.x - carRadius < obs.x + obs.w &&
+                    car.y + carRadius > obs.y &&
+                    car.y - carRadius < obs.y + obs.h) {
+                    triggerGameOver();
+                    return;
+                }
+            }
+
+            for (let prop of props) {
+                const dx = car.x - prop.x;
+                const dy = car.y - prop.y;
+                if (Math.sqrt(dx * dx + dy * dy) < prop.r + carRadius) {
+                    triggerGameOver();
+                    return;
+                }
+            }
+        }
+
+        function triggerGameOver() {
+            isDead = true;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('gameOverModal').style.display = 'flex';
+        }
+
+        function restartGame() {
+            isDead = false;
+            score = 0;
+            document.getElementById('driftScore').textContent = 0;
+            loadMap(currentMap);
+            car.vx = 0; car.vy = 0; car.speed = 0; car.angle = 0;
+            document.getElementById('gameOverModal').style.display = 'none';
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            ctx.translate(canvas.width / 2 - camera.x, canvas.height / 2 - camera.y);
+
+            // Ground Background Style per Map
+            ctx.fillStyle = currentMap === 'touge' ? '#141c14' : (currentMap === 'stadium' ? '#161b22' : '#181d26');
+            ctx.fillRect(0, 0, WORLD.width, WORLD.height);
+
+            // Render Map Specific Environments
+            if (currentMap === 'downtown') {
+                obstacles.forEach(obs => {
+                    ctx.fillStyle = '#2d3545';
+                    ctx.fillRect(obs.x - 30, obs.y - 30, obs.w + 60, obs.h + 60);
+                    ctx.fillStyle = '#0f131a';
+                    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                });
+                props.forEach(p => {
+                    ctx.fillStyle = '#ffb703';
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+                });
+            } else if (currentMap === 'stadium') {
+                obstacles.forEach(obs => {
+                    ctx.fillStyle = '#ff2a5f';
+                    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                });
+            } else if (currentMap === 'touge') {
+                obstacles.forEach(obs => {
+                    ctx.fillStyle = '#4a5568';
+                    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                });
+            } else if (currentMap === 'industrial') {
+                obstacles.forEach(obs => {
+                    ctx.fillStyle = '#d97706';
+                    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                    ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
+                });
+            }
+
+            // Skid Marks
+            skidMarks.forEach(sm => {
+                ctx.save();
+                ctx.translate(sm.x, sm.y);
+                ctx.rotate(sm.angle);
+                ctx.fillStyle = `rgba(0, 0, 0, ${sm.life * 0.6})`;
+                ctx.fillRect(-10, -8, 20, 3);
+                ctx.fillRect(-10, 5, 20, 3);
+                ctx.restore();
+            });
+
+            // Smoke
+            particles.forEach(p => {
+                ctx.fillStyle = `rgba(220, 230, 240, ${p.alpha})`;
+                ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
+            });
+
+            // Car
+            if (!isDead) {
+                ctx.save();
+                ctx.translate(car.x, car.y);
+                ctx.rotate(car.angle);
+
+                ctx.fillStyle = 'rgba(0,0,0,0.5)';
+                ctx.fillRect(-car.width / 2 + 3, -car.height / 2 + 3, car.width, car.height);
+
+                ctx.fillStyle = carColor;
+                ctx.beginPath();
+                if (ctx.roundRect) ctx.roundRect(-car.width / 2, -car.height / 2, car.width, car.height, 4);
+                else ctx.rect(-car.width / 2, -car.height / 2, car.width, car.height);
+                ctx.fill();
+
+                ctx.fillStyle = '#080b10';
+                ctx.fillRect(-car.width / 6, -car.height / 2 + 3, car.width / 2, car.height - 6);
+
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(car.width / 2 - 2, -car.height / 2 + 2, 2, 4);
+                ctx.fillRect(car.width / 2 - 2, car.height / 2 - 6, 2, 4);
+
+                ctx.fillStyle = '#ff2a5f';
+                ctx.fillRect(-car.width / 2, -car.height / 2 + 2, 2, 4);
+                ctx.fillRect(-car.width / 2, car.height / 2 - 6, 2, 4);
+
+                ctx.restore();
+            }
+
+            ctx.restore();
+        }
+
+        function gameLoop() {
+            updatePhysics();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function openGarage() {
+            document.getElementById('garageModal').style.display = 'flex';
+        }
+
+        function closeGarage() {
+            const selectedMap = document.getElementById('mapSelect').value;
+            const selectedCar = document.getElementById('carSelect').value;
+            carColor = document.getElementById('carColor').value;
+
+            if (selectedMap !== currentMap) {
+                loadMap(selectedMap);
+            }
+            Object.assign(car, CAR_PRESETS[selectedCar]);
+            document.getElementById('garageModal').style.display = 'none';
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>

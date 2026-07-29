@@ -7,7 +7,98 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Bar</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
 
+        body {
+            background-color: #0d1117;
+            color: #ffffff;
+        }
+
+        /* Main Navigation Bar Container */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #12161f;
+            padding: 16px 32px;
+            width: 100%;
+        }
+
+        /* Logo / Username */
+        .navbar-logo {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            white-space: nowrap;
+            margin-right: 30px;
+        }
+
+        /* Navigation Items List */
+        .nav-links {
+            display: flex;
+            flex-wrap: nowrap; /* Prevents links from dropping to a second row */
+            align-items: center;
+            gap: 24px;         /* Equal spacing between menu items */
+            list-style: none;
+        }
+
+        /* Individual Links */
+        .nav-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            white-space: nowrap; /* Forces multi-word titles onto one single line */
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover {
+            color: #ffffff;
+        }
+
+        /* Optional: Handle small screen horizontal scrolling smoothly */
+        .nav-container {
+            overflow-x: auto;
+            scrollbar-width: none; /* Hide scrollbar in Firefox */
+        }
+        .nav-container::-webkit-scrollbar {
+            display: none; /* Hide scrollbar in Chrome/Safari */
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="navbar-logo">Username.</div>
+        
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="#">About</a></li>
+                <li><a href="#">What I Do</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="#">F1 website</a></li>
+                <li><a href="#">Plane websites</a></li>
+                <li><a href="#">Video game rating website</a></li>
+                <li><a href="#">Snake Game</a></li>
+                
+            </ul>
+        </div>
+    </nav>
+
+</body>
+</html>
     <nav class="nav-bar">
         <div class="nav-inner">
             <a href="#home" class="nav-logo">@username.</a>
@@ -15,7 +106,17 @@
                 <a href="#about">About</a>
                 <a href="#work">What I Do</a>
                 <a href="#contact">Contact</a>
-                <a href="f1wiki.html">F1 website</a>          </div>
+                <a href="f1wiki.html">F1 website</a>   
+            <a href="shoe.html">Plane websites
+                <a href="videogame.html">Video game rating website</a>
+                <a href="snake.html">Snake Game</a>
+                <a href="car.html">Car Drifting Game</a>
+                <a href="car3d.html">Car Drifting Game 3D</a>
+
+                
+
+                </a>
+            </a>       </div>
         </div>
     </nav>
 
@@ -26,10 +127,10 @@
             </div>
             <div class="hero-text">
                 <h1>Hi, I'm Luca Bendik.</h1>
-                <p>I'm a developer, gamer, and digital creator based in [Your City]. Welcome to my corner of the internet.</p>
+                <p>I'm a developer, gamer, and digital creator based in Chicago. Welcome to my corner of the internet.</p>
             </div>
         </section>
-<img src="blob:https://gemini.google.com/02fbf1b2-ba65-46c4-a2ed-cdba4ebefd62" alt="">
+<img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgJsz87Mw24ed7d7nxq3dU3iS0NDrqSBhATY10Mnwu6w&s=10" alt="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSgJsz87Mw24ed7d7nxq3dU3iS0NDrqSBhATY10Mnwu6w&s=10">
         <section id="about">
             <div class="section-heading">
                 <h2>Who I Am</h2>
@@ -71,7 +172,295 @@
                 <a href="#" class="social-btn">Discord</a>
                 <a href="#" class="social-btn">Roblox</a>
         
-        
+      
                 <script src="script.js"></script>
 </body>
 </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RGB Lighting Showcase</title>
+    <style>
+        :root {
+            --bg-dark: #07090e;
+            --bg-card: #111622;
+            --text-color: #f3f4f6;
+            --rgb-speed: 4s;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        /* Mouse-Tracking Ambient Glow */
+        #cursor-glow {
+            position: fixed;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.25) 0%, rgba(16, 185, 129, 0.15) 40%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            transition: width 0.3s ease, height 0.3s ease;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        /* Glowing RGB Text Effect */
+        .rgb-text {
+            font-size: 2.8rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, #ff0055, #7a00ff, #00e5ff, #00ff66, #ff0055);
+            background-size: 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: animate-rgb var(--rgb-speed) linear infinite;
+            text-shadow: 0 0 30px rgba(0, 229, 255, 0.3);
+        }
+
+        /* -------------------------------------------------------------
+           RGB BORDER CARD SETUP 
+        ------------------------------------------------------------- */
+        .rgb-card-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 20px;
+            padding: 3px; /* Creates space for the RGB border */
+            background: linear-gradient(90deg, #ff0055, #7a00ff, #00e5ff, #00ff66, #ff0055);
+            background-size: 400%;
+            animation: animate-rgb var(--rgb-speed) linear infinite;
+            box-shadow: 0 0 25px rgba(122, 0, 255, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .rgb-card-wrapper:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 45px rgba(0, 229, 255, 0.6);
+        }
+
+        .card-inner {
+            background: var(--bg-card);
+            border-radius: 17px;
+            padding: 35px 25px;
+            text-align: center;
+        }
+
+        .card-inner h2 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+        }
+
+        .card-inner p {
+            color: #9ca3af;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 24px;
+        }
+
+        /* RGB Glowing Button */
+        .rgb-btn {
+            position: relative;
+            background: #0f172a;
+            color: #ffffff;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            z-index: 1;
+            overflow: hidden;
+            transition: color 0.3s ease;
+        }
+
+        .rgb-btn::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(90deg, #ff0055, #7a00ff, #00e5ff, #00ff66, #ff0055);
+            background-size: 400%;
+            border-radius: 32px;
+            z-index: -1;
+            animation: animate-rgb var(--rgb-speed) linear infinite;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .rgb-btn:hover::before {
+            opacity: 1;
+            filter: blur(4px);
+        }
+
+        /* Interactive Light Controls */
+        .controls-bar {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .mode-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #9ca3af;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .mode-btn:hover, .mode-btn.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* CSS Animation Keyframes */
+        @keyframes animate-rgb {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        @keyframes pulse-rgb {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(0.98);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.02);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="cursor-glow"></div>
+
+    <div class="container">
+        <h1 class="rgb-text" id="rgbTitle">RGB Light System</h1>
+
+        <div class="rgb-card-wrapper" id="mainCard">
+            <div class="card-inner">
+                <h2>Custom Lighting Effects</h2>
+                <p>Features animated gradient borders, soft backlighting, glowing buttons, and dynamic cursor tracking.</p>
+                <button class="rgb-btn">Activate Lights</button>
+            </div>
+        </div>
+
+        <div class="controls-bar">
+            <button class="mode-btn active" onclick="setLightingMode('rainbow', this)">Fast Rainbow</button>
+            <button class="mode-btn" onclick="setLightingMode('slow', this)">Slow Drift</button>
+            <button class="mode-btn" onclick="setLightingMode('pulse', this)">Neon Pulse</button>
+        </div>
+    </div>
+<nav class="navbar">
+    <div class="logo">@username.</div>
+    <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#what-i-do">What I Do</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#f1">F1 website</a></li>
+        <li><a href="#plane">Plane websites</a></li>
+        <li><a href="#rating">Video game rating website</a></li>
+        
+        <li class="dropdown">
+            <a href="#" class="dropbtn">Games &darr;</a>
+            <div class="dropdown-content">
+                <a href="#snake">Snake Game</a>
+                <a href="#drift2d">Car Drifting Game 2D</a>
+                <a href="#drift3d">Car Drifting Game 3D</a>
+            </div>
+        </li>
+    </ul>
+</nav>
+    <script>
+        // Track mouse movements to move ambient cursor light
+        const cursorGlow = document.getElementById('cursor-glow');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursorGlow.style.left = `${e.clientX}px`;
+            cursorGlow.style.top = `${e.clientY}px`;
+        });
+
+        // Switch lighting speed/modes dynamically
+        function setLightingMode(mode, btnElement) {
+            const root = document.documentElement;
+            const card = document.getElementById('mainCard');
+
+            // Reset active button state
+            document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.remove('active'));
+            btnElement.classList.add('active');
+
+            // Apply light mode parameters
+            if (mode === 'rainbow') {
+                root.style.setProperty('--rgb-speed', '2s');
+                card.style.animation = 'animate-rgb 2s linear infinite';
+            } else if (mode === 'slow') {
+                root.style.setProperty('--rgb-speed', '8s');
+                card.style.animation = 'animate-rgb 8s linear infinite';
+            } else if (mode === 'pulse') {
+                root.style.setProperty('--rgb-speed', '4s');
+                card.style.animation = 'pulse-rgb 2s ease-in-out infinite, animate-rgb 4s linear infinite';
+            }
+        }
+    </script>
+</body>
+</html>
+<nav class="navbar">
+    <div class="logo">@username.</div>
+    <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#what-i-do">What I Do</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="#f1">F1 website</a></li>
+        <li><a href="#plane">Plane websites</a></li>
+        <li><a href="#rating">Video game rating website</a></li>
+        <li><a href="#snake">Snake Game</a></li>
+        <li><a href="#drift2d">Car Drifting Game 2D</a></li>
+        <li><a href="#drift3d">Car Drifting Game 3D</a></li>
+    </ul>
+</nav>

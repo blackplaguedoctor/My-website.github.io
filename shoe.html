@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKYVAULT // Complete Aircraft Archive</title>
+    <style>
+        :root {
+            --bg-dark: #06080d;
+            --bg-card: #10141e;
+            --bg-hover: #192030;
+            --accent-cyan: #00e5ff;
+            --accent-blue: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+        /* Top Header Navigation */
+        header {
+            background: rgba(16, 20, 30, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 14px 30px;
+        }
+
+        .nav-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 1.3rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .logo span {
+            color: var(--accent-cyan);
+        }
+
+        /* Working Nav Bar Links */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            font-weight: 600;
+            padding: 7px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            color: var(--text-main);
+            background: var(--bg-hover);
+        }
+
+        .nav-btn.active {
+            color: #000 !important;
+            background: var(--accent-cyan) !important;
+            border-color: var(--accent-cyan) !important;
+            font-weight: 700;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .search-box input {
+            background: #151c2c;
+            border: 1px solid var(--border-color);
+            padding: 8px 16px;
+            border-radius: 20px;
+            color: white;
+            outline: none;
+            font-size: 0.85rem;
+            width: 220px;
+        }
+
+        .plane-counter {
+            background: rgba(0, 229, 255, 0.1);
+            color: var(--accent-cyan);
+            border: 1px solid var(--accent-cyan);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Banner */
+        .hero {
+            background: linear-gradient(135deg, #10141e 0%, #06080d 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 30px;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            max-width: 650px;
+        }
+
+        .badge-tag {
+            display: inline-block;
+            background: rgba(0, 229, 255, 0.15);
+            color: var(--accent-cyan);
+            font-weight: 800;
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        /* Aircraft Cards Layout */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: #334155;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+
+        .card-type {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: var(--accent-cyan);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .origin-flag {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .card h3 {
+            font-size: 1.15rem;
+            margin-bottom: 4px;
+        }
+
+        .card-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .card-details {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            list-style: none;
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+        }
+
+        .card-details li {
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .card-details strong {
+            color: var(--text-main);
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <div class="logo">SKYVAULT <span>//</span> ARCHIVE</div>
+
+            <nav class="nav-links">
+                <button class="nav-btn active" onclick="setCategory('all', this)">All</button>
+                <button class="nav-btn" onclick="setCategory('commercial', this)">Commercial</button>
+                <button class="nav-btn" onclick="setCategory('military', this)">Military</button>
+                <button class="nav-btn" onclick="setCategory('historical', this)">Historical</button>
+                <button class="nav-btn" onclick="setCategory('cargo', this)">Cargo</button>
+                <button class="nav-btn" onclick="setCategory('experimental', this)">Experimental</button>
+            </nav>
+
+            <div class="nav-controls">
+                <div class="plane-counter" id="planeCounter">Showing 18 Aircraft</div>
+                <div class="search-box">
+                    <input type="text" id="searchInput" onkeyup="filterCards()" placeholder="Search aircraft or specs...">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <section class="hero">
+            <span class="badge-tag">MASTER INDEX</span>
+            <h1>Comprehensive Global Aircraft Vault</h1>
+            <p>Select any category from the top navigation bar or type in the search box to explore jetliners, stealth fighters, and experimental planes.</p>
+        </section>
+
+        <div class="grid-3" id="planeGrid">
+
+            <div class="card" data-category="commercial">
+                <div class="card-header">
+                    <span class="card-type">Commercial</span>
+                    <span class="origin-flag">🇪🇺 EU</span>
+                </div>
+                <h3>Airbus A350-1000</h3>
+                <div class="card-subtitle">Airbus • Ultra Long-Haul Twinjet</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.89 (945 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>16,100 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2016</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="commercial">
+                <div class="card-header">
+                    <span class="card-type">Commercial</span>
+                    <span class="origin-flag">🇺🇸 USA</span>
+                </div>
+                <h3>Boeing 777X (777-9)</h3>
+                <div class="card-subtitle">Boeing • Folding Wingtip Twinjet</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.85 (905 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>13,500 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2020</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="commercial">
+                <div class="card-header">
+                    <span class="card-type">Commercial</span>
+                    <span class="origin-flag">🇬🇧 / 🇫🇷 UK & FR</span>
+                </div>
+                <h3>Aérospatiale/BAC Concorde</h3>
+                <div class="card-subtitle">Concorde • Supersonic Passenger Jet</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 2.04 (2,179 km/h)</strong></li>
+                    <li><span>Cruising Altitude:</span> <strong>60,000 ft</strong></li>
+                    <li><span>First Flight:</span> <strong>1969</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="commercial">
+                <div class="card-header">
+                    <span class="card-type">Commercial</span>
+                    <span class="origin-flag">🇨🇳 China</span>
+                </div>
+                <h3>COMAC C919</h3>
+                <div class="card-subtitle">COMAC • Narrow-Body Airliner</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.78 (834 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>5,555 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2017</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="military">
+                <div class="card-header">
+                    <span class="card-type">Military</span>
+                    <span class="origin-flag">🇺🇸 USA</span>
+                </div>
+                <h3>Lockheed Martin F-35 Lightning II</h3>
+                <div class="card-subtitle">Lockheed Martin • 5th-Gen Stealth Multi-Role</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 1.6 (1,960 km/h)</strong></li>
+                    <li><span>Combat Radius:</span> <strong>1,239 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2006</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="military">
+                <div class="card-header">
+                    <span class="card-type">Military</span>
+                    <span class="origin-flag">🇺🇸 USA</span>
+                </div>
+                <h3>Northrop Grumman B-2 Spirit</h3>
+                <div class="card-subtitle">Northrop Grumman • Stealth Flying Wing Bomber</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.95 (1,010 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>11,100 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1989</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="military">
+                <div class="card-header">
+                    <span class="card-type">Military</span>
+                    <span class="origin-flag">🇫🇷 France</span>
+                </div>
+                <h3>Dassault Rafale</h3>
+                <div class="card-subtitle">Dassault Aviation • Twin-Engine Canard Delta</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 1.8 (1,912 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>3,700 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1986</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="military">
+                <div class="card-header">
+                    <span class="card-type">Military</span>
+                    <span class="origin-flag">🇸🇪 Sweden</span>
+                </div>
+                <h3>Saab JAS 39 Gripen E</h3>
+                <div class="card-subtitle">Saab • Light Multi-Role Fighter</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 2.0 (2,400 km/h)</strong></li>
+                    <li><span>Range:</span> <strong>4,000 km</strong></li>
+                    <li><span>First Flight:</span> <strong>2017</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="historical">
+                <div class="card-header">
+                    <span class="card-type">Historical</span>
+                    <span class="origin-flag">🇬🇧 UK</span>
+                </div>
+                <h3>Supermarine Spitfire</h3>
+                <div class="card-subtitle">Supermarine • WWII Fighter Aircraft</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>594 km/h</strong></li>
+                    <li><span>Engine:</span> <strong>Rolls-Royce Merlin</strong></li>
+                    <li><span>First Flight:</span> <strong>1936</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="historical">
+                <div class="card-header">
+                    <span class="card-type">Historical</span>
+                    <span class="origin-flag">🇺🇸 USA</span>
+                </div>
+                <h3>North American P-51 Mustang</h3>
+                <div class="card-subtitle">North American • Long-Range WWII Escort</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>708 km/h</strong></li>
+                    <li><span>Range:</span> <strong>2,656 km</strong></li>
+                    <li><span>First Flight:</span> <strong>1940</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="historical">
+                <div class="card-header">
+                    <span class="card-type">Historical</span>
+                    <span class="origin-flag">🇺🇸 USA</span>
+                </div>
+                <h3>Wright Flyer</h3>
+                <div class="card-subtitle">Wright Brothers • First Powered Airplane</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>48 km/h</strong></li>
+                    <li><span>First Distance:</span> <strong>36.5 meters</strong></li>
+                    <li><span>First Flight:</span> <strong>1903</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="cargo">
+                <div class="card-header">
+                    <span class="card-type">Cargo / Heavy</span>
+                    <span class="origin-flag">🇺🇦 Ukraine</span>
+                </div>
+                <h3>Antonov An-124 Ruslan</h3>
+                <div class="card-subtitle">Antonov • Heavy Strategic Transport</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>865 km/h</strong></li>
+                    <li><span>Payload Capacity:</span> <strong>150,000 kg</strong></li>
+                    <li><span>First Flight:</span> <strong>1982</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="cargo">
+                <div class="card-header">
+                    <span class="card-type">Cargo / Heavy</span>
+                    <span class="origin-flag">🇺🇸 USA</span>
+                </div>
+                <h3>Lockheed C-5M Super Galaxy</h3>
+                <div class="card-subtitle">Lockheed Martin • Intercontinental Airlifter</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.79 (855 km/h)</strong></li>
+                    <li><span>Payload Capacity:</span> <strong>127,459 kg</strong></li>
+                    <li><span>First Flight:</span> <strong>1968</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="cargo">
+                <div class="card-header">
+                    <span class="card-type">Cargo / Special</span>
+                    <span class="origin-flag">🇪🇺 EU</span>
+                </div>
+                <h3>Airbus BelugaXL (A330-743L)</h3>
+                <div class="card-subtitle">Airbus • Oversized Cargo Transporter</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 0.69 (737 km/h)</strong></li>
+                    <li><span>Cargo Volume:</span> <strong>2,209 m³</strong></li>
+                    <li><span>First Flight:</span> <strong>2018</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="experimental">
+                <div class="card-header">
+                    <span class="card-type">Experimental</span>
+                    <span class="origin-flag">🇺🇸 USA</span>
+                </div>
+                <h3>North American X-15</h3>
+                <div class="card-subtitle">USAF / NASA • Hypersonic Rocket Plane</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 6.7 (7,274 km/h)</strong></li>
+                    <li><span>Highest Altitude:</span> <strong>354,200 ft (107.9 km)</strong></li>
+                    <li><span>First Flight:</span> <strong>1959</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="experimental">
+                <div class="card-header">
+                    <span class="card-type">Experimental</span>
+                    <span class="origin-flag">🇺🇸 USA</span>
+                </div>
+                <h3>Bell X-1</h3>
+                <div class="card-subtitle">Bell Aircraft • First Sound Barrier Aircraft</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 1.45 (1,541 km/h)</strong></li>
+                    <li><span>Achievement:</span> <strong>Broke Sound Barrier (1947)</strong></li>
+                    <li><span>First Flight:</span> <strong>1946</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="experimental">
+                <div class="card-header">
+                    <span class="card-type">Experimental</span>
+                    <span class="origin-flag">🇺🇸 USA</span>
+                </div>
+                <h3>NASA / Grumman X-29</h3>
+                <div class="card-subtitle">Grumman • Forward-Swept Wing Demonstrator</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>Mach 1.8 (1,930 km/h)</strong></li>
+                    <li><span>Wing Design:</span> <strong>Forward Swept Carbon Fiber</strong></li>
+                    <li><span>First Flight:</span> <strong>1984</strong></li>
+                </ul>
+            </div>
+
+            <div class="card" data-category="experimental">
+                <div class="card-header">
+                    <span class="card-type">VTOL Tiltrotor</span>
+                    <span class="origin-flag">🇺🇸 USA</span>
+                </div>
+                <h3>Bell Boeing V-22 Osprey</h3>
+                <div class="card-subtitle">Bell / Boeing • Multi-Role Tiltrotor</div>
+                <ul class="card-details">
+                    <li><span>Max Speed:</span> <strong>565 km/h</strong></li>
+                    <li><span>Capability:</span> <strong>Vertical Takeoff & Landing</strong></li>
+                    <li><span>First Flight:</span> <strong>1989</strong></li>
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+
+    <footer>
+        <p>SKYVAULT &bull; Global Aerospace Data Center</p>
+    </footer>
+
+    <script>
+        let currentCategory = 'all';
+
+        function setCategory(category, buttonElement) {
+            currentCategory = category;
+
+            // Highlight active button in the top navigation bar
+            const navButtons = document.querySelectorAll('.nav-btn');
+            navButtons.forEach(btn => btn.classList.remove('active'));
+            if (buttonElement) {
+                buttonElement.classList.add('active');
+            }
+
+            filterCards();
+        }
+
+        function filterCards() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.card');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const text = card.textContent.toLowerCase();
+                const category = card.getAttribute('data-category');
+
+                const matchesCategory = (currentCategory === 'all' || category === currentCategory);
+                const matchesSearch = text.includes(query);
+
+                if (matchesCategory && matchesSearch) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            document.getElementById('planeCounter').textContent = `Showing ${visibleCount} Aircraft`;
+        }
+    </script>
+</body>
+</html>

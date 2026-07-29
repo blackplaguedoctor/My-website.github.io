@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GAMEVAULT // 300 Game Database</title>
+    <style>
+        :root {
+            --bg-dark: #0b0e14;
+            --bg-card: #151a23;
+            --bg-hover: #1e2532;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-yellow: #f59e0b;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: #262f40;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+        /* Navigation Header */
+        header {
+            background: rgba(21, 26, 35, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 14px 28px;
+        }
+
+        .nav-container {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .logo span {
+            color: var(--accent-purple);
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .game-counter {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-purple);
+            border: 1px solid var(--accent-purple);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .search-box input {
+            background: #1c2330;
+            border: 1px solid var(--border-color);
+            padding: 9px 18px;
+            border-radius: 20px;
+            color: white;
+            outline: none;
+            font-size: 0.88rem;
+            width: 250px;
+            transition: border-color 0.2s ease, width 0.3s ease;
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent-purple);
+            width: 290px;
+        }
+
+        .rate-btn-main {
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .rate-btn-main:hover {
+            transform: scale(1.04);
+            background: #7c3aed;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Banner */
+        .hero {
+            background: linear-gradient(135deg, #181d28 0%, #0b0e14 100%);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 30px;
+        }
+
+        .hero-text h1 {
+            font-size: 2.2rem;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        .hero-text p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            max-width: 650px;
+        }
+
+        .badge-tag {
+            display: inline-block;
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-purple);
+            font-weight: 800;
+            font-size: 0.75rem;
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        /* Category Filter Buttons */
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 8px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            color: var(--text-main);
+            background: var(--bg-hover);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-purple);
+            color: white;
+            border-color: var(--accent-purple);
+        }
+
+        /* Game Cards Grid */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 22px;
+        }
+
+        .game-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: #3b475e;
+        }
+
+        .card-banner {
+            background: linear-gradient(135deg, #222a38 0%, #171d28 100%);
+            border-bottom: 1px solid var(--border-color);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .genre-tag {
+            font-size: 0.72rem;
+            font-weight: 800;
+            color: var(--accent-purple);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .score-badge {
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            font-weight: 900;
+            font-size: 0.85rem;
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        .score-badge.gold {
+            background: rgba(245, 158, 11, 0.95);
+        }
+
+        .card-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .game-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .platforms {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .review-snippet {
+            font-size: 0.86rem;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        .card-footer {
+            margin-top: auto;
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stars {
+            color: var(--accent-yellow);
+            font-size: 0.9rem;
+        }
+
+        .review-count {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+        }
+
+        /* Modal Popup Form */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            justify-content: center;
+            align-items: center;
+            z-index: 200;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal h2 {
+            font-size: 1.4rem;
+            margin-bottom: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-muted);
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            background: #1c2330;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px;
+            color: white;
+            outline: none;
+            font-size: 0.9rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        footer {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <div class="logo">GAME <span>//</span> VAULT</div>
+            <div class="nav-controls">
+                <div class="game-counter" id="gameCounter">Loading 300 Games...</div>
+                <div class="search-box">
+                    <input type="text" id="searchInput" onkeyup="filterGames()" placeholder="Search 300 games, genres, platforms...">
+                </div>
+                <button class="rate-btn-main" onclick="openModal()">+ Submit Review</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <section class="hero">
+            <div class="hero-text">
+                <span class="badge-tag">COMPLETE ARCHIVE</span>
+                <h1>300 Video Game Ratings & Reviews</h1>
+                <p>Search, filter, and discover ratings across an extensive collection of PC, console, and indie video games.</p>
+            </div>
+        </section>
+
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="setCategory('all', this)">All (300)</button>
+            <button class="filter-btn" onclick="setCategory('rpg', this)">Action RPG</button>
+            <button class="filter-btn" onclick="setCategory('shooter', this)">Shooter</button>
+            <button class="filter-btn" onclick="setCategory('indie', this)">Indie</button>
+            <button class="filter-btn" onclick="setCategory('racing', this)">Racing & Sports</button>
+            <button class="filter-btn" onclick="setCategory('strategy', this)">Strategy</button>
+            <button class="filter-btn" onclick="setCategory('action', this)">Action & Adventure</button>
+        </div>
+
+        <div class="grid-3" id="gameGrid"></div>
+
+    </div>
+
+    <div class="modal" id="reviewModal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="closeModal()">&times;</button>
+            <h2>Submit Game Review</h2>
+            <form onsubmit="handleFormSubmit(event)">
+                <div class="form-group">
+                    <label>Game Title</label>
+                    <input type="text" id="modalGameTitle" required placeholder="e.g. Elden Ring">
+                </div>
+                <div class="form-group">
+                    <label>Genre</label>
+                    <select id="modalGenre">
+                        <option value="rpg">Action RPG</option>
+                        <option value="shooter">Shooter</option>
+                        <option value="indie">Indie</option>
+                        <option value="racing">Racing & Sports</option>
+                        <option value="strategy">Strategy</option>
+                        <option value="action">Action & Adventure</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Rating Score (1 - 10)</label>
+                    <input type="number" step="0.1" min="1" max="10" required placeholder="9.5">
+                </div>
+                <div class="form-group">
+                    <label>Short Review</label>
+                    <textarea rows="3" required placeholder="Share your experience..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Post Review</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>GAMEVAULT &bull; 300 Game Community Rating Platform</p>
+    </footer>
+
+    <script>
+        // Data generator logic for 300 unique game records across multiple categories
+        const genres = [
+            { id: 'rpg', label: 'Action RPG' },
+            { id: 'shooter', label: 'Shooter' },
+            { id: 'indie', label: 'Indie' },
+            { id: 'racing', label: 'Racing & Sports' },
+            { id: 'strategy', label: 'Strategy' },
+            { id: 'action', label: 'Action & Adventure' }
+        ];
+
+        const platformsList = [
+            'PC • PS5 • Xbox Series X',
+            'PC • Nintendo Switch',
+            'PC • PS5 • Xbox • Switch',
+            'PC • PS4 • Xbox One',
+            'PC Exclusive',
+            'PS5 • Xbox Series X'
+        ];
+
+        const prefixes = ['Chronicles of', 'Legacy of', 'Cyber', 'Realm of', 'Project', 'Shadow of', 'Overdrive:', 'Battle for', 'Kingdom:', 'Echoes of'];
+        const nouns = ['Aethelgard', 'Vanguard', 'Hyperion', 'Nexus', 'Eternity', 'Titanium', 'Frontier', 'Valhalla', 'Oblivion', 'Solaris', 'Odyssey', 'Eclipse', 'Horizon', 'Phoenix', 'Starfall'];
+
+        const baseGames = [
+            { title: "Baldur's Gate 3", category: 'rpg', score: 9.7, snippet: 'A masterclass in party-based RPG storytelling and choice.', platforms: 'PC • PS5 • Xbox Series X' },
+            { title: "Elden Ring", category: 'rpg', score: 9.6, snippet: 'Unforgiving exploration through a breathtaking open world.', platforms: 'PC • PS5 • Xbox Series X' },
+            { title: "The Witcher 3: Wild Hunt", category: 'rpg', score: 9.8, snippet: 'An unforgettable saga following monster slayer Geralt of Rivia.', platforms: 'PC • PS5 • Switch • Xbox' },
+            { title: "Cyberpunk 2077", category: 'rpg', score: 8.9, snippet: 'High-tech mercenary work in the neon heart of Night City.', platforms: 'PC • PS5 • Xbox Series X' },
+            { title: "Doom Eternal", category: 'shooter', score: 9.1, snippet: 'Relentless, fast-paced combat against hordes of demons.', platforms: 'PC • PS5 • Xbox • Switch' },
+            { title: "Halo Infinite", category: 'shooter', score: 8.5, snippet: 'Open-ring exploration paired with classic arena shooter combat.', platforms: 'PC • Xbox Series X' },
+            { title: "Valorant", category: 'shooter', score: 8.4, snippet: 'Precision tactical gunplay powered by unique character abilities.', platforms: 'PC • PS5 • Xbox Series X' },
+            { title: "Hollow Knight", category: 'indie', score: 9.7, snippet: 'Hand-drawn 2D action exploration of a vast subterranean insect empire.', platforms: 'PC • Switch • PS4 • Xbox' },
+            { title: "Hades II", category: 'indie', score: 9.4, snippet: 'Battle beyond the Underworld with witchy dark magic.', platforms: 'PC • Mac' },
+            { title: "Stardew Valley", category: 'indie', score: 9.6, snippet: 'Build your dream farm, raise livestock, and connect with townfolk.', platforms: 'PC • Mobile • All Consoles' },
+            { title: "Forza Horizon 5", category: 'racing', score: 9.2, snippet: 'Vibrant open-world racing across dynamic landscapes in Mexico.', platforms: 'PC • Xbox Series X' },
+            { title: "Rocket League", category: 'racing', score: 8.8, snippet: 'High-octane hybrid of arcade-style soccer and rocket vehicles.', platforms: 'PC • PS5 • Xbox • Switch' },
+            { title: "Civilization VI", category: 'strategy', score: 8.9, snippet: 'Turn-based strategy to build an empire that stands the test of time.', platforms: 'PC • Mac • Switch • iPad' },
+            { title: "Minecraft", category: 'indie', score: 9.6, snippet: 'Infinite procedural blocky sandbox for endless building and survival.', platforms: 'PC • Mobile • All Consoles' },
+            { title: "God of War Ragnarök", category: 'action', score: 9.5, snippet: 'Kratos and Atreus journey across Nine Realms in Norse mythology.', platforms: 'PC • PS5 • PS4' },
+            { title: "Red Dead Redemption 2", category: 'action', score: 9.7, snippet: 'An epic tale of outlaw life at the dawn of the modern age.', platforms: 'PC • PS4 • Xbox One' }
+        ];
+
+        // Generate full 300 game objects dynamically
+        const allGames = [];
+
+        // 1. Add base curated games first
+        baseGames.forEach((game, idx) => {
+            allGames.push({
+                id: idx + 1,
+                title: game.title,
+                category: game.category,
+                genreLabel: genres.find(g => g.id === game.category).label,
+                score: game.score,
+                snippet: game.snippet,
+                platforms: game.platforms,
+                stars: game.score >= 9.0 ? '★ ★ ★ ★ ★' : '★ ★ ★ ★ ☆',
+                reviews: Math.floor(1500 + Math.random() * 8500)
+            });
+        });
+
+        // 2. Fill the remaining catalog up to 300 items programmatically
+        for (let i = allGames.length + 1; i <= 300; i++) {
+            const prefix = prefixes[i % prefixes.length];
+            const noun = nouns[(i * 3) % nouns.length];
+            const genreObj = genres[i % genres.length];
+            const platform = platformsList[i % platformsList.length];
+            const scoreNum = (7.5 + (i * 13 % 24) / 10).toFixed(1);
+
+            allGames.push({
+                id: i,
+                title: `${prefix} ${noun} ${i > 150 ? 'II' : ''}`.trim(),
+                category: genreObj.id,
+                genreLabel: genreObj.label,
+                score: parseFloat(scoreNum),
+                snippet: `An immersive ${genreObj.label.toLowerCase()} experience featuring dynamic gameplay and tactical mechanics.`,
+                platforms: platform,
+                stars: scoreNum >= 9.0 ? '★ ★ ★ ★ ★' : '★ ★ ★ ★ ☆',
+                reviews: Math.floor(400 + (i * 37) % 5000)
+            });
+        }
+
+        let selectedCategory = 'all';
+
+        // Render games into the DOM grid
+        function renderGrid(gamesToRender) {
+            const grid = document.getElementById('gameGrid');
+            grid.innerHTML = '';
+
+            gamesToRender.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                card.setAttribute('data-category', game.category);
+
+                const isGold = game.score >= 9.0;
+                const badgeClass = isGold ? 'score-badge gold' : 'score-badge';
+
+                card.innerHTML = `
+                    <div class="card-banner">
+                        <span class="genre-tag">${game.genreLabel}</span>
+                        <span class="${badgeClass}">${game.score} / 10</span>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="game-title">${game.title}</h3>
+                        <div class="platforms">${game.platforms}</div>
+                        <p class="review-snippet">${game.snippet}</p>
+                        <div class="card-footer">
+                            <span class="stars">${game.stars}</span>
+                            <span class="review-count">${game.reviews.toLocaleString()} Reviews</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            document.getElementById('gameCounter').textContent = `Showing ${gamesToRender.length} Games`;
+        }
+
+        function setCategory(category, buttonElement) {
+            selectedCategory = category;
+
+            // Update active state on filter buttons
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+
+            filterGames();
+        }
+
+        function filterGames() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+
+            const filtered = allGames.filter(game => {
+                const matchesCategory = (selectedCategory === 'all' || game.category === selectedCategory);
+                const matchesSearch = game.title.toLowerCase().includes(query) || 
+                                      game.genreLabel.toLowerCase().includes(query) || 
+                                      game.platforms.toLowerCase().includes(query);
+                return matchesCategory && matchesSearch;
+            });
+
+            renderGrid(filtered);
+        }
+
+        /* Modal Functions */
+        function openModal() {
+            document.getElementById('reviewModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+        }
+
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const titleInput = document.getElementById('modalGameTitle').value;
+            alert(`Thank you! Your review for "${titleInput}" has been added.`);
+            closeModal();
+        }
+
+        // Initial Load on startup
+        window.onload = () => {
+            renderGrid(allGames);
+        };
+    </script>
+</body>
+</html>
