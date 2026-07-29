@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apex // F1 Database</title>
+    
+</head>
+<body>
+
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="logo">APEX <span class="accent-red">//</span> F1 WIKI</div>
+            <nav class="nav-links">
+                <a href="#drivers">Drivers</a>
+                <a href="#teams">Teams</a>
+                <a href="#circuits">Circuits</a>
+                <a href="#standings">Standings</a>
+            </nav>
+            <div class="search-box">
+                <input type="text" id="wikiSearch" placeholder="Search driver, team, track...">
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <span class="badge">Formula 1 Archive</span>
+            <h1>Pinnacle of Motorsport</h1>
+            <p>Comprehensive technical specs, telemetry insights, driver profiles, and circuit layouts.</p>
+        </div>
+    </section>
+
+    <div class="main-container">
+
+        <main class="content-area">
+
+            <section id="drivers" class="wiki-section">
+                <div class="section-title">
+                    <h2>Featured Driver</h2>
+                    <span class="tag">Active Era</span>
+                </div>
+
+                <div class="article-card">
+                    <div class="article-header">
+                        <div>
+                            <h3>Max Verstappen</h3>
+                            <p class="subtext">Red Bull Racing • #1</p>
+                        </div>
+                        <div class="driver-number">01</div>
+                    </div>
+                    <p>Known for aggressive racecraft, exceptional wet-weather control, and relentless consistency. Multiple-time World Driver Champion driving for Red Bull Racing.</p>
+
+                    <div class="quick-stats-grid">
+                        <div class="stat-box">
+                            <span class="stat-value">3+</span>
+                            <span class="stat-label">World Titles</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-value">50+</span>
+                            <span class="stat-label">Grand Prix Wins</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-value">100+</span>
+                            <span class="stat-label">Podiums</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="teams" class="wiki-section">
+                <div class="section-title">
+                    <h2>Constructor Grid</h2>
+                </div>
+
+                <div class="team-grid">
+                    <div class="team-card red-bull">
+                        <div class="team-color-strip rb-strip"></div>
+                        <h3>Red Bull Racing</h3>
+                        <p class="engine">Power Unit: Honda RBPT</p>
+                        <span class="base">Base: Milton Keynes, UK</span>
+                    </div>
+
+                    <div class="team-card ferrari">
+                        <div class="team-color-strip ferrari-strip"></div>
+                        <h3>Scuderia Ferrari</h3>
+                        <p class="engine">Power Unit: Ferrari</p>
+                        <span class="base">Base: Maranello, Italy</span>
+                    </div>
+
+                    <div class="team-card mercedes">
+                        <div class="team-color-strip merc-strip"></div>
+                        <h3>Mercedes-AMG F1</h3>
+                        <p class="engine">Power Unit: Mercedes</p>
+                        <span class="base">Base: Brackley, UK</span>
+                    </div>
+
+                    <div class="team-card mclaren">
+                        <div class="team-color-strip mcl-strip"></div>
+                        <h3>McLaren F1 Team</h3>
+                        <p class="engine">Power Unit: Mercedes</p>
+                        <span class="base">Base: Woking, UK</span>
+                    </div>
+                </div>
+            </section>
+
+            <section id="circuits" class="wiki-section">
+                <div class="section-title">
+                    <h2>Featured Circuit</h2>
+                </div>
+
+                <div class="circuit-card">
+                    <div class="circuit-info">
+                        <h3>Circuit de Spa-Francorchamps</h3>
+                        <p class="location">📍 Stavelot, Belgium</p>
+                        <ul class="circuit-specs">
+                            <li><strong>Length:</strong> 7.004 km (4.352 mi)</li>
+                            <li><strong>Turns:</strong> 19 (9 left, 10 right)</li>
+                            <li><strong>Lap Record:</strong> 1:46.286 (Valtteri Bottas, 2018)</li>
+                            <li><strong>Key Features:</strong> Eau Rouge, Raidillon, Kemmel Straight</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <aside class="sidebar">
+            <div class="infobox">
+                <div class="infobox-header">Technical Regulations</div>
+                <div class="infobox-img">
+                    <span>🏎️ 1.6L V6 Turbo Hybrid</span>
+                </div>
+                
+                <div class="info-row">
+                    <span class="label">Engine Config</span>
+                    <span class="val">90° V6 Turbo</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Displacement</span>
+                    <span class="val">1,600 cc</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">RPM Limit</span>
+                    <span class="val">15,000 RPM</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Minimum Weight</span>
+                    <span class="val">798 kg</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">ERS Output</span>
+                    <span class="val">~120 kW (160 bhp)</span>
+                </div>
+            </div>
+
+            <div class="chill-box">
+                💡 <strong>Track Note:</strong> Modern F1 cars generate enough downforce to theoretically drive upside down in a tunnel at 120+ mph!
+            </div>
+        </aside>
+
+    </div>
+<link rel="stylesheet" href="f1.css">
+    <footer>
+        <p>APEX F1 Wiki &bull; Community-curated motorsport database</p>
+    </footer>
+    <link rel="stylesheet" href="f1.css">
+
+<script src="f1.js"></script>
