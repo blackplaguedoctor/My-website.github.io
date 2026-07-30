@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEMONADE STAND TYCOON // MEGA EXPANSION</title>
+    <style>
+        :root {
+            --bg-dark: #07090e;
+            --panel-bg: #111622;
+            --accent-yellow: #facc15;
+            --accent-green: #22c55e;
+            --accent-red: #ef4444;
+            --accent-blue: #38bdf8;
+            --accent-purple: #c084fc;
+            --text-main: #f8fafc;
+            --border-color: #1e293b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 15px;
+        }
+
+        .game-wrapper {
+            width: 100%;
+            max-width: 1100px;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: #182030;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        header h1 {
+            font-size: 1.3rem;
+            color: var(--accent-yellow);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 15px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .stat-item span { color: var(--accent-green); }
+
+        .tabs {
+            display: flex;
+            background: #0d121c;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            color: #94a3b8;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-btn.active {
+            color: var(--accent-yellow);
+            background: rgba(250, 204, 21, 0.05);
+            border-bottom-color: var(--accent-yellow);
+        }
+
+        .main-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            min-height: 500px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 1.05rem;
+            color: var(--accent-blue);
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        .card {
+            background: rgba(7, 9, 14, 0.6);
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .row-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        button {
+            background: var(--accent-yellow);
+            color: #000;
+            border: none;
+            padding: 6px 12px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:hover { opacity: 0.85; }
+        button:disabled { background: #334155; color: #64748b; cursor: not-allowed; }
+
+        input[type="number"], select {
+            background: var(--bg-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px;
+            border-radius: 6px;
+            width: 75px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .btn-action {
+            background: var(--accent-green);
+            color: #000;
+            width: 100%;
+            padding: 14px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            border-radius: 10px;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+        }
+
+        .log-box {
+            background: #040508;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            height: 180px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="game-wrapper">
+        <header>
+            <h1>🍋 LEMONADE STAND TYCOON // MEGA EDITION</h1>
+            <div class="stats-bar">
+                <div class="stat-item">Day: <span id="dayDisplay">1</span></div>
+                <div class="stat-item">Cash: <span id="cashDisplay">$50.00</span></div>
+                <div class="stat-item">Location: <span id="locationDisplay">Suburban Park</span></div>
+            </div>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('manage')">1. Operations & Recipe</button>
+            <button class="tab-btn" onclick="switchTab('market')">2. Market & Staff</button>
+            <button class="tab-btn" onclick="switchTab('upgrades')">3. Equipment & Upgrades</button>
+        </div>
+
+        <div class="main-content" id="tab-manage">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h3 class="section-title" style="border:none; margin:0;">Morning Planning & Supply Chain</h3>
+                    <p style="color: #94a3b8; font-size: 0.85rem;">Stock up on inventory, pick your lemonade flavor, and tweak your recipe before opening.</p>
+                </div>
+                <div style="font-weight: bold; color: var(--accent-yellow);">Weather: <span id="weatherDisplay">☀️ Sunny (78°F)</span></div>
+            </div>
+
+            <div class="grid-2">
+                <div class="card">
+                    <h4 style="color: var(--accent-yellow);">Raw Inventory</h4>
+                    <div class="row-item"><span>Lemons ($0.50): <strong id="invLemons">30</strong></span> <button onclick="buyStock('lemons', 10, 5.00)">Buy 10</button></div>
+                    <div class="row-item"><span>Sugar ($0.25): <strong id="invSugar">30</strong></span> <button onclick="buyStock('sugar', 10, 2.50)">Buy 10</button></div>
+                    <div class="row-item"><span>Ice Cubes ($0.05): <strong id="invIce">100</strong></span> <button onclick="buyStock('ice', 50, 2.50)">Buy 50</button></div>
+                    <div class="row-item"><span>Paper Cups ($0.10): <strong id="invCups">50</strong></span> <button onclick="buyStock('cups', 25, 2.50)">Buy 25</button></div>
+                    <div class="row-item"><span>Strawberries ($0.80): <strong id="invStrawberries">0</strong></span> <button onclick="buyStock('strawberries', 10, 8.00)">Buy 10</button></div>
+                    <div class="row-item"><span>Peaches ($0.90): <strong id="invPeaches">0</strong></span> <button onclick="buyStock('peaches', 10, 9.00)">Buy 10</button></div>
+                    <div class="row-item"><span>Mint Leaves ($0.30): <strong id="invMint">0</strong></span> <button onclick="buyStock('mint', 20, 6.00)">Buy 20</button></div>
+                    <div class="row-item"><span>Sparkling Water ($0.60): <strong id="invSparkling">0</strong></span> <button onclick="buyStock('sparkling', 10, 6.00)">Buy 10</button></div>
+                </div>
+
+                <div class="card">
+                    <h4 style="color: var(--accent-yellow);">Recipe & Pricing (Per Pitcher)</h4>
+                    <div class="row-item">
+                        <span>Base Flavor:</span>
+                        <select id="flavorSelect" onchange="changeFlavor()">
+                            <option value="classic">Classic Lemonade</option>
+                            <option value="strawberry">Strawberry Lemonade</option>
+                            <option value="peach">Peach Lemonade</option>
+                            <option value="mint">Mint Refresher</option>
+                            <option value="sparkling">Sparkling Fizz</option>
+                        </select>
+                    </div>
+                    <div class="row-item"><span>Lemons per Pitcher:</span> <input type="number" id="recipeLemons" value="4" min="1" max="10" onchange="updateRecipe()"></div>
+                    <div class="row-item"><span>Sugar Spoons:</span> <input type="number" id="recipeSugar" value="4" min="1" max="10" onchange="updateRecipe()"></div>
+                    <div class="row-item"><span>Ice per Cup:</span> <input type="number" id="recipeIce" value="4" min="0" max="10" onchange="updateRecipe()"></div>
+                    <div class="row-item"><span>Special Fruit/Herb:</span> <input type="number" id="recipeSpecial" value="2" min="0" max="10" onchange="updateRecipe()"></div>
+                    <div class="row-item"><span>Price per Cup ($):</span> <input type="number" id="pricePerCup" value="2.00" min="0.25" max="15.00" step="0.25" onchange="updatePrice()"></div>
+                </div>
+            </div>
+
+            <button class="btn-action" onclick="startDay()">Open Stand for Business!</button>
+        </div>
+
+        <div class="main-content hidden" id="tab-market">
+            <h3 class="section-title">Locations & Marketing Campaigns</h3>
+            <div class="grid-2">
+                <div class="card">
+                    <h4 style="color: var(--accent-blue);">Business Locations</h4>
+                    <div class="row-item"><span><strong>Suburban Park</strong> (Free, Low traffic)</span> <button id="loc0" onclick="setLoc(0, 0)" disabled>Active</button></div>
+                    <div class="row-item"><span><strong>Beach Boardwalk</strong> ($150, High summer traffic)</span> <button id="loc1" onclick="setLoc(1, 150)">Move ($150)</button></div>
+                    <div class="row-item"><span><strong>Downtown District</strong> ($400, Busy professionals)</span> <button id="loc2" onclick="setLoc(2, 400)">Move ($400)</button></div>
+                    <div class="row-item"><span><strong>Stadium Arena</strong> ($1000, Massive crowds)</span> <button id="loc3" onclick="setLoc(3, 1000)">Move ($1000)</button></div>
+                    <div class="row-item"><span><strong>Luxury Resort</strong> ($2500, High spenders)</span> <button id="loc4" onclick="setLoc(4, 2500)">Move ($2500)</button></div>
+                </div>
+
+                <div class="card">
+                    <h4 style="color: var(--accent-purple);">Marketing Campaigns (Daily Boost)</h4>
+                    <div class="row-item"><span><strong>Flyer Handouts</strong> ($10/day)</span> <button id="mkt0" onclick="toggleMkt(0, 10)">Hire</button></div>
+                    <div class="row-item"><span><strong>Local Radio Ad</strong> ($35/day)</span> <button id="mkt1" onclick="toggleMkt(1, 35)">Hire</button></div>
+                    <div class="row-item"><span><strong>Social Media Blitz</strong> ($75/day)</span> <button id="mkt2" onclick="toggleMkt(2, 75)">Hire</button></div>
+                    <div class="row-item"><span><strong>Billboard Ad</strong> ($150/day)</span> <button id="mkt3" onclick="toggleMkt(3, 150)">Hire</button></div>
+                    <div class="row-item"><span><strong>TV Commercial</strong> ($400/day)</span> <button id="mkt4" onclick="toggleMkt(4, 400)">Hire</button></div>
+                </div>
+            </div>
+
+            <h3 class="section-title" style="margin-top: 10px;">Employee Staffing</h3>
+            <div class="grid-3">
+                <div class="card">
+                    <h4 style="color: var(--accent-green);">Lemon Squeezer Intern</h4>
+                    <p style="font-size:0.8rem; color:#94a3b8;">Squeezes lemons automatically so you don't run out.</p>
+                    <p>Wage: $20 / day</p>
+                    <button id="emp0" onclick="hireStaff(0, 20)">Hire Intern</button>
+                </div>
+                <div class="card">
+                    <h4 style="color: var(--accent-green);">Stand Server</h4>
+                    <p style="font-size:0.8rem; color:#94a3b8;">Serves customers faster during peak hours.</p>
+                    <p>Wage: $50 / day</p>
+                    <button id="emp1" onclick="hireStaff(1, 50)">Hire Server</button>
+                </div>
+                <div class="card">
+                    <h4 style="color: var(--accent-green);">General Manager</h4>
+                    <p style="font-size:0.8rem; color:#94a3b8;">Automatically auto-restocks basic supplies daily.</p>
+                    <p>Wage: $120 / day</p>
+                    <button id="emp2" onclick="hireStaff(2, 120)">Hire Manager</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content hidden" id="tab-upgrades">
+            <h3 class="section-title">Equipment & Permanent Upgrades</h3>
+            <div class="grid-2">
+                <div class="card" id="upgradesList1"></div>
+                <div class="card" id="upgradesList2"></div>
+            </div>
+        </div>
+
+        <div class="main-content hidden" id="sellingPhase">
+            <h3 class="section-title">Stand Open — Afternoon Sales in Progress</h3>
+            <div class="grid-2" style="height: 100%;">
+                <div class="card" style="justify-content: space-between;">
+                    <div>
+                        <h4 style="color: var(--accent-green); margin-bottom: 10px;">Live Sales Dashboard</h4>
+                        <p>Cups Sold Today: <strong id="soldCount">0</strong></p>
+                        <p>Revenue Today: <strong id="revenueCount">$0.00</strong></p>
+                        <p style="margin-top: 15px;">Customer Feedback: <span id="feedbackText" style="color: var(--accent-yellow);">Waiting...</span></p>
+                    </div>
+                    <button class="btn-action" id="closeDayBtn" onclick="endDay()" disabled>Close Stand & Review Results</button>
+                </div>
+                <div class="card">
+                    <h4 style="color: var(--accent-yellow); margin-bottom: 5px;">Live Activity Log</h4>
+                    <div class="log-box" id="activityLog">
+                        <div>[09:00 AM] Stand opened for business.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content hidden" id="summaryPhase">
+            <h3 class="section-title">Daily Business Review</h3>
+            <div class="card" style="gap: 12px; max-width: 500px; margin: 0 auto; width: 100%;">
+                <h4 style="color: var(--accent-yellow);">End of Day <span id="sumDayNum">1</span> Report</h4>
+                <p>Total Customers Visited: <strong id="sumCustomers">0</strong></p>
+                <p>Total Cups Sold: <strong id="sumSold">0</strong></p>
+                <p>Gross Revenue: <strong id="sumRevenue">$0.00</strong></p>
+                <p>Ingredient & Staff Costs: <strong id="sumCost">$0.00</strong></p>
+                <p style="font-size: 1.1rem; border-top: 1px solid var(--border-color); padding-top: 8px;">Net Profit: <strong id="sumProfit" style="color: var(--accent-green);">$0.00</strong></p>
+                <button class="btn-action" onclick="nextDay()">Proceed to Next Day</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let game = {
+            day: 1,
+            cash: 50.00,
+            location: 0,
+            flavor: 'classic',
+            inventory: { lemons: 30, sugar: 30, ice: 100, cups: 50, strawberries: 0, peaches: 0, mint: 0, sparkling: 0 },
+            recipe: { lemons: 4, sugar: 4, ice: 4, special: 2 },
+            price: 2.00,
+            staff: [false, false, false],
+            marketing: [false, false, false, false, false],
+            weather: { name: "☀️ Sunny", temp: 78, mult: 1.0 },
+            upgrades: {}
+        };
+
+        const locations = [
+            { name: "Suburban Park", cost: 0, mult: 1.0 },
+            { name: "Beach Boardwalk", cost: 150, mult: 1.6 },
+            { name: "Downtown District", cost: 400, mult: 2.4 },
+            { name: "Stadium Arena", cost: 1000, mult: 3.8 },
+            { name: "Luxury Resort", cost: 2500, mult: 5.5 }
+        ];
+
+        const weatherTypes = [
+            { name: "☀️ Sunny", temp: 82, mult: 1.2 },
+            { name: "🔥 Heatwave", temp: 97, mult: 1.8 },
+            { name: "⛅ Partly Cloudy", temp: 74, mult: 0.9 },
+            { name: "🌧️ Rainy", temp: 62, mult: 0.4 }
+        ];
+
+        const upgradeDefs = [
+            { id: 'squeezer', name: 'Pro Squeezer', desc: 'Saves 20% on lemons per pitcher', cost: 40 },
+            { id: 'sign', name: 'Neon Sign', desc: 'Attracts 15% more customers', cost: 65 },
+            { id: 'cooler', name: 'Ice Cooler Box', desc: 'Reduces ice melting by 30%', cost: 50 },
+            { id: 'blender', name: 'High-Speed Blender', desc: 'Allows gourmet fruit juices', cost: 120 },
+            { id: 'umbrella', name: 'Shade Umbrella', desc: 'Keeps customers comfy on hot days', cost: 80 },
+            { id: 'register', name: 'Digital Register', desc: 'Speeds up checkout lines by 20%', cost: 150 },
+            { id: 'sound', name: 'Sound System', desc: 'Plays upbeat music, boosting mood', cost: 200 },
+            { id: 'table', name: 'Granite Countertop', desc: 'Professional look increases prices', cost: 300 },
+            { id: 'solar', name: 'Solar Panels', desc: 'Eliminates stand operating expenses', cost: 500 },
+            { id: 'camera', name: 'Security System', desc: 'Prevents petty theft & losses', cost: 350 },
+            { id: 'espresso', name: 'Espresso Machine', desc: 'Sell morning coffee to commuters', cost: 450 },
+            { id: 'pastry', name: 'Pastry Display Case', desc: 'Sell snacks alongside lemonade', cost: 600 },
+            { id: 'dispenser', name: 'Auto Dispenser', desc: 'Speeds up drink pouring', cost: 800 },
+            { id: 'truck', name: 'Mobile Food Truck', desc: 'Ultimate mobility and capacity', cost: 2000 },
+            { id: 'franchise', name: 'Franchise License', desc: 'Passive daily royalty income', cost: 3500 }
+        ];
+
+        function initUpgrades() {
+            let list1 = document.getElementById('upgradesList1');
+            let list2 = document.getElementById('upgradesList2');
+            list1.innerHTML = '<h4 style="color: var(--accent-yellow);">Equipment (Part 1)</h4>';
+            list2.innerHTML = '<h4 style="color: var(--accent-yellow);">Equipment (Part 2)</h4>';
+
+            upgradeDefs.forEach((up, idx) => {
+                game.upgrades[up.id] = false;
+                let html = `<div class="row-item"><span><strong>${up.name}</strong><br><small style="color:#94a3b8;">${up.desc}</small></span> <button id="upg_${up.id}" onclick="buyUpgrade('${up.id}', ${up.cost})">$${up.cost}</button></div>`;
+                if (idx < 8) list1.innerHTML += html;
+                else list2.innerHTML += html;
+            });
+        }
+        initUpgrades();
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.main-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            event.target.classList.add('active');
+        }
+
+        function updateDisplay() {
+            document.getElementById('dayDisplay').textContent = game.day;
+            document.getElementById('cashDisplay').textContent = `$${game.cash.toFixed(2)}`;
+            document.getElementById('locationDisplay').textContent = locations[game.location].name;
+            document.getElementById('weatherDisplay').textContent = `${game.weather.name} (${game.weather.temp}°F)`;
+
+            for (let k in game.inventory) {
+                let el = document.getElementById(`inv${k.charAt(0).toUpperCase() + k.slice(1)}`);
+                if (el) el.textContent = Math.floor(game.inventory[k]);
+            }
+        }
+
+        function buyStock(item, qty, cost) {
+            if (game.cash >= cost) {
+                game.cash -= cost;
+                game.inventory[item] += qty;
+                updateDisplay();
+            } else alert("Not enough cash!");
+        }
+
+        function buyUpgrade(id, cost) {
+            if (game.cash >= cost && !game.upgrades[id]) {
+                game.cash -= cost;
+                game.upgrades[id] = true;
+                let btn = document.getElementById(`upg_${id}`);
+                btn.textContent = 'OWNED';
+                btn.disabled = true;
+                updateDisplay();
+            }
+        }
+
+        function setLoc(idx, cost) {
+            if (game.cash >= cost) {
+                game.cash -= cost;
+                game.location = idx;
+                for (let i = 0; i < locations.length; i++) {
+                    let btn = document.getElementById(`loc${i}`);
+                    if (i === idx) { btn.textContent = 'Active'; btn.disabled = true; }
+                    else { btn.textContent = `Move ($${locations[i].cost})`; btn.disabled = false; }
+                }
+                updateDisplay();
+            } else alert("Not enough cash to move location!");
+        }
+
+        function toggleMkt(idx, cost) {
+            game.marketing[idx] = !game.marketing[idx];
+            let btn = document.getElementById(`mkt${idx}`);
+            btn.textContent = game.marketing[idx] ? 'Active' : 'Hire';
+            btn.style.background = game.marketing[idx] ? 'var(--accent-green)' : 'var(--accent-yellow)';
+        }
+
+        function hireStaff(idx, cost) {
+            game.staff[idx] = !game.staff[idx];
+            let btn = document.getElementById(`emp${idx}`);
+            btn.textContent = game.staff[idx] ? 'Hired' : 'Hire';
+        }
+
+        function changeFlavor() {
+            game.flavor = document.getElementById('flavorSelect').value;
+        }
+
+        function updateRecipe() {
+            game.recipe.lemons = parseInt(document.getElementById('recipeLemons').value) || 1;
+            game.recipe.sugar = parseInt(document.getElementById('recipeSugar').value) || 1;
+            game.recipe.ice = parseInt(document.getElementById('recipeIce').value) || 0;
+            game.recipe.special = parseInt(document.getElementById('recipeSpecial').value) || 0;
+        }
+
+        function updatePrice() {
+            game.price = parseFloat(document.getElementById('pricePerCup').value) || 1.00;
+        }
+
+        let sellingInterval = null;
+        let dayStats = { sold: 0, customers: 0, revenue: 0, cost: 0 };
+
+        function startDay() {
+            game.weather = weatherTypes[Math.floor(Math.random() * weatherTypes.length)];
+            
+            // Staff auto actions
+            let totalCosts = 0;
+            if (game.staff[0]) totalCosts += 20;
+            if (game.staff[1]) totalCosts += 50;
+            if (game.staff[2]) {
+                totalCosts += 120;
+                game.inventory.lemons += 20;
+                game.inventory.sugar += 20;
+                game.inventory.cups += 20;
+            }
+
+            game.marketing.forEach((active, i) => {
+                const costs = [10, 35, 75, 150, 400];
+                if (active) totalCosts += costs[i];
+            });
+
+            game.cash -= totalCosts;
+
+            document.querySelectorAll('.main-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('sellingPhase').classList.remove('hidden');
+
+            dayStats = { sold: 0, customers: 0, revenue: 0, cost: totalCosts };
+            document.getElementById('soldCount').textContent = 0;
+            document.getElementById('revenueCount').textContent = '$0.00';
+            document.getElementById('closeDayBtn').disabled = true;
+
+            const logBox = document.getElementById('activityLog');
+            logBox.innerHTML = `<div>[09:00 AM] Stand opened at ${locations[game.location].name}. Weather: ${game.weather.name}</div>`;
+
+            let hour = 9;
+            let mktMultiplier = 1.0;
+            game.marketing.forEach((active, i) => { if (active) mktMultiplier += (i + 1) * 0.25; });
+            if (game.upgrades.sign) mktMultiplier += 0.15;
+
+            let targetVisitors = Math.floor((Math.random() * 20 + 20) * game.weather.mult * locations[game.location].mult * mktMultiplier);
+
+            sellingInterval = setInterval(() => {
+                hour++;
+                if (hour > 17) {
+                    clearInterval(sellingInterval);
+                    document.getElementById('closeDayBtn').disabled = false;
+                    document.getElementById('feedbackText').textContent = 'Business hours ended! Click review.';
+                    logBox.innerHTML += `<div>[05:00 PM] Closing up shop for the day.</div>`;
+                    return;
+                }
+
+                let timeStr = hour > 12 ? `${hour - 12}:00 PM` : `${hour}:00 AM`;
+                let hourlyVisitors = Math.floor(targetVisitors / 8) + Math.floor(Math.random() * 4);
+                dayStats.customers += hourlyVisitors;
+
+                let soldThisHour = 0;
+                for (let i = 0; i < hourlyVisitors; i++) {
+                    let lemonsNeeded = game.recipe.lemons / 10;
+                    if (game.upgrades.squeezer) lemonsNeeded *= 0.8;
+                    let sugarNeeded = game.recipe.sugar / 10;
+                    let iceNeeded = game.recipe.ice;
+                    let specialNeeded = game.recipe.special / 10;
+
+                    let hasIngredients = game.inventory.lemons >= lemonsNeeded &&
+                                         game.inventory.sugar >= sugarNeeded &&
+                                         game.inventory.ice >= iceNeeded &&
+                                         game.inventory.cups >= 1;
+
+                    if (game.flavor !== 'classic') {
+                        let fruitKey = game.flavor === 'strawberry' ? 'strawberries' : (game.flavor === 'peach' ? 'peaches' : (game.flavor === 'mint' ? 'mint' : 'sparkling'));
+                        if (game.inventory[fruitKey] < specialNeeded) hasIngredients = false;
+                        else if (hasIngredients) game.inventory[fruitKey] -= specialNeeded;
+                    }
+
+                    if (hasIngredients && game.price <= 6.00) {
+                        game.inventory.lemons -= lemonsNeeded;
+                        game.inventory.sugar -= sugarNeeded;
+                        game.inventory.ice -= iceNeeded;
+                        game.inventory.cups -= 1;
+
+                        soldThisHour++;
+                        dayStats.sold++;
+                        dayStats.revenue += game.price;
+                    }
+                }
+
+                document.getElementById('soldCount').textContent = dayStats.sold;
+                document.getElementById('revenueCount').textContent = `$${dayStats.revenue.toFixed(2)}`;
+                logBox.innerHTML += `<div>[${timeStr}] Sold ${soldThisHour} cups.</div>`;
+                logBox.scrollTop = logBox.scrollHeight;
+            }, 1000);
+        }
+
+        function endDay() {
+            document.getElementById('sellingPhase').classList.add('hidden');
+            document.getElementById('summaryPhase').classList.remove('hidden');
+
+            let netProfit = dayStats.revenue - dayStats.cost;
+            if (game.upgrades.franchise) netProfit += 75; // Passive royalty income
+            game.cash += netProfit;
+
+            document.getElementById('sumDayNum').textContent = game.day;
+            document.getElementById('sumCustomers').textContent = dayStats.customers;
+            document.getElementById('sumSold').textContent = dayStats.sold;
+            document.getElementById('sumRevenue').textContent = `$${dayStats.revenue.toFixed(2)}`;
+            document.getElementById('sumCost').textContent = `$${dayStats.cost.toFixed(2)}`;
+            
+            let profitEl = document.getElementById('sumProfit');
+            profitEl.textContent = `$${netProfit.toFixed(2)}`;
+            profitEl.style.color = netProfit >= 0 ? 'var(--accent-green)' : 'var(--accent-red)';
+        }
+
+        function nextDay() {
+            game.day++;
+            document.getElementById('summaryPhase').classList.add('hidden');
+            document.getElementById('tab-manage').classList.remove('hidden');
+            updateDisplay();
+        }
+
+        updateDisplay();
+    </script>
+</body>
+</html>

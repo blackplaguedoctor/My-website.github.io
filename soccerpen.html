@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOCCER SUPER STARS // DRAW LINE</title>
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --pitch-green: #106e37;
+            --accent-gold: #fbbf24;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .dashboard {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .stat-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        .stat-box {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid #334155;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            pointer-events: auto;
+        }
+
+        .stat-box span {
+            color: var(--accent-gold);
+        }
+
+        .stat-box.lives span {
+            color: var(--accent-red);
+        }
+
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: var(--pitch-green);
+        }
+
+        .modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(9, 13, 22, 0.88);
+            backdrop-filter: blur(10px);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+        }
+
+        .modal-content {
+            background: #111827;
+            border: 1px solid #374151;
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+        }
+
+        .modal h2 {
+            font-size: 2rem;
+            color: var(--accent-red);
+            margin-bottom: 10px;
+        }
+
+        .modal p {
+            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+
+        .btn-action {
+            background: var(--accent-gold);
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            font-weight: 800;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+
+        .controls-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(4px);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid #334155;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            pointer-events: none;
+            z-index: 10;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <div class="stat-group">
+            <div class="stat-box">Goals: <span id="scoreDisplay">0</span></div>
+            <div class="stat-box">Level: <span id="levelDisplay">1</span></div>
+        </div>
+        <div class="stat-box lives">Lives: <span id="livesDisplay">❤️❤️❤️</span></div>
+    </div>
+
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <div class="controls-hint">
+        Click and draw a line from the ball towards the goal &bull; Release to shoot!
+    </div>
+
+    <div class="modal" id="gameOverModal">
+        <div class="modal-content">
+            <h2>GAME OVER</h2>
+            <p>You ran out of lives!</p>
+            <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 20px;">
+                Final Score: <span id="finalScore" style="color: var(--accent-gold);">0</span>
+            </div>
+            <button class="btn-action" onclick="restartGame()">Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        let score = 0;
+        let level = 1;
+        let lives = 3;
+
+        const ball = {
+            x: canvas.width / 2,
+            y: canvas.height - 180,
+            vx: 0,
+            vy: 0,
+            curve: 0,
+            radius: 15,
+            isMoving: false,
+            trail: [],
+            reset() {
+                this.x = canvas.width / 2;
+                this.y = canvas.height - 180;
+                this.vx = 0;
+                this.vy = 0;
+                this.curve = 0;
+                this.isMoving = false;
+                this.trail = [];
+            }
+        };
+
+        const goal = {
+            width: 260,
+            height: 130,
+            get x() { return (canvas.width - this.width) / 2; },
+            y: 80,
+            postWidth: 10
+        };
+
+        let goalkeeper = {
+            x: canvas.width / 2,
+            y: 130,
+            width: 55,
+            height: 22,
+            speed: 3.5,
+            direction: 1
+        };
+
+        let defenders = [];
+
+        function setupLevel() {
+            defenders = [];
+            let count = Math.min(5, Math.floor(1 + level * 0.6));
+            for (let i = 0; i < count; i++) {
+                defenders.push({
+                    x: canvas.width / 2 - 140 + (i * (280 / Math.max(1, count - 1))),
+                    y: canvas.height / 2 + (Math.random() * 80 - 40),
+                    radius: 22,
+                    speed: 2 + (level * 0.35),
+                    direction: i % 2 === 0 ? 1 : -1,
+                    minX: canvas.width / 2 - 190,
+                    maxX: canvas.width / 2 + 190
+                });
+            }
+        }
+        setupLevel();
+
+        // Draw Line Input Handling
+        let isDrawing = false;
+        let swipePath = [];
+
+        window.addEventListener('mousedown', (e) => {
+            if (ball.isMoving) return;
+            const dist = Math.hypot(e.clientX - ball.x, e.clientY - ball.y);
+            if (dist < 45) {
+                isDrawing = true;
+                swipePath = [{x: ball.x, y: ball.y}, {x: e.clientX, y: e.clientY}];
+            }
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            swipePath.push({x: e.clientX, y: e.clientY});
+        });
+
+        window.addEventListener('mouseup', (e) => {
+            if (!isDrawing) return;
+            isDrawing = false;
+
+            if (swipePath.length < 3) {
+                swipePath = [];
+                return;
+            }
+
+            const startPt = swipePath[0];
+            const endPt = swipePath[swipePath.length - 1];
+            
+            // Vector from start (ball) to end of drawn line
+            const dx = endPt.x - startPt.x;
+            const dy = endPt.y - startPt.y;
+
+            ball.vx = dx * 0.13;
+            ball.vy = dy * 0.13;
+
+            // Curve calculation based on lateral deviation of the drawn stroke
+            let midX = swipePath[Math.floor(swipePath.length / 2)].x;
+            let curveForce = (endPt.x - midX) * 0.015;
+            ball.curve = curveForce;
+
+            ball.isMoving = true;
+            swipePath = [];
+        });
+
+        function loseLife(reason) {
+            lives--;
+            updateHUD();
+            
+            if (lives <= 0) {
+                document.getElementById('finalScore').textContent = score;
+                document.getElementById('gameOverModal').style.display = 'flex';
+            } else {
+                ball.reset();
+            }
+        }
+
+        function updateHUD() {
+            document.getElementById('scoreDisplay').textContent = score;
+            document.getElementById('levelDisplay').textContent = level;
+            let hearts = '';
+            for(let i=0; i<lives; i++) hearts += '❤️';
+            document.getElementById('livesDisplay').textContent = hearts;
+        }
+
+        function restartGame() {
+            score = 0;
+            level = 1;
+            lives = 3;
+            updateHUD();
+            document.getElementById('gameOverModal').style.display = 'none';
+            setupLevel();
+            ball.reset();
+        }
+
+        function update() {
+            if (ball.isMoving) {
+                if (ball.curve) {
+                    let speed = Math.hypot(ball.vx, ball.vy);
+                    let angle = Math.atan2(ball.vy, ball.vx) + Math.PI / 2;
+                    ball.vx += Math.cos(angle) * ball.curve * (speed * 0.05);
+                    ball.vy += Math.sin(angle) * ball.curve * (speed * 0.05);
+                }
+
+                ball.x += ball.vx;
+                ball.y += ball.vy;
+
+                ball.vx *= 0.985;
+                ball.vy *= 0.985;
+
+                ball.trail.push({x: ball.x, y: ball.y});
+                if (ball.trail.length > 15) ball.trail.shift();
+
+                if (ball.y <= goal.y + goal.height && ball.y >= goal.y) {
+                    if (ball.x > goal.x + goal.postWidth && ball.x < goal.x + goal.width - goal.postWidth) {
+                        score++;
+                        level++;
+                        updateHUD();
+                        ball.reset();
+                        setupLevel();
+                        return;
+                    }
+                }
+
+                const leftPostX = goal.x + goal.postWidth;
+                const rightPostX = goal.x + goal.width - goal.postWidth;
+                const crossbarY = goal.y;
+
+                if (Math.hypot(ball.x - leftPostX, ball.y - crossbarY) < ball.radius + 6 ||
+                    Math.hypot(ball.x - rightPostX, ball.y - crossbarY) < ball.radius + 6 ||
+                    (ball.y >= goal.y - 5 && ball.y <= goal.y + 10 && ball.x >= goal.x && ball.x <= goal.x + goal.width)) {
+                    loseLife('hit_post');
+                    return;
+                }
+
+                if (ball.x < 40 || ball.x > canvas.width - 40 || ball.y > canvas.height + 30 || ball.y < 20) {
+                    loseLife('out_of_bounds');
+                    return;
+                }
+
+                if (ball.x > goalkeeper.x - goalkeeper.width / 2 - ball.radius &&
+                    ball.x < goalkeeper.x + goalkeeper.width / 2 + ball.radius &&
+                    ball.y > goalkeeper.y - goalkeeper.height / 2 - ball.radius &&
+                    ball.y < goalkeeper.y + goalkeeper.height / 2 + ball.radius) {
+                    loseLife('saved');
+                    return;
+                }
+
+                for (let def of defenders) {
+                    const dist = Math.hypot(ball.x - def.x, ball.y - def.y);
+                    if (dist < ball.radius + def.radius) {
+                        loseLife('blocked');
+                        return;
+                    }
+                }
+
+                if (Math.hypot(ball.vx, ball.vy) < 0.4) {
+                    loseLife('too_slow');
+                }
+            }
+
+            goalkeeper.x += goalkeeper.speed * goalkeeper.direction;
+            if (goalkeeper.x < goal.x + 40 || goalkeeper.x > goal.x + goal.width - 40) {
+                goalkeeper.direction *= -1;
+            }
+
+            for (let def of defenders) {
+                def.x += def.speed * def.direction;
+                if (def.x < def.minX || def.x > def.maxX) {
+                    def.direction *= -1;
+                }
+            }
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, 110, 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
+            ctx.fillRect(goal.x, goal.y, goal.width, goal.height);
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+            ctx.lineWidth = 2;
+            for (let gx = goal.x; gx <= goal.x + goal.width; gx += 18) {
+                ctx.beginPath(); ctx.moveTo(gx, goal.y); ctx.lineTo(gx, goal.y + goal.height); ctx.stroke();
+            }
+            for (let gy = goal.y; gy <= goal.y + goal.height; gy += 18) {
+                ctx.beginPath(); ctx.moveTo(goal.x, gy); ctx.lineTo(goal.x + goal.width, gy); ctx.stroke();
+            }
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(goal.x, goal.y - 4, goal.width, 10);
+            ctx.fillRect(goal.x, goal.y, goal.postWidth, goal.height);
+            ctx.fillRect(goal.x + goal.width - goal.postWidth, goal.y, goal.postWidth, goal.height);
+
+            ctx.fillStyle = '#ef4444';
+            ctx.fillRect(goalkeeper.x - goalkeeper.width / 2, goalkeeper.y - goalkeeper.height / 2, goalkeeper.width, goalkeeper.height);
+            ctx.strokeStyle = '#991b1b';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(goalkeeper.x - goalkeeper.width / 2, goalkeeper.y - goalkeeper.height / 2, goalkeeper.width, goalkeeper.height);
+
+            for (let def of defenders) {
+                ctx.fillStyle = '#3b82f6';
+                ctx.beginPath();
+                ctx.arc(def.x, def.y, def.radius, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.strokeStyle = '#1e3a8a';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+
+            // Draw Swipe Path / Line while dragging
+            if (isDrawing && swipePath.length > 1) {
+                ctx.strokeStyle = '#fbbf24';
+                ctx.lineWidth = 6;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(swipePath[0].x, swipePath[0].y);
+                for (let i = 1; i < swipePath.length; i++) {
+                    ctx.lineTo(swipePath[i].x, swipePath[i].y);
+                }
+                ctx.stroke();
+            }
+
+            if (ball.isMoving) {
+                for (let i = 0; i < ball.trail.length; i++) {
+                    let alpha = i / ball.trail.length;
+                    ctx.fillStyle = `rgba(248, 250, 252, ${alpha * 0.4})`;
+                    ctx.beginPath();
+                    ctx.arc(ball.trail[i].x, ball.trail[i].y, ball.radius * alpha, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.beginPath();
+            ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#090d16';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>

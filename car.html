@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CITY DRIFT // MULTI-MAP</title>
+    <title>CITY DRIFT // Multi-Map & Mini-Games</title>
     <style>
         :root {
             --bg-dark: #080b10;
@@ -11,6 +11,7 @@
             --accent-cyan: #00f0ff;
             --accent-red: #ff2a5f;
             --accent-yellow: #ffb703;
+            --accent-green: #06d6a0;
             --text-main: #f0f6fc;
             --border-color: #232b38;
         }
@@ -68,6 +69,10 @@
 
         .stat-box.high-score span {
             color: var(--accent-yellow);
+        }
+
+        .stat-box.mini-game span {
+            color: var(--accent-green);
         }
 
         .control-panel {
@@ -129,7 +134,7 @@
             max-width: 500px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 18px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.7);
             text-align: center;
         }
@@ -146,7 +151,7 @@
         .option-group {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             text-align: left;
         }
 
@@ -180,7 +185,7 @@
             font-weight: 800;
             border-radius: 10px;
             cursor: pointer;
-            margin-top: 10px;
+            margin-top: 5px;
             font-size: 1rem;
         }
 
@@ -225,6 +230,7 @@
             <div class="stat-box">Speed: <span id="speedDisplay">0</span> km/h</div>
             <div class="stat-box">Score: <span id="driftScore">0</span></div>
             <div class="stat-box high-score">High Score: <span id="highScoreDisplay">0</span></div>
+            <div class="stat-box mini-game" id="objectiveStat" style="display:none;">Checkpoints: <span id="checkpointDisplay">0/10</span></div>
         </div>
         <div class="control-panel">
             <button class="ui-btn" onclick="openGarage()">Garage & Maps</button>
@@ -236,20 +242,28 @@
     </div>
 
     <div class="controls-hint">
-        <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Drive &bull; <kbd>SPACE</kbd> Handbrake &bull; Don't Crash!
+        <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> Drive &bull; <kbd>SPACE</kbd> Handbrake &bull; Avoid Obstacles!
     </div>
 
-    <div class="modal" id="garageModal">
+    <div class="modal" id="garageModal" style="display: flex;">
         <div class="modal-content">
             <h2>GARAGE & MAP SELECTOR</h2>
+
+            <div class="option-group">
+                <label>Game Mode</label>
+                <select id="gameModeSelect">
+                    <option value="drift">Free Drift / Score Attack</option>
+                    <option value="checkpoint">Checkpoint Rush (Mini-Game)</option>
+                </select>
+            </div>
 
             <div class="option-group">
                 <label>Select Map</label>
                 <select id="mapSelect">
                     <option value="downtown">Downtown City Grid (Wide Avenues)</option>
-                    <option value="stadium">Stunt Stadium (Open Arena & Barrels)</option>
-                    <option value="touge">Touge Mountain Pass (Tight Curves)</option>
-                    <option value="industrial">Industrial Zone (Shipping Containers & Mazes)</option>
+                    <option value="cones">Cone Slalom Arena (Precision Drifting)</option>
+                    <option value="parking">Multi-Level Parking Garage (Pillars & Corners)</option>
+                    <option value="touge">Touge Mountain Pass (Curves & Canyons)</option>
                 </select>
             </div>
 
@@ -257,10 +271,10 @@
                 <label>Select Vehicle</label>
                 <select id="carSelect">
                     <option value="compact">City Hatchback (Easy Handling)</option>
-                    <option value="tuner">JDM Drift Spec (Balanced)</option>
+                    <option value="tuner" selected>JDM Drift Spec (Balanced)</option>
                     <option value="muscle">V8 Muscle Car (High Speed, Heavy Slide)</option>
                     <option value="super">Hypercar (Ultra Fast & Sharp)</option>
-                    <option value="truck">Drift Truck (Heavy Weight & Wide turning)</option>
+                    <option value="truck">Drift Truck (Heavy Weight & Wide Turning)</option>
                 </select>
             </div>
 
@@ -276,7 +290,7 @@
     <div class="modal" id="gameOverModal">
         <div class="modal-content">
             <h2 class="danger">CRASHED!</h2>
-            <p style="color: #8b949e;">You hit an obstacle and lost your points.</p>
+            <p style="color: #8b949e;">You collided with an obstacle.</p>
             <div style="font-size: 1.2rem; font-weight: bold; margin: 10px 0;">
                 Final Score: <span id="finalScore" style="color: var(--accent-red);">0</span>
             </div>
@@ -296,7 +310,8 @@
         resize();
 
         let currentMap = 'downtown';
-        let WORLD = { width: 4800, height: 4800 };
+        let gameMode = 'drift';
+        let WORLD = { width: 5000, height: 5000 };
 
         const CAR_PRESETS = {
             compact: { width: 38, height: 20, maxSpeed: 8.5, accel: 0.16, steer: 0.07, grip: 0.92, handbrakeGrip: 0.82 },
@@ -312,9 +327,15 @@
         let highScore = localStorage.getItem('multiMapHighScore') || 0;
         document.getElementById('highScoreDisplay').textContent = highScore;
 
+        // Mini-Game Checkpoint Variables
+        let checkpoints = [];
+        let currentCheckpointIndex = 0;
+        let checkpointsCollected = 0;
+        const totalCheckpoints = 10;
+
         const car = {
-            x: 350,
-            y: 350,
+            x: 200,
+            y: 200,
             angle: 0,
             speed: 0,
             vx: 0,
@@ -329,69 +350,95 @@
         let props = [];
         const keys = {};
 
-        document.addEventListener('keydown', (e) => { keys[e.key.toLowerCase()] = true; });
-        document.addEventListener('keyup', (e) => { keys[e.key.toLowerCase()] = false; });
+        document.addEventListener('keydown', (e) => { 
+            if (e.code === 'Space' || e.key === ' ') keys[' '] = true;
+            keys[e.key.toLowerCase()] = true; 
+        });
+        document.addEventListener('keyup', (e) => { 
+            if (e.code === 'Space' || e.key === ' ') keys[' '] = false;
+            keys[e.key.toLowerCase()] = false; 
+        });
 
-        // Map Generator based on selection
         function loadMap(mapName) {
             currentMap = mapName;
             obstacles = [];
             props = [];
+            checkpoints = [];
+            currentCheckpointIndex = 0;
+            checkpointsCollected = 0;
 
             if (mapName === 'downtown') {
-                WORLD.width = 4800; WORLD.height = 4800;
-                let blockSize = 450, roadWidth = 280;
-                car.x = 350; car.y = 350;
+                WORLD.width = 5000; WORLD.height = 5000;
+                let blockSize = 400, roadWidth = 420;
+                car.x = 200; car.y = 200; // Safe road spawn
 
                 for (let x = blockSize; x < WORLD.width - blockSize; x += blockSize + roadWidth) {
                     for (let y = blockSize; y < WORLD.height - blockSize; y += blockSize + roadWidth) {
-                        if ((x + y) % 1460 === 0) continue;
                         obstacles.push({ x: x, y: y, w: blockSize, h: blockSize, type: 'building' });
-                        props.push({ x: x - 20, y: y - 20, r: 8 }, { x: x + blockSize + 20, y: y - 20, r: 8 });
+                        props.push({ x: x - 25, y: y - 25, r: 8 }, { x: x + blockSize + 25, y: y - 25, r: 8 });
                     }
                 }
             } 
-            else if (mapName === 'stadium') {
-                WORLD.width = 3000; WORLD.height = 3000;
-                car.x = 1500; car.y = 1500;
+            else if (mapName === 'cones') {
+                WORLD.width = 3200; WORLD.height = 3200;
+                car.x = 1600; car.y = 1600;
 
-                // Open Arena with scattered stunt barrels & barriers
-                for (let i = 0; i < 40; i++) {
-                    obstacles.push({
-                        x: 400 + Math.random() * 2200,
-                        y: 400 + Math.random() * 2200,
-                        w: 50, h: 50, type: 'barrier'
-                    });
+                for (let cx = 600; cx <= 2600; cx += 300) {
+                    for (let cy = 600; cy <= 2600; cy += 300) {
+                        props.push({ x: cx, y: cy, r: 14, type: 'cone' });
+                    }
                 }
             } 
+            else if (mapName === 'parking') {
+                WORLD.width = 3200; WORLD.height = 3200;
+                car.x = 400; car.y = 400;
+
+                for (let px = 500; px < WORLD.width - 500; px += 450) {
+                    for (let py = 500; py < WORLD.height - 500; py += 450) {
+                        obstacles.push({ x: px, y: py, w: 60, h: 60, type: 'pillar' });
+                    }
+                }
+            }
             else if (mapName === 'touge') {
                 WORLD.width = 5000; WORLD.height = 3000;
                 car.x = 300; car.y = 1500;
 
-                // Winding Mountain Pass Guardrails
                 for (let x = 200; x < WORLD.width - 200; x += 150) {
-                    let topY = 1100 + Math.sin(x * 0.003) * 600;
-                    let botY = 1900 + Math.cos(x * 0.003) * 600;
+                    let topY = 1000 + Math.sin(x * 0.003) * 600;
+                    let botY = 1800 + Math.cos(x * 0.003) * 600;
                     obstacles.push({ x: x, y: topY - 100, w: 120, h: 80, type: 'rock' });
                     obstacles.push({ x: x, y: botY, w: 120, h: 80, type: 'rock' });
                 }
-            } 
-            else if (mapName === 'industrial') {
-                WORLD.width = 3600; WORLD.height = 3600;
-                car.x = 300; car.y = 300;
+            }
 
-                // Shipping Container Maze
-                for (let x = 600; x < WORLD.width - 600; x += 450) {
-                    for (let y = 600; y < WORLD.height - 600; y += 450) {
-                        obstacles.push({
-                            x: x + (Math.random() * 60 - 30),
-                            y: y + (Math.random() * 60 - 30),
-                            w: 140, h: 70, type: 'container'
-                        });
-                    }
-                }
+            if (gameMode === 'checkpoint') {
+                generateCheckpoints();
+                document.getElementById('objectiveStat').style.display = 'block';
+                document.getElementById('checkpointDisplay').textContent = `0/${totalCheckpoints}`;
+            } else {
+                document.getElementById('objectiveStat').style.display = 'none';
             }
         }
+
+        function generateCheckpoints() {
+            checkpoints = [];
+            for (let i = 0; i < totalCheckpoints; i++) {
+                let cpX, cpY, valid = false;
+                while (!valid) {
+                    cpX = Math.random() * (WORLD.width - 800) + 400;
+                    cpY = Math.random() * (WORLD.height - 800) + 400;
+                    valid = true;
+                    for (let obs of obstacles) {
+                        if (cpX > obs.x - 40 && cpX < obs.x + obs.w + 40 && cpY > obs.y - 40 && cpY < obs.y + obs.h + 40) {
+                            valid = false;
+                            break;
+                        }
+                    }
+                }
+                checkpoints.push({ x: cpX, y: cpY, r: 45 });
+            }
+        }
+
         loadMap('downtown');
 
         function updatePhysics() {
@@ -433,6 +480,7 @@
             camera.y += (car.y - camera.y) * 0.1;
 
             checkCollisions();
+            checkCheckpoints();
 
             const lateralSpeed = Math.abs(-forwardY * car.vx + forwardX * car.vy);
             const isDrifting = lateralSpeed > 1.6 && Math.abs(car.speed) > 2;
@@ -500,6 +548,23 @@
             }
         }
 
+        function checkCheckpoints() {
+            if (gameMode !== 'checkpoint' || checkpoints.length === 0) return;
+            let target = checkpoints[currentCheckpointIndex];
+            const dx = car.x - target.x;
+            const dy = car.y - target.y;
+            if (Math.sqrt(dx * dx + dy * dy) < target.r + car.height / 2) {
+                checkpointsCollected++;
+                score += 500;
+                document.getElementById('checkpointDisplay').textContent = `${checkpointsCollected}/${totalCheckpoints}`;
+                currentCheckpointIndex++;
+                if (currentCheckpointIndex >= checkpoints.length) {
+                    alert('Victory! You cleared all checkpoints!');
+                    restartGame();
+                }
+            }
+        }
+
         function triggerGameOver() {
             isDead = true;
             document.getElementById('finalScore').textContent = score;
@@ -521,11 +586,9 @@
             ctx.save();
             ctx.translate(canvas.width / 2 - camera.x, canvas.height / 2 - camera.y);
 
-            // Ground Background Style per Map
-            ctx.fillStyle = currentMap === 'touge' ? '#141c14' : (currentMap === 'stadium' ? '#161b22' : '#181d26');
+            ctx.fillStyle = currentMap === 'touge' ? '#141c14' : (currentMap === 'parking' ? '#1b222d' : '#181d26');
             ctx.fillRect(0, 0, WORLD.width, WORLD.height);
 
-            // Render Map Specific Environments
             if (currentMap === 'downtown') {
                 obstacles.forEach(obs => {
                     ctx.fillStyle = '#2d3545';
@@ -537,25 +600,41 @@
                     ctx.fillStyle = '#ffb703';
                     ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
                 });
-            } else if (currentMap === 'stadium') {
+            } else if (currentMap === 'cones') {
+                props.forEach(p => {
+                    ctx.fillStyle = '#ff5400';
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath(); ctx.arc(p.x, p.y, p.r * 0.4, 0, Math.PI * 2); ctx.fill();
+                });
+            } else if (currentMap === 'parking') {
                 obstacles.forEach(obs => {
-                    ctx.fillStyle = '#ff2a5f';
+                    ctx.fillStyle = '#48556b';
                     ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                    ctx.strokeStyle = '#232b38'; ctx.lineWidth = 4; ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
                 });
             } else if (currentMap === 'touge') {
                 obstacles.forEach(obs => {
                     ctx.fillStyle = '#4a5568';
                     ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
                 });
-            } else if (currentMap === 'industrial') {
-                obstacles.forEach(obs => {
-                    ctx.fillStyle = '#d97706';
-                    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
-                    ctx.strokeStyle = '#000'; ctx.lineWidth = 2; ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
-                });
             }
 
-            // Skid Marks
+            // Render Checkpoints if in mini-game mode
+            if (gameMode === 'checkpoint' && checkpoints.length > 0 && currentCheckpointIndex < checkpoints.length) {
+                let cp = checkpoints[currentCheckpointIndex];
+                ctx.strokeStyle = '#06d6a0';
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.arc(cp.x, cp.y, cp.r + Math.sin(Date.now() * 0.01) * 8, 0, Math.PI * 2);
+                ctx.stroke();
+
+                ctx.fillStyle = 'rgba(6, 214, 160, 0.3)';
+                ctx.beginPath();
+                ctx.arc(cp.x, cp.y, cp.r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
             skidMarks.forEach(sm => {
                 ctx.save();
                 ctx.translate(sm.x, sm.y);
@@ -566,13 +645,11 @@
                 ctx.restore();
             });
 
-            // Smoke
             particles.forEach(p => {
                 ctx.fillStyle = `rgba(220, 230, 240, ${p.alpha})`;
                 ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fill();
             });
 
-            // Car
             if (!isDead) {
                 ctx.save();
                 ctx.translate(car.x, car.y);
@@ -616,12 +693,12 @@
 
         function closeGarage() {
             const selectedMap = document.getElementById('mapSelect').value;
+            const selectedMode = document.getElementById('gameModeSelect').value;
             const selectedCar = document.getElementById('carSelect').value;
             carColor = document.getElementById('carColor').value;
 
-            if (selectedMap !== currentMap) {
-                loadMap(selectedMap);
-            }
+            gameMode = selectedMode;
+            loadMap(selectedMap);
             Object.assign(car, CAR_PRESETS[selectedCar]);
             document.getElementById('garageModal').style.display = 'none';
         }

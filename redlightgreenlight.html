@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RED LIGHT, GREEN LIGHT // EXTENDED FIELD</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --panel-bg: #1e293b;
+            --accent-green: #22c55e;
+            --accent-yellow: #eab308;
+            --accent-red: #ef4444;
+            --text-main: #f8fafc;
+            --border-color: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .dashboard {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .stat-box {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            pointer-events: auto;
+        }
+
+        .stat-box.light-status span {
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: #1e293b;
+        }
+
+        .modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .modal h2 {
+            font-size: 1.8rem;
+            color: var(--accent-green);
+        }
+
+        .modal h2.danger {
+            color: var(--accent-red);
+        }
+
+        .modal p {
+            color: #94a3b8;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .btn-action {
+            background: var(--accent-green);
+            color: #000;
+            border: none;
+            padding: 12px;
+            font-weight: 800;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+
+        .controls-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(4px);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            color: #94a3b8;
+            pointer-events: none;
+            z-index: 10;
+            text-align: center;
+        }
+
+        kbd {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard">
+        <div class="stat-box light-status">Status: <span id="statusDisplay" style="color: var(--accent-green);">GREEN LIGHT</span></div>
+        <div class="stat-box">Time Left: <span id="timerDisplay">45</span>s</div>
+    </div>
+
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <div class="controls-hint">
+        Hold <kbd>W</kbd> or <kbd>UP</kbd> to move &bull; Watch for the 2-second countdown warning before <span style="color:var(--accent-red); font-weight:bold;">RED LIGHT</span>
+    </div>
+
+    <div class="modal" id="messageModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">RED LIGHT, GREEN LIGHT</h2>
+            <p id="modalText">Navigate the long field before time runs out. A 2-second warning countdown will trigger before the light turns red. Stop moving instantly when it hits red!</p>
+            <button class="btn-action" id="modalBtn">Start Game</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        let gameState = 'menu';
+
+        const worldHeight = 2200; // Much longer field
+        const finishLineY = 200;
+
+        const player = {
+            x: canvas.width / 2,
+            y: 0,
+            radius: 14,
+            speed: 1.8, // Slower player speed
+            reset() {
+                this.x = canvas.width / 2;
+                this.y = worldHeight - 120;
+            }
+        };
+
+        let cameraY = 0;
+        let lightState = 'GREEN'; // GREEN, WARNING, RED
+        let lightTimer = 0;
+        let nextLightChange = 180;
+        let warningCountdown = 2.0; // 2 seconds countdown before red
+        let gameTimeLeft = 45;
+        let timerInterval = null;
+
+        const keys = {};
+        window.addEventListener('keydown', e => {
+            if (['KeyW', 'KeyS', 'ArrowUp', 'ArrowDown'].includes(e.code)) {
+                e.preventDefault();
+            }
+            keys[e.code] = true;
+        });
+        window.addEventListener('keyup', e => {
+            keys[e.code] = false;
+        });
+
+        function startGame() {
+            player.reset();
+            gameState = 'playing';
+            lightState = 'GREEN';
+            lightTimer = 0;
+            nextLightChange = Math.floor(Math.random() * 120) + 180;
+            gameTimeLeft = 45;
+            document.getElementById('timerDisplay').textContent = gameTimeLeft;
+            document.getElementById('messageModal').style.display = 'none';
+
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (gameState === 'playing') {
+                    gameTimeLeft--;
+                    document.getElementById('timerDisplay').textContent = gameTimeLeft;
+                    if (gameTimeLeft <= 0) {
+                        triggerGameOver("TIME'S UP", "You failed to reach the finish line in time.");
+                    }
+                }
+            }, 1000);
+        }
+
+        function update() {
+            if (gameState !== 'playing') return;
+
+            // Light Management
+            lightTimer++;
+            if (lightState === 'GREEN') {
+                if (lightTimer >= nextLightChange) {
+                    lightState = 'WARNING';
+                    lightTimer = 0;
+                    warningCountdown = 2.0;
+                    document.getElementById('statusDisplay').textContent = 'WARNING: RED IN 2.0s';
+                    document.getElementById('statusDisplay').style.color = 'var(--accent-yellow)';
+                }
+            } else if (lightState === 'WARNING') {
+                warningCountdown -= 1 / 60; // 60 FPS update
+                if (warningCountdown <= 0) {
+                    lightState = 'RED';
+                    lightTimer = 0;
+                    nextLightChange = Math.floor(Math.random() * 120) + 90; // Red duration
+                    document.getElementById('statusDisplay').textContent = 'RED LIGHT';
+                    document.getElementById('statusDisplay').style.color = 'var(--accent-red)';
+                } else {
+                    document.getElementById('statusDisplay').textContent = `WARNING: RED IN ${Math.max(0, warningCountdown).toFixed(1)}s`;
+                }
+            } else if (lightState === 'RED') {
+                if (lightTimer >= nextLightChange) {
+                    lightState = 'GREEN';
+                    lightTimer = 0;
+                    nextLightChange = Math.floor(Math.random() * 150) + 180; // Green duration
+                    document.getElementById('statusDisplay').textContent = 'GREEN LIGHT';
+                    document.getElementById('statusDisplay').style.color = 'var(--accent-green)';
+                }
+            }
+
+            // Player movement
+            let isMoving = false;
+            if (keys['KeyW'] || keys['ArrowUp']) {
+                player.y -= player.speed;
+                isMoving = true;
+            }
+            if (keys['KeyS'] || keys['ArrowDown']) {
+                player.y += player.speed;
+                if (player.y > worldHeight - 120) player.y = worldHeight - 120;
+                isMoving = true;
+            }
+
+            // Check Red Light Violation
+            if (lightState === 'RED' && isMoving) {
+                triggerGameOver("ELIMINATED", "You moved during a Red Light!");
+            }
+
+            // Camera Tracking (keep player centered vertically when possible)
+            cameraY = player.y - canvas.height / 2;
+            let maxCameraY = worldHeight - canvas.height;
+            if (cameraY < 0) cameraY = 0;
+            if (cameraY > maxCameraY) cameraY = maxCameraY;
+
+            // Check Victory
+            if (player.y <= finishLineY) {
+                triggerVictory();
+            }
+        }
+
+        function triggerGameOver(title, desc) {
+            gameState = 'gameover';
+            clearInterval(timerInterval);
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalTitle').className = 'danger';
+            document.getElementById('modalText').textContent = desc;
+            document.getElementById('modalBtn').textContent = 'Try Again';
+            document.getElementById('messageModal').style.display = 'flex';
+        }
+
+        function triggerVictory() {
+            gameState = 'victory';
+            clearInterval(timerInterval);
+            document.getElementById('modalTitle').textContent = 'VICTORY!';
+            document.getElementById('modalTitle').className = '';
+            document.getElementById('modalText').textContent = 'Congratulations! You successfully crossed the long finish line safely.';
+            document.getElementById('modalBtn').textContent = 'Play Again';
+            document.getElementById('messageModal').style.display = 'flex';
+        }
+
+        document.getElementById('modalBtn').onclick = function() {
+            startGame();
+        };
+
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            ctx.translate(0, -cameraY);
+
+            // Draw Finish Line
+            ctx.fillStyle = '#334155';
+            ctx.fillRect(0, finishLineY - 30, canvas.width, 50);
+            ctx.fillStyle = '#22c55e';
+            ctx.font = 'bold 18px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('FINISH LINE', canvas.width / 2, finishLineY);
+
+            // Guard / Doll Post at Top
+            let guardColor = '#1e293b';
+            if (lightState === 'WARNING') guardColor = '#eab308';
+            if (lightState === 'RED') guardColor = '#ef4444';
+
+            ctx.fillStyle = guardColor;
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, finishLineY - 100, 30, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#f8fafc';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.fillStyle = '#f8fafc';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.fillText('GUARD POST', canvas.width / 2, finishLineY - 145);
+
+            // Start Line Marker
+            ctx.strokeStyle = '#475569';
+            ctx.lineWidth = 3;
+            ctx.setLineDash([12, 12]);
+            ctx.beginPath();
+            ctx.moveTo(100, worldHeight - 120);
+            ctx.lineTo(canvas.width - 100, worldHeight - 120);
+            ctx.stroke();
+            ctx.setLineDash([]);
+
+            // Draw Player
+            ctx.fillStyle = '#38bdf8';
+            ctx.beginPath();
+            ctx.arc(player.x, player.y, player.radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#0284c7';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        gameLoop();
+    </script>
+</body>
+</html>

@@ -3,17 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SNAKE // Arcade Classic</title>
+    <title>SNAKE // Arcade Enhanced</title>
     <style>
-
-
-
-
         :root {
             --bg-dark: #0b0e14;
             --bg-card: #151a23;
             --accent-green: #10b981;
             --accent-red: #ef4444;
+            --accent-gold: #f59e0b;
             --accent-purple: #8b5cf6;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
@@ -89,31 +86,58 @@
             background: #0f131a;
         }
 
-        /* Overlay Menu for Start / Game Over */
+        /* Overlay Menu */
         .overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(11, 14, 20, 0.88);
+            background: rgba(11, 14, 20, 0.92);
             backdrop-filter: blur(4px);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             gap: 16px;
+            padding: 20px;
+            text-align: center;
         }
 
         .overlay h2 {
             font-size: 2rem;
             font-weight: 900;
-            color: var(--accent-red);
+            color: var(--accent-green);
         }
 
         .overlay p {
             color: var(--text-muted);
             font-size: 0.95rem;
+        }
+
+        .menu-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 80%;
+            max-width: 240px;
+        }
+
+        .menu-options label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-align: left;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            background: #1f2937;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            font-size: 0.95rem;
+            cursor: pointer;
         }
 
         .btn-start {
@@ -126,6 +150,7 @@
             border-radius: 20px;
             cursor: pointer;
             transition: transform 0.2s ease, background 0.2s ease;
+            margin-top: 10px;
         }
 
         .btn-start:hover {
@@ -166,7 +191,17 @@
         
         <div class="overlay" id="gameOverlay">
             <h2 id="overlayTitle">SNAKE ARCADE</h2>
-            <p id="overlaySubtitle">Press start to begin!</p>
+            <p id="overlaySubtitle">Select your game mode and start!</p>
+            
+            <div class="menu-options">
+                <label for="modeSelect">Game Mode:</label>
+                <select id="modeSelect">
+                    <option value="classic">Classic (Walls Kill)</option>
+                    <option value="wrap">Wrap-Around (Pass Walls)</option>
+                    <option value="hyper">Hyper Speed (Fast Pace)</option>
+                </select>
+            </div>
+
             <button class="btn-start" onclick="startGame()">Start Game</button>
         </div>
     </div>
@@ -183,7 +218,7 @@
         const tileCount = canvas.width / gridSize;
 
         let snake = [];
-        let food = { x: 0, y: 0 };
+        let food = { x: 0, y: 0, type: 'normal' };
         let dx = gridSize;
         let dy = 0;
         let nextDx = gridSize;
@@ -191,9 +226,9 @@
         let score = 0;
         let highScore = 0;
         let gameInterval = null;
-        let isRunning = false;
+        let gameMode = 'classic';
+        let foodTimer = 0;
 
-        // Listen for Keyboard Input
         document.addEventListener('keydown', changeDirection);
 
         function changeDirection(event) {
@@ -223,7 +258,8 @@
         }
 
         function startGame() {
-            // Reset state
+            gameMode = document.getElementById('modeSelect').value;
+
             snake = [
                 { x: 160, y: 200 },
                 { x: 140, y: 200 },
@@ -234,16 +270,19 @@
             dy = 0;
             nextDx = gridSize;
             nextDy = 0;
+            foodTimer = 0;
             document.getElementById('currentScore').textContent = score;
 
             spawnFood();
             
-            // Hide overlay
             document.getElementById('gameOverlay').style.display = 'none';
 
             if (gameInterval) clearInterval(gameInterval);
-            isRunning = true;
-            gameInterval = setInterval(gameLoop, 100);
+            
+            let tickRate = 100;
+            if (gameMode === 'hyper') tickRate = 65;
+
+            gameInterval = setInterval(gameLoop, tickRate);
         }
 
         function gameLoop() {
@@ -252,7 +291,6 @@
                 return;
             }
 
-            // Update Direction from buffered input
             dx = nextDx;
             dy = nextDy;
 
@@ -266,7 +304,6 @@
             ctx.fillStyle = '#0f131a';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Subtle Grid Pattern
             ctx.strokeStyle = '#18202c';
             ctx.lineWidth = 0.5;
             for (let i = 0; i < canvas.width; i += gridSize) {
@@ -283,12 +320,21 @@
         }
 
         function moveSnake() {
-            const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+            let head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+            // Handle Wrap-Around mode
+            if (gameMode === 'wrap') {
+                if (head.x < 0) head.x = canvas.width - gridSize;
+                if (head.x >= canvas.width) head.x = 0;
+                if (head.y < 0) head.y = canvas.height - gridSize;
+                if (head.y >= canvas.height) head.y = 0;
+            }
+
             snake.unshift(head);
 
-            // Check if Snake Eats Food
             if (snake[0].x === food.x && snake[0].y === food.y) {
-                score += 10;
+                const points = food.type === 'gold' ? 30 : 10;
+                score += points;
                 document.getElementById('currentScore').textContent = score;
                 if (score > highScore) {
                     highScore = score;
@@ -296,13 +342,12 @@
                 }
                 spawnFood();
             } else {
-                snake.pop(); // Remove tail segment if not eating
+                snake.pop();
             }
         }
 
         function drawSnake() {
             snake.forEach((part, index) => {
-                // Head is brighter green, body has slight gradient
                 ctx.fillStyle = index === 0 ? '#10b981' : '#34d399';
                 ctx.strokeStyle = '#0f131a';
                 ctx.lineWidth = 2;
@@ -315,17 +360,33 @@
         }
 
         function drawFood() {
-            ctx.fillStyle = '#ef4444';
+            if (food.type === 'gold') {
+                ctx.fillStyle = '#f59e0b'; // Gold apple color
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#f59e0b';
+            } else {
+                ctx.fillStyle = '#ef4444'; // Normal red apple
+                ctx.shadowBlur = 0;
+            }
+
             ctx.beginPath();
             ctx.arc(food.x + gridSize / 2, food.y + gridSize / 2, gridSize / 2 - 2, 0, Math.PI * 2);
             ctx.fill();
+            ctx.shadowBlur = 0; // Reset shadow
         }
 
         function spawnFood() {
             food.x = Math.floor(Math.random() * tileCount) * gridSize;
             food.y = Math.floor(Math.random() * tileCount) * gridSize;
 
-            // Ensure food does not spawn on top of the snake
+            // 20% chance to spawn a bonus golden apple if score > 30
+            if (score > 30 && Math.random() < 0.25) {
+                food.type = 'gold';
+            } else {
+                food.type = 'normal';
+            }
+
+            // Ensure food doesn't spawn on top of snake
             snake.forEach(part => {
                 if (part.x === food.x && part.y === food.y) {
                     spawnFood();
@@ -334,15 +395,17 @@
         }
 
         function hasGameEnded() {
-            // Wall Collisions
-            const hitLeft = snake[0].x < 0;
-            const hitRight = snake[0].x >= canvas.width;
-            const hitTop = snake[0].y < 0;
-            const hitBottom = snake[0].y >= canvas.height;
+            // Wall Collisions (Only for Classic & Hyper modes)
+            if (gameMode !== 'wrap') {
+                const hitLeft = snake[0].x < 0;
+                const hitRight = snake[0].x >= canvas.width;
+                const hitTop = snake[0].y < 0;
+                const hitBottom = snake[0].y >= canvas.height;
 
-            if (hitLeft || hitRight || hitTop || hitBottom) return true;
+                if (hitLeft || hitRight || hitTop || hitBottom) return true;
+            }
 
-            // Self Collision
+            // Self Collision (Applies to all modes)
             for (let i = 1; i < snake.length; i++) {
                 if (snake[0].x === snake[i].x && snake[0].y === snake[i].y) return true;
             }
@@ -352,7 +415,6 @@
 
         function handleGameOver() {
             clearInterval(gameInterval);
-            isRunning = false;
 
             document.getElementById('overlayTitle').textContent = 'GAME OVER';
             document.getElementById('overlayTitle').style.color = 'var(--accent-red)';
@@ -360,8 +422,11 @@
             document.getElementById('gameOverlay').style.display = 'flex';
         }
 
-        // Draw blank background on initial load
         clearCanvas();
     </script>
 </body>
 </html>
+<nav><a href="soccerpen.html">Penalty</a></nav>
+<nav><a href="r6.html">TS</a></nav>
+<nav><a href="redlightgreenlight.html">Red light Green light</a></nav>
+<nav><a href="lemsatnd.html">Lemonade stand</a></nav>
