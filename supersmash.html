@@ -3,231 +3,228 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SMASH BROS // CUSTOM FIGHTER EDITION</title>
+    <title>Neon Platform Fighter - Expanded Edition</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;800&display=swap');
+
         :root {
-            --bg-dark: #080b10;
-            --bg-card: #121721;
-            --accent-blue: #00f0ff;
-            --accent-red: #ff2a5f;
-            --text-main: #f0f6fc;
-            --border-color: #232b38;
+            --bg-color: #05050a;
+            --ui-glow: 0 0 10px rgba(255,255,255,0.2);
+            --p1-color: #00f0ff;
+            --p2-color: #ff2a5f;
+            --menu-bg: #111122;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             user-select: none;
+            font-family: 'Orbitron', sans-serif;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-main);
+            background-color: var(--bg-color);
+            color: white;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            height: 100vh;
             overflow: hidden;
         }
 
-        .container {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            padding: 24px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+        #game-container {
+            position: relative;
+            width: 1000px;
+            height: 562.5px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 1);
+            border: 2px solid #1a1a2e;
+            border-radius: 8px;
+            background: radial-gradient(circle at center, #111122, #05050a);
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+
+        /* MENU SCREEN */
+        #menu-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(5, 5, 10, 0.95);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            text-align: center;
-            gap: 16px;
-            max-width: 860px;
-            width: 100%;
-        }
-
-        h1 {
-            font-size: 1.4rem;
-            color: var(--accent-blue);
-            letter-spacing: 1px;
-            width: 100%;
-        }
-
-        .menu-screen {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            width: 100%;
+            z-index: 20;
             padding: 20px;
         }
 
-        .selectors-grid {
+        .menu-title {
+            font-size: 2.5rem;
+            color: white;
+            text-shadow: 0 0 15px #4444ff;
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .menu-grid {
             display: flex;
-            justify-content: space-around;
-            gap: 20px;
+            gap: 40px;
+            margin-bottom: 30px;
         }
 
-        .player-setup {
-            background: #1a2230;
-            border: 1px solid var(--border-color);
-            padding: 16px;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            width: 320px;
-        }
-
-        .player-setup h3 {
-            font-size: 1.1rem;
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 4px;
-            font-size: 0.9rem;
-            color: #8b949e;
-        }
-
-        select, input[type="color"] {
-            width: 100%;
-            padding: 8px;
-            border-radius: 6px;
-            background: #080b10;
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            outline: none;
-            cursor: pointer;
-        }
-
-        input[type="color"] {
-            height: 40px;
-            padding: 2px;
-        }
-
-        .btn-start {
-            background: var(--accent-blue);
-            color: #080b10;
-            border: none;
-            padding: 12px 24px;
-            font-weight: bold;
-            font-size: 1rem;
+        .menu-panel {
+            background: var(--menu-bg);
+            border: 2px solid #2a2a4a;
+            padding: 20px;
             border-radius: 8px;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            margin-top: 10px;
-        }
-
-        .btn-start:hover {
-            opacity: 0.85;
-        }
-
-        .game-screen {
-            display: none;
+            width: 280px;
+            display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 16px;
-            width: 100%;
+            gap: 15px;
         }
 
-        .hud {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 800px;
+        .p1-panel { border-top: 5px solid var(--p1-color); }
+        .p2-panel { border-top: 5px solid var(--p2-color); }
+        .stage-panel { border-top: 5px solid #a020f0; width: 100%; align-items: center;}
+
+        label { font-size: 0.9rem; color: #aaa; }
+        select, input[type="color"] {
+            width: 100%; padding: 10px; background: #05050a; color: white;
+            border: 1px solid #444; border-radius: 4px; outline: none; cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+        }
+        input[type="color"] { height: 45px; padding: 2px; }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            background: #4444ff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+            text-transform: uppercase;
             font-weight: 800;
-            font-size: 1.1rem;
-            padding: 0 10px;
+            box-shadow: 0 0 15px rgba(68, 68, 255, 0.5);
         }
+        .btn:hover { background: #6666ff; transform: scale(1.05); }
 
-        .p1-hud { color: var(--accent-blue); }
-        .p2-hud { color: var(--accent-red); }
-
-        canvas {
-            background: linear-gradient(135deg, #111827, #1f2937);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            display: block;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
-            width: 100%;
-            max-width: 800px;
-            height: auto;
+        /* UI OVERLAY */
+        #ui-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; display: none; flex-direction: column;
+            justify-content: space-between; padding: 20px 40px;
         }
+        
+        .hud-top { display: flex; justify-content: space-between; text-shadow: var(--ui-glow); }
+        .player-info { display: flex; flex-direction: column; }
+        .p1-info { align-items: flex-start; }
+        .p2-info { align-items: flex-end; }
+        .name { font-size: 1.2rem; font-weight: 800; letter-spacing: 2px; }
+        .p1-name { color: var(--p1-color); }
+        .p2-name { color: var(--p2-color); }
+        .damage { font-size: 3.5rem; font-weight: 800; line-height: 1; transition: color 0.3s, transform 0.1s; }
+        .stocks { display: flex; gap: 8px; margin-top: 5px; }
+        .stock-icon { width: 16px; height: 16px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
+        .controls { text-align: center; font-size: 0.8rem; color: #555; letter-spacing: 1px; margin-bottom: -10px; }
 
-        .controls-info {
-            font-size: 0.85rem;
-            color: #8b949e;
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            width: 100%;
+        /* WINNER SCREEN */
+        #winner-screen {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); display: none; flex-direction: column;
+            align-items: center; justify-content: center; z-index: 10;
         }
-
-        .controls-info span {
-            color: var(--text-main);
-        }
+        #winner-text { font-size: 4rem; font-weight: 800; margin-bottom: 20px; text-shadow: 0 0 20px currentColor; }
+        .btn-outline { background: transparent; border: 2px solid white; box-shadow: none; }
+        .btn-outline:hover { background: white; color: black; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div id="menuScreen" class="menu-screen">
-            <h1>CHOOSE YOUR FIGHTER & CUSTOMIZE</h1>
-            <div class="selectors-grid">
-                <div class="player-setup" style="border-top: 4px solid var(--accent-blue);">
-                    <h3 style="color: var(--accent-blue);">PLAYER 1 CONFIG</h3>
-                    <div class="control-group">
-                        <label>Fighter Class:</label>
+    <div id="game-container">
+        <div id="menu-screen">
+            <div class="menu-title">NEON FIGHTER // EXPANDED</div>
+            
+            <div class="menu-panel stage-panel" style="margin-bottom: 20px;">
+                <label>SELECT MAP</label>
+                <select id="stageSelect">
+                    <option value="battlefield">Battlefield (Standard 3 Platforms)</option>
+                    <option value="omega">Omega (Final Destination - Flat)</option>
+                    <option value="pit">The Pit (Center Gap Hazard)</option>
+                    <option value="highrise">Highrise (Vertical City)</option>
+                </select>
+            </div>
+
+            <div class="menu-grid">
+                <div class="menu-panel p1-panel">
+                    <h3 style="color: var(--p1-color)">PLAYER 1</h3>
+                    <div>
+                        <label>Class:</label>
                         <select id="p1Class">
-                            <option value="balanced">Balanced (All-Rounder)</option>
-                            <option value="speedster">Speedster (Fast & Agile)</option>
-                            <option value="tank">Heavy Tank (High Power)</option>
+                            <option value="balanced">Balanced (Standard)</option>
+                            <option value="speedster">Speedster (Fast, Light)</option>
+                            <option value="tank">Tank (Slow, Heavy, Strong)</option>
+                            <option value="aerial">Aerialist (Floaty, 5 Jumps)</option>
+                            <option value="brawler">Brawler (Fast hits, Bad Jump)</option>
                         </select>
                     </div>
-                    <div class="control-group">
-                        <label>Color Theme:</label>
+                    <div>
+                        <label>Color:</label>
                         <input type="color" id="p1Color" value="#00f0ff">
                     </div>
                 </div>
 
-                <div class="player-setup" style="border-top: 4px solid var(--accent-red);">
-                    <h3 style="color: var(--accent-red);">PLAYER 2 CONFIG</h3>
-                    <div class="control-group">
-                        <label>Fighter Class:</label>
+                <div class="menu-panel p2-panel">
+                    <h3 style="color: var(--p2-color)">PLAYER 2</h3>
+                    <div>
+                        <label>Class:</label>
                         <select id="p2Class">
-                            <option value="balanced">Balanced (All-Rounder)</option>
-                            <option value="speedster">Speedster (Fast & Agile)</option>
-                            <option value="tank">Heavy Tank (High Power)</option>
+                            <option value="balanced">Balanced (Standard)</option>
+                            <option value="speedster">Speedster (Fast, Light)</option>
+                            <option value="tank">Tank (Slow, Heavy, Strong)</option>
+                            <option value="aerial">Aerialist (Floaty, 5 Jumps)</option>
+                            <option value="brawler">Brawler (Fast hits, Bad Jump)</option>
                         </select>
                     </div>
-                    <div class="control-group">
-                        <label>Color Theme:</label>
+                    <div>
+                        <label>Color:</label>
                         <input type="color" id="p2Color" value="#ff2a5f">
                     </div>
                 </div>
             </div>
-            <button class="btn-start" onclick="startGame()">START MATCH</button>
+            
+            <button class="btn" onclick="startGame()">ENTER COMBAT</button>
         </div>
 
-        <div id="gameScreen" class="game-screen">
-            <h1>SMASH MINI FIGHTER</h1>
-            
-            <div class="hud">
-                <div class="p1-hud">PLAYER 1: <span id="p1Stocks">3</span> Stocks | <span id="p1Damage">0</span>%</div>
-                <div class="p2-hud">PLAYER 2: <span id="p2Stocks">3</span> Stocks | <span id="p2Damage">0</span>%</div>
+        <canvas id="gameCanvas" width="1000" height="562"></canvas>
+        
+        <div id="ui-layer">
+            <div class="hud-top">
+                <div class="player-info p1-info">
+                    <div class="name p1-name">PLAYER 1</div>
+                    <div class="damage" id="p1Damage">0%</div>
+                    <div class="stocks" id="p1Stocks"></div>
+                </div>
+                <div class="player-info p2-info">
+                    <div class="name p2-name">PLAYER 2</div>
+                    <div class="damage" id="p2Damage">0%</div>
+                    <div class="stocks" id="p2Stocks"></div>
+                </div>
             </div>
-
-            <canvas id="gameCanvas" width="800" height="450"></canvas>
-
-            <div class="controls-info">
-                <div><strong>P1:</strong> Move: <span>A / D</span> | Jump: <span>W</span> | Attack: <span>F</span></div>
-                <div><strong>P2:</strong> Move: <span>Left / Right</span> | Jump: <span>Up</span> | Attack: <span>L</span></div>
+            <div class="controls">
+                P1: W,A,S,D to Move/Jump | F to Attack &nbsp;&nbsp; // &nbsp;&nbsp; P2: ARROWS to Move/Jump | L to Attack
             </div>
+        </div>
+
+        <div id="winner-screen">
+            <div id="winner-text">PLAYER 1 WINS</div>
+            <button class="btn btn-outline" onclick="showMenu()">Return to Menu</button>
         </div>
     </div>
 
@@ -235,239 +232,372 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        const keys = {};
+        // GAME STATE
+        let keys = {};
         window.addEventListener('keydown', e => keys[e.code] = true);
         window.addEventListener('keyup', e => keys[e.code] = false);
 
-        const gravity = 0.5;
-        const friction = 0.85;
+        let hitPauseFrames = 0;
+        let screenShake = 0;
+        let particles = [];
+        let currentPlatforms = [];
+        let p1, p2, gameActive = false;
 
+        const GRAVITY = 0.6;
+        const FRICTION = 0.82;
+        const BLAST_ZONE = { top: -300, bottom: 800, left: -200, right: 1200 };
+
+        // STAGE DEFINITIONS
+        const STAGES = {
+            omega: [
+                { x: 150, y: 400, w: 700, h: 20 }
+            ],
+            battlefield: [
+                { x: 200, y: 400, w: 600, h: 20 },
+                { x: 250, y: 280, w: 150, h: 10 },
+                { x: 600, y: 280, w: 150, h: 10 },
+                { x: 425, y: 160, w: 150, h: 10 }
+            ],
+            pit: [
+                { x: 50, y: 350, w: 350, h: 20 },
+                { x: 600, y: 350, w: 350, h: 20 },
+                { x: 425, y: 220, w: 150, h: 10 }
+            ],
+            highrise: [
+                { x: 350, y: 500, w: 300, h: 20 },
+                { x: 150, y: 400, w: 150, h: 10 },
+                { x: 700, y: 400, w: 150, h: 10 },
+                { x: 425, y: 320, w: 150, h: 10 },
+                { x: 250, y: 220, w: 150, h: 10 },
+                { x: 600, y: 220, w: 150, h: 10 },
+                { x: 425, y: 120, w: 150, h: 10 }
+            ]
+        };
+
+        // PARTICLES
+        class Particle {
+            constructor(x, y, color, vx, vy, life) {
+                this.x = x; this.y = y; this.color = color;
+                this.vx = vx; this.vy = vy; this.life = life;
+                this.maxLife = life; this.size = Math.random() * 4 + 2;
+            }
+            update() { this.x += this.vx; this.y += this.vy; this.life--; this.size *= 0.95; }
+            draw(ctx) {
+                ctx.globalAlpha = Math.max(0, this.life / this.maxLife);
+                ctx.fillStyle = this.color; ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+                ctx.globalAlpha = 1;
+            }
+        }
+
+        function spawnExplosion(x, y, color, count) {
+            for (let i = 0; i < count; i++) {
+                let angle = Math.random() * Math.PI * 2; let speed = Math.random() * 8 + 2;
+                particles.push(new Particle(x, y, color, Math.cos(angle) * speed, Math.sin(angle) * speed, Math.random() * 20 + 10));
+            }
+        }
+
+        function spawnDust(x, y) {
+            for(let i=0; i<3; i++) particles.push(new Particle(x, y, '#aaaaaa', (Math.random()-0.5)*2, Math.random()*-2, 15));
+        }
+
+        // FIGHTER LOGIC
         class Fighter {
-            constructor(x, y, color, fighterClass, controls) {
-                this.x = x;
-                this.y = y;
-                this.vx = 0; // Fixed: Initialized velocity X
-                this.vy = 0; // Fixed: Initialized velocity Y
+            constructor(x, y, color, type, controls, isP1) {
+                this.x = x; this.y = y;
+                this.vx = 0; this.vy = 0;
                 this.color = color;
                 this.controls = controls;
+                this.isP1 = isP1;
+                this.type = type;
+                
                 this.stocks = 3;
                 this.damage = 0;
-                this.facing = 1;
+                this.facing = isP1 ? 1 : -1;
+                
                 this.isAttacking = false;
-                this.attackCooldown = 0;
-
-                this.applyClassStats(fighterClass);
+                this.attackTimer = 0;
+                this.hitstun = 0;
+                this.trails = [];
+                
+                this.applyClass(type);
+                this.currentJumps = this.maxJumps;
             }
 
-            applyClassStats(type) {
+            applyClass(type) {
                 switch(type) {
                     case 'speedster':
-                        this.width = 25;
-                        this.height = 45;
-                        this.speed = 6;
-                        this.jumpPower = -12.5;
-                        this.attackPower = 5;
-                        this.weight = 0.85;
-                        break;
+                        this.width = 25; this.height = 50; this.speed = 7.5; this.jumpForce = -11.5;
+                        this.weight = 0.75; this.maxJumps = 2; this.attackPwr = 5; this.gravityMod = 1; break;
                     case 'tank':
-                        this.width = 38;
-                        this.height = 56;
-                        this.speed = 3;
-                        this.jumpPower = -9.5;
-                        this.attackPower = 12;
-                        this.weight = 1.3;
-                        break;
-                    default:
-                        this.width = 30;
-                        this.height = 50;
-                        this.speed = 4;
-                        this.jumpPower = -11;
-                        this.attackPower = 7;
-                        this.weight = 1.0;
-                        break;
+                        this.width = 40; this.height = 60; this.speed = 3.5; this.jumpForce = -10;
+                        this.weight = 1.4; this.maxJumps = 2; this.attackPwr = 12; this.gravityMod = 1.2; break;
+                    case 'aerial':
+                        this.width = 35; this.height = 35; this.speed = 4.5; this.jumpForce = -8.5;
+                        this.weight = 0.65; this.maxJumps = 5; this.attackPwr = 6; this.gravityMod = 0.6; break;
+                    case 'brawler':
+                        this.width = 30; this.height = 45; this.speed = 6.5; this.jumpForce = -9;
+                        this.weight = 1.1; this.maxJumps = 1; this.attackPwr = 9; this.gravityMod = 1.1; break;
+                    default: // balanced
+                        this.width = 30; this.height = 55; this.speed = 5.5; this.jumpForce = -12;
+                        this.weight = 1.0; this.maxJumps = 2; this.attackPwr = 8; this.gravityMod = 1; break;
                 }
             }
 
             update(platforms) {
-                if (keys[this.controls.left]) {
-                    this.vx = -this.speed;
-                    this.facing = -1;
-                } else if (keys[this.controls.right]) {
-                    this.vx = this.speed;
-                    this.facing = 1;
+                if (this.hitstun > 0) {
+                    this.hitstun--;
                 } else {
-                    this.vx *= friction;
-                }
+                    if (keys[this.controls.left]) {
+                        this.vx -= 1.5; if(this.vx < -this.speed) this.vx = -this.speed; this.facing = -1;
+                    } else if (keys[this.controls.right]) {
+                        this.vx += 1.5; if(this.vx > this.speed) this.vx = this.speed; this.facing = 1;
+                    } else {
+                        this.vx *= FRICTION;
+                    }
 
-                if (keys[this.controls.up] && this.grounded) {
-                    this.vy = this.jumpPower;
-                    this.grounded = false;
-                }
+                    if (keys[this.controls.up] && !this.upHeld) {
+                        if (this.currentJumps > 0) {
+                            this.vy = this.jumpForce;
+                            this.currentJumps--;
+                            spawnDust(this.x + this.width/2, this.y + this.height);
+                        }
+                        this.upHeld = true;
+                    }
+                    if (!keys[this.controls.up]) this.upHeld = false;
 
-                if (keys[this.controls.attack] && this.attackCooldown === 0) {
-                    this.isAttacking = true;
-                    this.attackCooldown = 25;
-                }
+                    if (keys[this.controls.down] && this.vy > 0) this.vy += 1.5; // Fast fall
 
-                if (this.attackCooldown > 0) {
-                    this.attackCooldown--;
-                    if (this.attackCooldown < 15) {
-                        this.isAttacking = false;
+                    if (keys[this.controls.attack] && this.attackTimer === 0) {
+                        this.isAttacking = true;
+                        this.attackTimer = this.type === 'brawler' ? 20 : 30; // brawler attacks faster
+                        this.vx += this.facing * 4; 
                     }
                 }
 
-                this.vy += gravity;
+                if (this.attackTimer > 0) {
+                    this.attackTimer--;
+                    if (this.attackTimer < (this.type === 'brawler' ? 10 : 20)) this.isAttacking = false;
+                }
+
+                this.vy += (GRAVITY * this.gravityMod);
                 this.x += this.vx;
                 this.y += this.vy;
 
-                this.grounded = false;
-                platforms.forEach(plat => {
-                    if (
-                        this.x < plat.x + plat.width &&
-                        this.x + this.width > plat.x &&
-                        this.y + this.height >= plat.y &&
-                        this.y + this.height - this.vy <= plat.y + 10 &&
-                        this.vy >= 0
-                    ) {
-                        this.y = plat.y - this.height;
-                        this.vy = 0;
-                        this.grounded = true;
+                let grounded = false;
+                if (this.vy > 0) { 
+                    for (let p of platforms) {
+                        if (this.x < p.x + p.w && this.x + this.width > p.x &&
+                            this.y + this.height >= p.y && this.y + this.height - this.vy <= p.y + 12) {
+                            this.y = p.y - this.height;
+                            this.vy = 0;
+                            grounded = true;
+                            this.currentJumps = this.maxJumps;
+                        }
                     }
-                });
+                }
 
-                if (this.x < -100 || this.x > canvas.width + 100 || this.y > canvas.height + 100 || this.y < -200) {
-                    this.respawn();
+                if (Math.abs(this.vx) > 4 || Math.abs(this.vy) > 4) this.trails.push({x: this.x, y: this.y, life: 10});
+                for(let i = this.trails.length - 1; i >= 0; i--) {
+                    this.trails[i].life--;
+                    if(this.trails[i].life <= 0) this.trails.splice(i, 1);
+                }
+
+                if (this.x < BLAST_ZONE.left || this.x > BLAST_ZONE.right || 
+                    this.y > BLAST_ZONE.bottom || this.y < BLAST_ZONE.top) {
+                    this.die();
                 }
             }
 
-            respawn() {
+            die() {
+                spawnExplosion(this.x, this.y, this.color, 60);
+                screenShake = 20;
                 this.stocks--;
                 this.damage = 0;
-                this.x = canvas.width / 2 + (this.vx > 0 ? -100 : 100);
-                this.y = 100;
-                this.vx = 0;
-                this.vy = 0;
+                // Find a safe respawn height based on center stage
+                this.x = canvas.width / 2;
+                this.y = 50;
+                this.vx = 0; this.vy = 0; this.hitstun = 0;
+                updateDOM();
             }
 
             draw() {
-                ctx.fillStyle = this.color;
-                ctx.fillRect(this.x, this.y, this.width, this.height);
+                this.trails.forEach(t => {
+                    ctx.globalAlpha = t.life / 20;
+                    ctx.fillStyle = this.color;
+                    if(this.type === 'aerial') ctx.beginPath(), ctx.arc(t.x+this.width/2, t.y+this.height/2, this.width/2, 0, Math.PI*2), ctx.fill();
+                    else ctx.fillRect(t.x, t.y, this.width, this.height);
+                });
+                ctx.globalAlpha = 1;
 
-                ctx.fillStyle = '#ffffff';
-                let eyeX = this.facing === 1 ? this.x + this.width - 10 : this.x + 4;
-                ctx.fillRect(eyeX, this.y + 10, 6, 6);
+                ctx.fillStyle = (this.hitstun > 0 && Math.floor(Date.now() / 50) % 2 === 0) ? 'white' : this.color;
+                ctx.shadowBlur = 15; ctx.shadowColor = this.color;
+                
+                if(this.type === 'aerial') {
+                    ctx.beginPath(); ctx.arc(this.x+this.width/2, this.y+this.height/2, this.width/2, 0, Math.PI*2); ctx.fill();
+                } else {
+                    ctx.fillRect(this.x, this.y, this.width, this.height);
+                }
+                ctx.shadowBlur = 0;
+
+                ctx.fillStyle = '#05050a';
+                let visorX = this.facing === 1 ? this.x + (this.width/2) : this.x + 5;
+                ctx.fillRect(visorX, this.y + 10, 10, 6);
 
                 if (this.isAttacking) {
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-                    let hitX = this.facing === 1 ? this.x + this.width : this.x - 30;
-                    ctx.fillRect(hitX, this.y + 10, 30, 25);
+                    ctx.fillStyle = 'white'; ctx.shadowBlur = 20; ctx.shadowColor = this.color;
+                    let hitX = this.facing === 1 ? this.x + this.width : this.x - 45;
+                    ctx.beginPath();
+                    ctx.ellipse(hitX + 22, this.y + this.height/2, 35, 10, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
                 }
             }
 
-            getHitbox() {
-                return { x: this.x, y: this.y, width: this.width, height: this.height };
-            }
-
+            getHitbox() { return { x: this.x, y: this.y, w: this.width, h: this.height }; }
             getAttackHitbox() {
                 if (!this.isAttacking) return null;
-                let hitX = this.facing === 1 ? this.x + this.width : this.x - 30;
-                return { x: hitX, y: this.y + 10, width: 30, height: 25 };
+                return { x: this.facing === 1 ? this.x + this.width : this.x - 45, y: this.y + 10, w: 45, h: 30 };
             }
         }
 
-        const platforms = [
-            { x: 150, y: 340, width: 500, height: 20 },
-            { x: 220, y: 230, width: 140, height: 15 },
-            { x: 440, y: 230, width: 140, height: 15 }
-        ];
+        function checkCombats() {
+            let p1Box = p1.getHitbox(), p2Box = p2.getHitbox();
+            let p1Atk = p1.getAttackHitbox(), p2Atk = p2.getAttackHitbox();
 
-        let p1, p2;
-
-        function startGame() {
-            const p1Class = document.getElementById('p1Class').value;
-            const p2Class = document.getElementById('p2Class').value;
-            const p1Color = document.getElementById('p1Color').value;
-            const p2Color = document.getElementById('p2Color').value;
-
-            p1 = new Fighter(200, 200, p1Color, p1Class, { left: 'KeyA', right: 'KeyD', up: 'KeyW', attack: 'KeyF' });
-            p2 = new Fighter(560, 200, p2Color, p2Class, { left: 'ArrowLeft', right: 'ArrowRight', up: 'ArrowUp', attack: 'KeyL' });
-
-            document.getElementById('menuScreen').style.display = 'none';
-            document.getElementById('gameScreen').style.display = 'flex';
-
-            requestAnimationFrame(gameLoop);
+            if (p1Atk && p2.hitstun === 0 && rectIntersect(p1Atk, p2Box)) applyHit(p1, p2, p1.attackPwr);
+            if (p2Atk && p1.hitstun === 0 && rectIntersect(p2Atk, p1Box)) applyHit(p2, p1, p2.attackPwr);
         }
 
-        function checkCollisions() {
-            const p1Attack = p1.getAttackHitbox();
-            const p2Attack = p2.getAttackHitbox();
-            const p1Box = p1.getHitbox();
-            const p2Box = p2.getHitbox();
+        function applyHit(attacker, victim, dmg) {
+            victim.damage += dmg;
+            let knockback = ((victim.damage / 10) + (victim.damage * dmg / 20)) / victim.weight;
+            victim.vx = attacker.facing * (knockback + 3);
+            victim.vy = -(knockback * 0.7 + 3);
+            
+            victim.hitstun = Math.floor(knockback * 1.5) + 12;
+            attacker.isAttacking = false;
 
-            if (p1Attack && rectIntersect(p1Attack, p2Box)) {
-                p2.damage += p1.attackPower;
-                let knockback = (4 + (p2.damage * 0.15)) / p2.weight;
-                p2.vx = p1.facing * knockback;
-                p2.vy = -knockback * 0.7;
-                p1.isAttacking = false;
-            }
-
-            if (p2Attack && rectIntersect(p2Attack, p1Box)) {
-                p1.damage += p2.attackPower;
-                let knockback = (4 + (p1.damage * 0.15)) / p1.weight;
-                p1.vx = p2.facing * knockback;
-                p1.vy = -knockback * 0.7;
-                p2.isAttacking = false;
-            }
+            spawnExplosion(victim.x + victim.width/2, victim.y + victim.height/2, victim.color, 15);
+            hitPauseFrames = 5; 
+            screenShake = Math.min(knockback, 18); 
+            updateDOM();
         }
 
         function rectIntersect(r1, r2) {
-            return r1.x < r2.x + r2.width &&
-                   r1.x + r1.width > r2.x &&
-                   r1.y < r2.y + r2.height &&
-                   r1.y + r1.height > r2.y;
+            return r1.x < r2.x + r2.w && r1.x + r1.w > r2.x && r1.y < r2.y + r2.h && r1.y + r1.h > r2.y;
         }
 
-        function updateHUD() {
-            document.getElementById('p1Stocks').textContent = p1.stocks;
-            document.getElementById('p1Damage').textContent = Math.floor(p1.damage);
-            document.getElementById('p2Stocks').textContent = p2.stocks;
-            document.getElementById('p2Damage').textContent = Math.floor(p2.damage);
+        function getDamageColor(dmg) {
+            if(dmg < 60) return 'white';
+            if(dmg < 120) return '#ffaa00';
+            return '#ff2222';
+        }
+
+        function updateDOM() {
+            let p1D = document.getElementById('p1Damage'), p2D = document.getElementById('p2Damage');
+            
+            p1D.textContent = Math.floor(p1.damage) + '%';
+            p1D.style.color = getDamageColor(p1.damage);
+            p1D.style.transform = 'scale(1.3)'; setTimeout(() => p1D.style.transform = 'scale(1)', 100);
+
+            p2D.textContent = Math.floor(p2.damage) + '%';
+            p2D.style.color = getDamageColor(p2.damage);
+            p2D.style.transform = 'scale(1.3)'; setTimeout(() => p2D.style.transform = 'scale(1)', 100);
+
+            document.getElementById('p1Stocks').innerHTML = `<div class="stock-icon" style="background:${p1.color}"></div>`.repeat(p1.stocks);
+            document.getElementById('p2Stocks').innerHTML = `<div class="stock-icon" style="background:${p2.color}"></div>`.repeat(p2.stocks);
+
+            if (p1.stocks <= 0 || p2.stocks <= 0) {
+                gameActive = false;
+                let winScreen = document.getElementById('winner-screen');
+                let winText = document.getElementById('winner-text');
+                winScreen.style.display = 'flex';
+                if(p1.stocks <= 0) { winText.textContent = "PLAYER 2 WINS"; winText.style.color = p2.color; } 
+                else { winText.textContent = "PLAYER 1 WINS"; winText.style.color = p1.color; }
+            }
+        }
+
+        function showMenu() {
+            document.getElementById('winner-screen').style.display = 'none';
+            document.getElementById('ui-layer').style.display = 'none';
+            document.getElementById('menu-screen').style.display = 'flex';
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear background
+        }
+
+        function startGame() {
+            let stageKey = document.getElementById('stageSelect').value;
+            currentPlatforms = STAGES[stageKey];
+
+            p1 = new Fighter(300, 100, document.getElementById('p1Color').value, document.getElementById('p1Class').value, { left: 'KeyA', right: 'KeyD', up: 'KeyW', down: 'KeyS', attack: 'KeyF' }, true);
+            p2 = new Fighter(700, 100, document.getElementById('p2Color').value, document.getElementById('p2Class').value, { left: 'ArrowLeft', right: 'ArrowRight', up: 'ArrowUp', down: 'ArrowDown', attack: 'KeyL' }, false);
+            
+            document.getElementById('p1Damage').style.color = document.getElementById('p1Color').value;
+            document.getElementById('p2Damage').style.color = document.getElementById('p2Color').value;
+            
+            document.documentElement.style.setProperty('--p1-color', p1.color);
+            document.documentElement.style.setProperty('--p2-color', p2.color);
+
+            document.getElementById('menu-screen').style.display = 'none';
+            document.getElementById('ui-layer').style.display = 'flex';
+            
+            particles = [];
+            gameActive = true;
+            updateDOM();
+            requestAnimationFrame(gameLoop);
         }
 
         function gameLoop() {
+            if (!gameActive) return;
+
+            if (hitPauseFrames > 0) {
+                hitPauseFrames--;
+                requestAnimationFrame(gameLoop);
+                return;
+            }
+
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            p1.update(platforms);
-            p2.update(platforms);
+            ctx.save();
+            if (screenShake > 0) {
+                let dx = (Math.random() - 0.5) * screenShake;
+                let dy = (Math.random() - 0.5) * screenShake;
+                ctx.translate(dx, dy);
+                screenShake *= 0.8; 
+                if(screenShake < 0.5) screenShake = 0;
+            }
 
-            checkCollisions();
+            p1.update(currentPlatforms);
+            p2.update(currentPlatforms);
+            checkCombats();
 
-            ctx.fillStyle = '#232b38';
-            platforms.forEach(plat => {
-                ctx.fillRect(plat.x, plat.y, plat.width, plat.height);
-                ctx.strokeStyle = '#00f0ff';
-                ctx.strokeRect(plat.x, plat.y, plat.width, plat.height);
+            // Draw Stage
+            currentPlatforms.forEach(p => {
+                ctx.fillStyle = '#0a0a1a';
+                ctx.fillRect(p.x, p.y, p.w, p.h);
+                ctx.strokeStyle = '#a020f0';
+                ctx.lineWidth = 2; ctx.shadowBlur = 10; ctx.shadowColor = '#a020f0';
+                ctx.strokeRect(p.x, p.y, p.w, p.h);
+                ctx.shadowBlur = 0;
             });
+
+            // Particles
+            for(let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].draw(ctx);
+                if(particles[i].life <= 0) particles.splice(i, 1);
+            }
 
             p1.draw();
             p2.draw();
 
-            updateHUD();
-
-            if (p1.stocks <= 0 || p2.stocks <= 0) {
-                ctx.fillStyle = 'rgba(8, 11, 16, 0.85)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                ctx.fillStyle = '#f0f6fc';
-                ctx.font = 'bold 30px sans-serif';
-                ctx.textAlign = 'center';
-                let winner = p1.stocks <= 0 ? "PLAYER 2 WINS!" : "PLAYER 1 WINS!";
-                ctx.fillText(winner, canvas.width / 2, canvas.height / 2);
-                return;
-            }
-
+            ctx.restore(); 
             requestAnimationFrame(gameLoop);
         }
+        
+        // Ensure menu is visible on load
+        showMenu();
+
     </script>
 </body>
 </html>

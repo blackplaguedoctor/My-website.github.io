@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RETRO ARCADE PORTAL // V3</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: #1f2833;
+            --accent-green: #66fcf1;
+            --accent-yellow: #f39c12;
+            --accent-pink: #ff0055;
+            --text-color: #c5c6c7;
+            --border-color: #45a29e;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Press Start 2P', monospace;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            color: var(--accent-green);
+            font-size: 1.8rem;
+            text-shadow: 3px 3px 0px var(--accent-pink);
+            margin-bottom: 8px;
+        }
+
+        p.subtitle {
+            font-size: 0.65rem;
+            color: #888;
+            line-height: 1.5;
+        }
+
+        .arcade-container {
+            background: var(--card-bg);
+            border: 4px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 0 30px rgba(102, 252, 241, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 880px;
+            width: 100%;
+        }
+
+        .game-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            width: 100%;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: #0b0c10;
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+            padding: 10px 12px;
+            font-size: 0.55rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 6px;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--accent-yellow);
+            color: var(--accent-yellow);
+        }
+
+        .tab-btn.active {
+            background: var(--accent-green);
+            color: #0b0c10;
+            border-color: var(--accent-green);
+            box-shadow: 0 0 12px var(--accent-green);
+        }
+
+        .viewport {
+            position: relative;
+            background: #000;
+            border: 4px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            background: #000;
+        }
+
+        .info-panel {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+            background: #0b0c10;
+            padding: 12px 16px;
+            border-radius: 6px;
+            border: 2px solid var(--border-color);
+            font-size: 0.6rem;
+            line-height: 1.6;
+        }
+
+        .score-display { color: var(--accent-yellow); }
+        .level-display { color: var(--accent-pink); }
+        .controls-text { color: #888; }
+        .controls-text span { color: var(--accent-green); }
+
+        .difficulty-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            font-size: 0.65rem;
+        }
+
+        select.diff-select {
+            background: #0b0c10;
+            color: var(--accent-yellow);
+            border: 2px solid var(--border-color);
+            padding: 6px 10px;
+            font-size: 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>RETRO ARCADE PORTAL</h1>
+        <p class="subtitle">MULTI-GAME 8-BIT ENTERTAINMENT SUITE</p>
+    </header>
+
+    <div class="arcade-container">
+        <div class="difficulty-wrapper">
+            <label for="diffSelect">DIFFICULTY:</label>
+            <select id="diffSelect" class="diff-select" onchange="changeDifficulty(this.value)">
+                <option value="easy">EASY</option>
+                <option value="medium" selected>MEDIUM</option>
+                <option value="hard">HARD</option>
+            </select>
+        </div>
+
+        <div class="game-selector">
+            <button class="tab-btn active" data-game="football" onclick="switchGame('football')">RETRO BOWL</button>
+            <button class="tab-btn" data-game="pacman" onclick="switchGame('pacman')">PAC-MAN</button>
+            <button class="tab-btn" data-game="shooter" onclick="switchGame('shooter')">SPACE BLASTER</button>
+            <button class="tab-btn" data-game="breakout" onclick="switchGame('breakout')">BRICK BREAKER</button>
+            <button class="tab-btn" data-game="snake" onclick="switchGame('snake')">CYBER SNAKE</button>
+        </div>
+
+        <div class="viewport">
+            <canvas id="arcadeCanvas" width="800" height="400"></canvas>
+        </div>
+
+        <div class="info-panel">
+            <div class="score-display">SCORE: <span id="scoreVal">0</span></div>
+            <div class="level-display">LEVEL: <span id="levelVal">1</span></div>
+            <div class="controls-text" id="controlsGuide">Controls: <span>WASD / Arrow Keys</span></div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('arcadeCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElem = document.getElementById('scoreVal');
+        const levelElem = document.getElementById('levelVal');
+        const controlsElem = document.getElementById('controlsGuide');
+
+        let currentGame = 'football';
+        let difficulty = 'medium';
+        let keys = {};
+        let score = 0;
+        let currentLevel = 1;
+        let gameLoopId = null;
+
+        // Prevent page scrolling on navigation keys
+        window.addEventListener('keydown', e => {
+            if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+                e.preventDefault();
+            }
+            keys[e.code] = true;
+        });
+
+        window.addEventListener('keyup', e => {
+            if (['Space', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.code)) {
+                e.preventDefault();
+            }
+            keys[e.code] = false;
+        });
+
+        function changeDifficulty(val) {
+            difficulty = val;
+            switchGame(currentGame);
+        }
+
+        function switchGame(gameType) {
+            if (gameLoopId) {
+                cancelAnimationFrame(gameLoopId);
+                gameLoopId = null;
+            }
+
+            currentGame = gameType;
+            score = 0;
+            currentLevel = 1;
+            keys = {};
+            scoreElem.textContent = score;
+            levelElem.textContent = currentLevel;
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.game === gameType);
+            });
+
+            if (gameType === 'football') {
+                controlsElem.innerHTML = 'Controls: <span>W/S or Up/Down</span> Move | <span>Shift</span> Turbo';
+                initFootball();
+            } else if (gameType === 'pacman') {
+                controlsElem.innerHTML = 'Controls: <span>WASD / Arrows</span> Move Pac-Man';
+                initPacman();
+            } else if (gameType === 'shooter') {
+                controlsElem.innerHTML = 'Controls: <span>WASD/Arrows</span> Move | <span>Space</span> Shoot';
+                initShooter();
+            } else if (gameType === 'breakout') {
+                controlsElem.innerHTML = 'Controls: <span>A/D or Arrows</span> Move Paddle | Destroy Bricks!';
+                initBreakout();
+            } else if (gameType === 'snake') {
+                controlsElem.innerHTML = 'Controls: <span>WASD / Arrows</span> Steer | Eat Food!';
+                initSnake();
+            }
+        }
+
+        // =======================================================
+        // GAME 1: RETRO BOWL CHAMPIONS
+        // =======================================================
+        const TEAMS = [
+            { name: 'GREEN BAY', primary: '#203731', alt: '#FFB81C' },
+            { name: 'DALLAS', primary: '#003594', alt: '#041E42' },
+            { name: 'SAN FRANCISCO', primary: '#AA0000', alt: '#B3995D' },
+            { name: 'CHICAGO', primary: '#0B162A', alt: '#C83803' }
+        ];
+
+        let fbState, selectedTeam, oppTeam, qb, defenders, downs, touchdownsScored, targetTDs, fbTimer;
+
+        function initFootball() {
+            fbState = 'select';
+            selectedTeam = 0;
+            touchdownsScored = 0;
+            targetTDs = currentLevel;
+            if (fbTimer) clearTimeout(fbTimer);
+            runFootball();
+        }
+
+        function startFootballMatch() {
+            oppTeam = (selectedTeam + currentLevel) % TEAMS.length;
+            qb = { x: 100, y: 180, w: 22, h: 22 };
+            defenders = [];
+            downs = 1;
+            fbState = 'play';
+        }
+
+        function runFootball() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let maxAllowedDowns = difficulty === 'easy' ? 5 : (difficulty === 'medium' ? 4 : 3);
+            let defSpeedMult = (difficulty === 'easy' ? 0.75 : (difficulty === 'medium' ? 1.0 : 1.35)) + (currentLevel - 1) * 0.2;
+
+            if (fbState === 'select') {
+                ctx.fillStyle = '#0b0c10'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#66fcf1'; ctx.font = '16px "Press Start 2P"'; ctx.textAlign = 'center';
+                ctx.fillText(`LEVEL ${currentLevel}: SELECT TEAM`, canvas.width / 2, 60);
+
+                TEAMS.forEach((t, i) => {
+                    let y = 110 + (i * 60);
+                    ctx.fillStyle = (i === selectedTeam) ? '#f39c12' : '#1f2833';
+                    ctx.fillRect(200, y, 400, 45);
+                    ctx.fillStyle = t.primary; ctx.fillRect(210, y + 5, 35, 35);
+                    ctx.fillStyle = '#fff'; ctx.font = '12px "Press Start 2P"'; ctx.textAlign = 'left';
+                    ctx.fillText(t.name, 260, y + 28);
+                });
+
+                ctx.fillStyle = '#888'; ctx.font = '9px "Press Start 2P"'; ctx.textAlign = 'center';
+                ctx.fillText('UP/DOWN to Select | SPACE to Confirm', canvas.width / 2, 375);
+
+                if (keys['ArrowUp'] || keys['KeyW']) { selectedTeam = (selectedTeam > 0) ? selectedTeam - 1 : TEAMS.length - 1; keys['ArrowUp'] = false; keys['KeyW'] = false; }
+                if (keys['ArrowDown'] || keys['KeyS']) { selectedTeam = (selectedTeam + 1) % TEAMS.length; keys['ArrowDown'] = false; keys['KeyS'] = false; }
+                if (keys['Space'] || keys['Enter']) { startFootballMatch(); keys['Space'] = false; }
+
+            } else if (fbState === 'play') {
+                ctx.fillStyle = '#1b4d2e'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = TEAMS[selectedTeam].primary; ctx.fillRect(0, 0, 70, canvas.height);
+                ctx.fillStyle = TEAMS[oppTeam].primary; ctx.fillRect(730, 0, 70, canvas.height);
+
+                ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
+                for (let x = 70; x <= 730; x += 66) {
+                    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+                }
+
+                let speed = keys['ShiftLeft'] || keys['ShiftRight'] ? 5.2 : 3.5;
+                if ((keys['KeyW'] || keys['ArrowUp']) && qb.y > 10) qb.y -= speed;
+                if ((keys['KeyS'] || keys['ArrowDown']) && qb.y < canvas.height - 32) qb.y += speed;
+                if ((keys['KeyD'] || keys['ArrowRight']) && qb.x < 720) qb.x += speed * 0.7;
+
+                ctx.fillStyle = TEAMS[selectedTeam].primary; ctx.fillRect(qb.x, qb.y, qb.w, qb.h);
+                ctx.fillStyle = TEAMS[selectedTeam].alt; ctx.fillRect(qb.x + 14, qb.y + 2, 6, 6);
+
+                if (Math.random() < 0.05 && defenders.length < 4 + currentLevel) {
+                    defenders.push({
+                        x: canvas.width - 80, y: Math.random() * (canvas.height - 40),
+                        w: 22, h: 22, speed: (2.0 + Math.random() * 1.5) * defSpeedMult
+                    });
+                }
+
+                for (let i = defenders.length - 1; i >= 0; i--) {
+                    let d = defenders[i];
+                    d.x -= d.speed;
+                    if (d.y < qb.y) d.y += 0.8;
+                    if (d.y > qb.y) d.y -= 0.8;
+
+                    ctx.fillStyle = TEAMS[oppTeam].primary; ctx.fillRect(d.x, d.y, d.w, d.h);
+                    ctx.fillStyle = TEAMS[oppTeam].alt; ctx.fillRect(d.x + 2, d.y + 2, 6, 6);
+
+                    if (qb.x < d.x + d.w && qb.x + qb.w > d.x && qb.y < d.y + d.h && qb.y + qb.h > d.y) {
+                        downs++;
+                        if (downs > maxAllowedDowns) {
+                            showGameOver('TURNOVER ON DOWNS!'); return;
+                        } else {
+                            qb.x = 100;
+                            defenders = [];
+                        }
+                    }
+                    if (d.x < 70) defenders.splice(i, 1);
+                }
+
+                if (qb.x >= 710) {
+                    touchdownsScored++;
+                    score += 100 * currentLevel;
+                    scoreElem.textContent = score;
+
+                    if (touchdownsScored >= targetTDs) {
+                        if (currentLevel < 3) {
+                            currentLevel++;
+                            levelElem.textContent = currentLevel;
+                            fbState = 'level_clear';
+                            fbTimer = setTimeout(() => { initFootball(); }, 2000);
+                        } else {
+                            showWinScreen('SUPER BOWL CHAMPIONS!'); return;
+                        }
+                    } else {
+                        fbState = 'td';
+                        fbTimer = setTimeout(() => { startFootballMatch(); }, 1500);
+                    }
+                }
+
+                ctx.fillStyle = '#fff'; ctx.font = '10px "Press Start 2P"'; ctx.textAlign = 'left';
+                ctx.fillText(`DOWN: ${downs}/${maxAllowedDowns} | NEED ${targetTDs - touchdownsScored} TD(s)`, 100, 22);
+
+            } else if (fbState === 'td') {
+                ctx.fillStyle = '#0b0c10'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#66fcf1'; ctx.font = '24px "Press Start 2P"'; ctx.textAlign = 'center';
+                ctx.fillText('TOUCHDOWN!!', canvas.width / 2, canvas.height / 2);
+            } else if (fbState === 'level_clear') {
+                ctx.fillStyle = '#0b0c10'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#f39c12'; ctx.font = '20px "Press Start 2P"'; ctx.textAlign = 'center';
+                ctx.fillText(`LEVEL ${currentLevel - 1} CLEARED!`, canvas.width / 2, canvas.height / 2 - 15);
+                ctx.fillStyle = '#fff'; ctx.font = '12px "Press Start 2P"';
+                ctx.fillText(`ADVANCING TO LEVEL ${currentLevel}`, canvas.width / 2, canvas.height / 2 + 20);
+            }
+
+            gameLoopId = requestAnimationFrame(runFootball);
+        }
+
+        // =======================================================
+        // GAME 2: PAC-MAN ARCADE
+        // =======================================================
+        let pacman, ghosts, pellets, mouthAngle = 0.2, mouthSpeed = 0.02;
+
+        const MAP = [
+            "1111111111111111111111111111111111111111",
+            "1222222222111122222222221111222222222211",
+            "1211111112111121111111121111211111111211",
+            "1311111112111121111111121111211111111311",
+            "1222222222222222221122222222222222222211",
+            "1211112111111111121121111111111211111211",
+            "1222222111111111122221111111111222222111",
+            "1111112111111111111111111111111211111111",
+            "0000012111000000000000000000111210000000",
+            "1111112111011111100111111010111211111111",
+            "1222222222010000100100001012222222222111",
+            "1111112111011111111111111010111211111111",
+            "0000012111000000000000000000111210000000",
+            "1111112111211111111111111112111211111111",
+            "1222222222222222221122222222222222222211",
+            "1211112111111111121121111111111211111211",
+            "1322112222222222220022222222222211223111",
+            "1112112111211111111111111112111211211111",
+            "1222222111222222221122222222111222222211",
+            "1111111111111111111111111111111111111111"
+        ];
+
+        function initPacman() {
+            pacman = { x: 20, y: 14, dirX: 0, dirY: 0, nextDirX: 0, nextDirY: 0 };
+            let ghostCount = 1 + currentLevel;
+            const colors = ['#ff0000', '#ffb8ff', '#00ffff', '#ffb852'];
+            ghosts = [];
+            for (let i = 0; i < Math.min(ghostCount, 4); i++) {
+                ghosts.push({ x: 18 + (i % 2), y: 9, color: colors[i], dirX: 1, dirY: 0, scared: 0 });
+            }
+
+            pellets = [];
+            for (let r = 0; r < 20; r++) {
+                for (let c = 0; c < 40; c++) {
+                    let tile = MAP[r][c];
+                    if (tile === '2') pellets.push({ x: c, y: r, power: false });
+                    if (tile === '3') pellets.push({ x: c, y: r, power: true });
+                }
+            }
+            runPacman();
+        }
+
+        function runPacman() {
+            ctx.fillStyle = '#000'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            let ghostSpeed = (difficulty === 'easy' ? 0.05 : (difficulty === 'medium' ? 0.08 : 0.12)) + (currentLevel - 1) * 0.02;
+
+            if (keys['KeyA'] || keys['ArrowLeft']) { pacman.nextDirX = -1; pacman.nextDirY = 0; }
+            if (keys['KeyD'] || keys['ArrowRight']) { pacman.nextDirX = 1; pacman.nextDirY = 0; }
+            if (keys['KeyW'] || keys['ArrowUp']) { pacman.nextDirX = 0; pacman.nextDirY = -1; }
+            if (keys['KeyS'] || keys['ArrowDown']) { pacman.nextDirX = 0; pacman.nextDirY = 1; }
+
+            if (canMovePac(pacman.x + pacman.nextDirX * 0.2, pacman.y + pacman.nextDirY * 0.2)) {
+                pacman.dirX = pacman.nextDirX; pacman.dirY = pacman.nextDirY;
+            }
+            if (canMovePac(pacman.x + pacman.dirX * 0.2, pacman.y + pacman.dirY * 0.2)) {
+                pacman.x += pacman.dirX * 0.12; pacman.y += pacman.dirY * 0.12;
+            }
+
+            ctx.fillStyle = '#1919a6';
+            for (let r = 0; r < 20; r++) {
+                for (let c = 0; c < 40; c++) {
+                    if (MAP[r][c] === '1') ctx.fillRect(c * 20, r * 20, 20, 20);
+                }
+            }
+
+            let powerTime = difficulty === 'easy' ? 400 : (difficulty === 'medium' ? 280 : 180);
+            for (let i = pellets.length - 1; i >= 0; i--) {
+                let p = pellets[i];
+                ctx.fillStyle = p.power ? '#ffb8ae' : '#ffb8ff';
+                let radius = p.power ? 6 : 3;
+                ctx.beginPath(); ctx.arc(p.x * 20 + 10, p.y * 20 + 10, radius, 0, Math.PI * 2); ctx.fill();
+
+                if (Math.hypot(pacman.x - p.x, pacman.y - p.y) < 0.8) {
+                    score += p.power ? 50 : 10;
+                    scoreElem.textContent = score;
+                    if (p.power) ghosts.forEach(g => g.scared = powerTime);
+                    pellets.splice(i, 1);
+                }
+            }
+
+            if (pellets.length === 0) {
+                if (currentLevel < 3) {
+                    currentLevel++;
+                    levelElem.textContent = currentLevel;
+                    initPacman();
+                    return;
+                } else {
+                    showWinScreen('PAC-MAN CHAMPION!'); return;
+                }
+            }
+
+            mouthAngle += mouthSpeed;
+            if (mouthAngle > 0.4 || mouthAngle < 0.05) mouthSpeed = -mouthSpeed;
+            ctx.fillStyle = '#ffff00';
+            let rotation = 0;
+            if (pacman.dirX === -1) rotation = Math.PI;
+            if (pacman.dirY === 1) rotation = Math.PI / 2;
+            if (pacman.dirY === -1) rotation = -Math.PI / 2;
+
+            ctx.beginPath();
+            ctx.arc(pacman.x * 20 + 10, pacman.y * 20 + 10, 9, rotation + mouthAngle, rotation + Math.PI * 2 - mouthAngle);
+            ctx.lineTo(pacman.x * 20 + 10, pacman.y * 20 + 10); ctx.fill();
+
+            ghosts.forEach(g => {
+                if (g.scared > 0) g.scared--;
+
+                let rx = Math.round(g.x);
+                let ry = Math.round(g.y);
+                if (Math.abs(g.x - rx) < ghostSpeed && Math.abs(g.y - ry) < ghostSpeed) {
+                    g.x = rx; g.y = ry;
+                    let dirs = [{x: 1, y: 0}, {x: -1, y: 0}, {x: 0, y: 1}, {x: 0, y: -1}]
+                        .filter(d => (d.x !== -g.dirX || d.y !== -g.dirY) && canMovePac(rx + d.x, ry + d.y));
+                    if (dirs.length === 0) {
+                        dirs = [{x: 1, y: 0}, {x: -1, y: 0}, {x: 0, y: 1}, {x: 0, y: -1}]
+                            .filter(d => canMovePac(rx + d.x, ry + d.y));
+                    }
+                    if (dirs.length > 0) {
+                        let chosen = dirs[Math.floor(Math.random() * dirs.length)];
+                        g.dirX = chosen.x; g.dirY = chosen.y;
+                    }
+                }
+                g.x += g.dirX * ghostSpeed; g.y += g.dirY * ghostSpeed;
+
+                ctx.fillStyle = (g.scared > 0) ? '#0000ff' : g.color;
+                ctx.beginPath();
+                ctx.arc(g.x * 20 + 10, g.y * 20 + 8, 8, Math.PI, 0, false);
+                ctx.lineTo(g.x * 20 + 18, g.y * 20 + 18); ctx.lineTo(g.x * 20 + 2, g.y * 20 + 18); ctx.fill();
+
+                if (Math.hypot(pacman.x - g.x, pacman.y - g.y) < 0.8) {
+                    if (g.scared > 0) {
+                        score += 200; scoreElem.textContent = score;
+                        g.x = 20; g.y = 9; g.scared = 0;
+                    } else {
+                        showGameOver('PAC-MAN CAUGHT!'); return;
+                    }
+                }
+            });
+
+            gameLoopId = requestAnimationFrame(runPacman);
+        }
+
+        function canMovePac(col, row) {
+            col = Math.round(col); row = Math.round(row);
+            if (row < 0 || row >= 20 || col < 0 || col >= 40) return false;
+            return MAP[row][col] !== '1';
+        }
+
+        // =======================================================
+        // GAME 3: SPACE BLASTER ULTIMATE
+        // =======================================================
+        let ship, lasers, enemies, powerups, particles, weaponMode, weaponTimer, killsCount, boss;
+
+        function initShooter() {
+            ship = { x: 380, y: 340, w: 32, h: 24, speed: 6 };
+            lasers = []; enemies = []; powerups = []; particles = [];
+            weaponMode = 'single'; weaponTimer = 0; killsCount = 0; boss = null;
+            runShooter();
+        }
+
+        function runShooter() {
+            ctx.fillStyle = '#050510'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            let spawnChance = difficulty === 'easy' ? 0.03 : (difficulty === 'medium' ? 0.05 : 0.08);
+
+            if ((keys['KeyA'] || keys['ArrowLeft']) && ship.x > 10) ship.x -= ship.speed;
+            if ((keys['KeyD'] || keys['ArrowRight']) && ship.x < canvas.width - 40) ship.x += ship.speed;
+            if ((keys['KeyW'] || keys['ArrowUp']) && ship.y > 10) ship.y -= ship.speed;
+            if ((keys['KeyS'] || keys['ArrowDown']) && ship.y < canvas.height - 30) ship.y += ship.speed;
+
+            if (keys['Space'] && weaponTimer <= 0) {
+                if (weaponMode === 'triple') {
+                    lasers.push({ x: ship.x + 14, y: ship.y, vx: 0, vy: -9 });
+                    lasers.push({ x: ship.x, y: ship.y, vx: -2, vy: -8 });
+                    lasers.push({ x: ship.x + 28, y: ship.y, vx: 2, vy: -8 });
+                } else {
+                    lasers.push({ x: ship.x + 14, y: ship.y, vx: 0, vy: -9 });
+                }
+                weaponTimer = (weaponMode === 'rapid') ? 6 : 14;
+            }
+            if (weaponTimer > 0) weaponTimer--;
+
+            particles.push({ x: ship.x + 14 + (Math.random()*6-3), y: ship.y + 24, vx: 0, vy: 3, life: 10, color: '#66fcf1' });
+
+            if (!boss && currentLevel < 3) {
+                if (Math.random() < spawnChance) {
+                    enemies.push({
+                        x: Math.random() * (canvas.width - 40), y: -30,
+                        w: 30, h: 24,
+                        hp: currentLevel === 2 ? 2 : 1,
+                        speed: 1.5 + Math.random() * 2
+                    });
+                }
+            }
+
+            if (currentLevel === 3 && !boss) {
+                boss = { x: 300, y: 30, w: 200, h: 60, hp: 50, maxHp: 50, dirX: 2 };
+            }
+
+            for (let i = lasers.length - 1; i >= 0; i--) {
+                let l = lasers[i]; l.x += l.vx; l.y += l.vy;
+                ctx.fillStyle = '#66fcf1'; ctx.fillRect(l.x, l.y, 4, 12);
+
+                if (boss && l.x < boss.x + boss.w && l.x + 4 > boss.x && l.y < boss.y + boss.h && l.y + 12 > boss.y) {
+                    boss.hp--;
+                    createExplosion(l.x, l.y, '#f39c12');
+                    lasers.splice(i, 1);
+                    if (boss.hp <= 0) {
+                        showWinScreen('MOTHERSHIP DESTROYED!'); return;
+                    }
+                    continue;
+                }
+                if (l.y < -10) lasers.splice(i, 1);
+            }
+
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                let e = enemies[i]; e.y += e.speed;
+                ctx.fillStyle = (e.hp > 1) ? '#ff0055' : '#f39c12';
+                ctx.fillRect(e.x, e.y, e.w, e.h);
+
+                let destroyed = false;
+                for (let j = lasers.length - 1; j >= 0; j--) {
+                    let l = lasers[j];
+                    if (l.x < e.x + e.w && l.x + 4 > e.x && l.y < e.y + e.h && l.y + 12 > e.y) {
+                        e.hp--;
+                        lasers.splice(j, 1);
+                        if (e.hp <= 0) {
+                            createExplosion(e.x + 15, e.y + 12, '#f39c12');
+                            if (Math.random() < 0.3) powerups.push({ x: e.x, y: e.y, type: Math.random() < 0.5 ? 'triple' : 'rapid' });
+                            enemies.splice(i, 1);
+                            killsCount++;
+                            score += 25; scoreElem.textContent = score;
+                            
+                            if (killsCount >= 12 * currentLevel && currentLevel < 3) {
+                                currentLevel++;
+                                levelElem.textContent = currentLevel;
+                            }
+                            destroyed = true;
+                            break;
+                        }
+                    }
+                }
+
+                if (!destroyed && ship.x < e.x + e.w && ship.x + ship.w > e.x && ship.y < e.y + e.h && ship.y + ship.h > e.y) {
+                    showGameOver('SHIP DESTROYED!'); return;
+                }
+            }
+
+            if (boss) {
+                boss.x += boss.dirX;
+                if (boss.x < 20 || boss.x > canvas.width - boss.w - 20) boss.dirX = -boss.dirX;
+
+                ctx.fillStyle = '#ff0055'; ctx.fillRect(boss.x, boss.y, boss.w, boss.h);
+                ctx.fillStyle = '#000'; ctx.fillRect(250, 10, 300, 15);
+                ctx.fillStyle = '#ff0055'; ctx.fillRect(252, 12, (boss.hp / boss.maxHp) * 296, 11);
+
+                if (Math.random() < 0.04) {
+                    enemies.push({ x: boss.x + Math.random() * boss.w, y: boss.y + boss.h, w: 8, h: 16, hp: 1, speed: 4 });
+                }
+            }
+
+            for (let i = powerups.length - 1; i >= 0; i--) {
+                let p = powerups[i]; p.y += 1.5;
+                ctx.fillStyle = p.type === 'triple' ? '#00ff66' : '#ff00ff';
+                ctx.fillRect(p.x, p.y, 16, 16);
+
+                if (ship.x < p.x + 16 && ship.x + ship.w > p.x && ship.y < p.y + 16 && ship.y + ship.h > p.y) {
+                    weaponMode = p.type;
+                    powerups.splice(i, 1);
+                }
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let pt = particles[i]; pt.x += pt.vx; pt.y += pt.vy; pt.life--;
+                ctx.fillStyle = pt.color; ctx.fillRect(pt.x, pt.y, 3, 3);
+                if (pt.life <= 0) particles.splice(i, 1);
+            }
+
+            ctx.fillStyle = '#66fcf1'; ctx.fillRect(ship.x + 12, ship.y, 8, 24);
+            ctx.fillRect(ship.x, ship.y + 12, ship.w, 12);
+
+            gameLoopId = requestAnimationFrame(runShooter);
+        }
+
+        function createExplosion(x, y, color) {
+            for (let i = 0; i < 12; i++) {
+                particles.push({
+                    x: x, y: y,
+                    vx: (Math.random() - 0.5) * 6, vy: (Math.random() - 0.5) * 6,
+                    life: 20, color: color
+                });
+            }
+        }
+
+        // =======================================================
+        // GAME 4: RETRO BRICK BREAKER
+        // =======================================================
+        let paddle, ball, bricks;
+
+        function initBreakout() {
+            let paddleW = difficulty === 'easy' ? 120 : (difficulty === 'medium' ? 90 : 70);
+            paddle = { x: canvas.width / 2 - paddleW / 2, y: 360, w: paddleW, h: 14, speed: 8 };
+            
+            let bSpeed = (difficulty === 'easy' ? 4 : (difficulty === 'medium' ? 5.5 : 7)) + (currentLevel - 1);
+            ball = { x: canvas.width / 2, y: 340, vx: bSpeed * (Math.random() > 0.5 ? 1 : -1), vy: -bSpeed, r: 6 };
+
+            bricks = [];
+            let rows = 4 + currentLevel;
+            let cols = 10;
+            let brickW = 70;
+            let brickH = 18;
+            let padding = 8;
+            let offsetLeft = (canvas.width - (cols * (brickW + padding))) / 2;
+            let colors = ['#ff0055', '#f39c12', '#66fcf1', '#00ff66', '#ffb8ff'];
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    bricks.push({
+                        x: offsetLeft + c * (brickW + padding),
+                        y: 40 + r * (brickH + padding),
+                        w: brickW, h: brickH,
+                        color: colors[r % colors.length],
+                        alive: true
+                    });
+                }
+            }
+            runBreakout();
+        }
+
+        function runBreakout() {
+            ctx.fillStyle = '#0b0c10'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if ((keys['KeyA'] || keys['ArrowLeft']) && paddle.x > 0) paddle.x -= paddle.speed;
+            if ((keys['KeyD'] || keys['ArrowRight']) && paddle.x < canvas.width - paddle.w) paddle.x += paddle.speed;
+
+            ball.x += ball.vx;
+            ball.y += ball.vy;
+
+            // Wall collisions
+            if (ball.x - ball.r < 0 || ball.x + ball.r > canvas.width) ball.vx = -ball.vx;
+            if (ball.y - ball.r < 0) ball.vy = -ball.vy;
+
+            // Paddle collision
+            if (ball.y + ball.r >= paddle.y && ball.x >= paddle.x && ball.x <= paddle.x + paddle.w) {
+                ball.vy = -Math.abs(ball.vy);
+                let hitPos = (ball.x - (paddle.x + paddle.w / 2)) / (paddle.w / 2);
+                ball.vx = hitPos * 6;
+            }
+
+            // Bottom fail
+            if (ball.y - ball.r > canvas.height) {
+                showGameOver('BALL DROPPED!'); return;
+            }
+
+            // Bricks collision
+            let remainingBricks = 0;
+            bricks.forEach(b => {
+                if (b.alive) {
+                    remainingBricks++;
+                    if (ball.x > b.x && ball.x < b.x + b.w && ball.y - ball.r < b.y + b.h && ball.y + ball.r > b.y) {
+                        b.alive = false;
+                        ball.vy = -ball.vy;
+                        score += 20;
+                        scoreElem.textContent = score;
+                    }
+                    ctx.fillStyle = b.color;
+                    ctx.fillRect(b.x, b.y, b.w, b.h);
+                }
+            });
+
+            if (remainingBricks === 0) {
+                if (currentLevel < 3) {
+                    currentLevel++;
+                    levelElem.textContent = currentLevel;
+                    initBreakout(); return;
+                } else {
+                    showWinScreen('BRICK BREAKER MASTER!'); return;
+                }
+            }
+
+            // Draw paddle and ball
+            ctx.fillStyle = '#66fcf1'; ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
+            ctx.fillStyle = '#f39c12'; ctx.beginPath(); ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2); ctx.fill();
+
+            gameLoopId = requestAnimationFrame(runBreakout);
+        }
+
+        // =======================================================
+        // GAME 5: CYBER SNAKE ARCADE
+        // =======================================================
+        let snake, snakeDir, nextSnakeDir, food, snakeFrame, speedDelay;
+
+        function initSnake() {
+            snake = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
+            snakeDir = { x: 1, y: 0 };
+            nextSnakeDir = { x: 1, y: 0 };
+            snakeFrame = 0;
+            speedDelay = (difficulty === 'easy' ? 9 : (difficulty === 'medium' ? 6 : 4)) - (currentLevel - 1);
+            spawnFood();
+            runSnake();
+        }
+
+        function spawnFood() {
+            food = {
+                x: Math.floor(Math.random() * 38) + 1,
+                y: Math.floor(Math.random() * 18) + 1
+            };
+        }
+
+        function runSnake() {
+            ctx.fillStyle = '#05050d'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if ((keys['KeyW'] || keys['ArrowUp']) && snakeDir.y === 0) nextSnakeDir = { x: 0, y: -1 };
+            if ((keys['KeyS'] || keys['ArrowDown']) && snakeDir.y === 0) nextSnakeDir = { x: 0, y: 1 };
+            if ((keys['KeyA'] || keys['ArrowLeft']) && snakeDir.x === 0) nextSnakeDir = { x: -1, y: 0 };
+            if ((keys['KeyD'] || keys['ArrowRight']) && snakeDir.x === 0) nextSnakeDir = { x: 1, y: 0 };
+
+            snakeFrame++;
+            if (snakeFrame >= speedDelay) {
+                snakeFrame = 0;
+                snakeDir = nextSnakeDir;
+                let head = { x: snake[0].x + snakeDir.x, y: snake[0].y + snakeDir.y };
+
+                // Boundary hit
+                if (head.x < 0 || head.x >= 40 || head.y < 0 || head.y >= 20) {
+                    showGameOver('SNAKE CRASHED!'); return;
+                }
+
+                // Self collision
+                for (let i = 0; i < snake.length; i++) {
+                    if (snake[i].x === head.x && snake[i].y === head.y) {
+                        showGameOver('SNAKE BIT ITSELF!'); return;
+                    }
+                }
+
+                snake.unshift(head);
+
+                // Eat food
+                if (head.x === food.x && head.y === food.y) {
+                    score += 50;
+                    scoreElem.textContent = score;
+                    spawnFood();
+
+                    if (snake.length >= 10 + currentLevel * 5) {
+                        if (currentLevel < 3) {
+                            currentLevel++;
+                            levelElem.textContent = currentLevel;
+                            initSnake(); return;
+                        } else {
+                            showWinScreen('CYBER SNAKE KING!'); return;
+                        }
+                    }
+                } else {
+                    snake.pop();
+                }
+            }
+
+            // Draw Food
+            ctx.fillStyle = '#ff0055';
+            ctx.fillRect(food.x * 20 + 2, food.y * 20 + 2, 16, 16);
+
+            // Draw Snake
+            snake.forEach((seg, i) => {
+                ctx.fillStyle = i === 0 ? '#66fcf1' : '#45a29e';
+                ctx.fillRect(seg.x * 20 + 1, seg.y * 20 + 1, 18, 18);
+            });
+
+            gameLoopId = requestAnimationFrame(runSnake);
+        }
+
+        // =======================================================
+        // OVERLAYS (GAME OVER & WIN)
+        // =======================================================
+        function showGameOver(msg) {
+            if (gameLoopId) cancelAnimationFrame(gameLoopId);
+            ctx.fillStyle = 'rgba(11, 12, 16, 0.9)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#ff0055'; ctx.font = '20px "Press Start 2P"'; ctx.textAlign = 'center';
+            ctx.fillText(msg, canvas.width / 2, canvas.height / 2 - 10);
+            ctx.fillStyle = '#ffffff'; ctx.font = '10px "Press Start 2P"';
+            ctx.fillText('CLICK A TAB ABOVE TO RESTART', canvas.width / 2, canvas.height / 2 + 30);
+        }
+
+        function showWinScreen(msg) {
+            if (gameLoopId) cancelAnimationFrame(gameLoopId);
+            ctx.fillStyle = 'rgba(11, 12, 16, 0.9)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ff66'; ctx.font = '20px "Press Start 2P"'; ctx.textAlign = 'center';
+            ctx.fillText(msg, canvas.width / 2, canvas.height / 2 - 10);
+            ctx.fillStyle = '#f39c12'; ctx.font = '12px "Press Start 2P"';
+            ctx.fillText(`FINAL SCORE: ${score}`, canvas.width / 2, canvas.height / 2 + 25);
+        }
+
+        // Initialize default game
+        initFootball();
+    </script>
+</body>
+</html>
