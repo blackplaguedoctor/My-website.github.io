@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wheelie Life - Arcade Edition</title>
+    <title>Wheelie Life - Mega Arcade Edition</title>
     <style>
+        * { box-sizing: border-box; }
         body {
             margin: 0;
-            background: #0f0f1a;
+            background: #0b0c10;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -28,21 +29,21 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(15, 15, 30, 0.96);
-            padding: 35px;
-            border: 3px solid #00ffcc;
-            border-radius: 14px;
+            background: rgba(15, 23, 42, 0.96);
+            padding: 30px;
+            border: 3px solid #00f0ff;
+            border-radius: 16px;
             z-index: 20;
-            box-shadow: 0 0 35px rgba(0, 255, 204, 0.4);
-            width: 340px;
-            text-align: center;
+            box-shadow: 0 0 35px rgba(0, 240, 255, 0.35);
+            width: 380px;
         }
 
         #menu h1 {
-            margin-top: 0;
-            color: #00ffcc;
-            font-size: 28px;
-            text-shadow: 0 0 10px rgba(0, 255, 204, 0.5);
+            margin: 0 0 15px 0;
+            color: #00f0ff;
+            font-size: 30px;
+            text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+            letter-spacing: 2px;
         }
 
         .option-group {
@@ -52,28 +53,30 @@
 
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-weight: bold;
-            color: #00ffcc;
+            color: #7000ff;
             font-size: 14px;
+            text-transform: uppercase;
         }
 
         select {
             width: 100%;
             padding: 10px;
-            font-size: 16px;
-            border-radius: 6px;
-            border: 2px solid #00ffcc;
-            background: #112233;
+            font-size: 15px;
+            border-radius: 8px;
+            border: 2px solid #7000ff;
+            background: #1e1b4b;
             color: #fff;
             cursor: pointer;
+            outline: none;
         }
 
         canvas {
-            background: linear-gradient(to bottom, #3a86ff, #8ecae6);
-            border: 4px solid #00ffcc;
-            border-radius: 12px;
-            box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
+            background: linear-gradient(to bottom, #0f172a, #1e293b);
+            border: 4px solid #00f0ff;
+            border-radius: 14px;
+            box-shadow: 0 0 40px rgba(0, 240, 255, 0.2);
             display: block;
         }
 
@@ -81,16 +84,33 @@
             position: absolute;
             top: 20px;
             left: 20px;
-            font-size: 18px;
+            font-size: 14px;
             font-weight: bold;
-            text-shadow: 2px 2px #000;
             pointer-events: none;
             display: none;
-            background: rgba(0,0,0,0.5);
-            padding: 10px 16px;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(15, 23, 42, 0.88);
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 240, 255, 0.3);
             text-align: left;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .balance-container {
+            margin-top: 8px;
+            width: 200px;
+            height: 10px;
+            background: #334155;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid #64748b;
+        }
+
+        #balance-bar {
+            height: 100%;
+            width: 0%;
+            background: #00ff66;
+            transition: width 0.1s linear, background-color 0.2s ease;
         }
 
         #game-over {
@@ -98,46 +118,60 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(15, 15, 30, 0.96);
+            background: rgba(15, 23, 42, 0.96);
             padding: 35px;
-            border: 3px solid #ff3366;
-            border-radius: 14px;
+            border: 3px solid #ff0055;
+            border-radius: 16px;
             display: none;
-            box-shadow: 0 0 30px rgba(255, 51, 102, 0.5);
+            box-shadow: 0 0 35px rgba(255, 0, 85, 0.4);
             text-align: center;
             z-index: 15;
+            width: 320px;
         }
 
         #game-over h2 {
             margin: 0 0 10px 0;
-            color: #ff3366;
-            font-size: 30px;
+            color: #ff0055;
+            font-size: 32px;
+            text-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
         }
 
         button {
             margin-top: 15px;
             width: 100%;
             padding: 12px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
-            background: #00ffcc;
-            color: #000;
+            background: #00f0ff;
+            color: #0f172a;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 4px 0 #009977;
+            box-shadow: 0 4px 0 #00b8d4;
+            transition: all 0.1s ease;
         }
 
         button:hover {
-            background: #33ffdd;
+            background: #7000ff;
+            color: #fff;
+            box-shadow: 0 4px 0 #4c00b3;
         }
 
         #controls-hint {
             margin-top: 10px;
-            font-size: 13px;
-            color: #ddd;
-            text-shadow: 1px 1px #000;
+            font-size: 12px;
+            color: #94a3b8;
             display: none;
+            max-width: 850px;
+            line-height: 1.6;
+        }
+
+        .key {
+            background: #334155;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #fff;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -147,27 +181,45 @@
         <div id="menu">
             <h1>WHEELIE LIFE</h1>
             <div class="option-group">
-                <label for="bikeSelect">Select Motorcycle:</label>
+                <label for="bikeSelect">Select Bike Garage:</label>
                 <select id="bikeSelect">
-                    <option value="scooter">Scooter (Stable & Easy)</option>
-                    <option value="dirtbike">Dirt Bike (Balanced Stunt)</option>
-                    <option value="sportbike">Sport Bike (Fast & Aggressive)</option>
+                    <option value="scooter">Moped / Scooter (Easy Balance)</option>
+                    <option value="pitbike">Mini Pit Bike (Twitchy & Agile)</option>
+                    <option value="dirtbike" selected>Dirt Bike (Balanced Stunts)</option>
+                    <option value="supermoto">Supermoto (Wide Balance Zone)</option>
+                    <option value="sportbike">Sport Bike (High Speed Torque)</option>
+                    <option value="cruiser">V-Twin Cruiser (Heavy Scraping Machine)</option>
+                    <option value="hyperbike">Electric Hyperbike (Extreme Speed)</option>
                 </select>
             </div>
             <button id="startBtn">START RIDE</button>
         </div>
 
         <div id="hud">
-            Score: <span id="score">0</span> | Best: <span id="highScore">0</span><br>
-            Speed: <span id="speedDisplay">0</span> km/h
+            Score: <span id="score" style="color: #00f0ff;">0</span> | Best: <span id="highScore" style="color: #ffaa00;">0</span><br>
+            Speed: <span id="speedDisplay">0</span> km/h | Stunt Multiplier: <span id="comboDisplay" style="color: #00ff66;">1x</span><br>
+            Active Trick: <span id="trickDisplay" style="color: #ff0055; font-weight: bold;">NONE</span>
+            <div class="balance-container">
+                <div id="balance-bar"></div>
+            </div>
         </div>
 
         <canvas id="gameCanvas" width="850" height="480"></canvas>
-        <div id="controls-hint"><strong>A / D or Left / Right:</strong> Lean | <strong>W / Up:</strong> Throttle | <strong>Space / S:</strong> Rear Brake (Saves Flips!)</div>
+        <div id="controls-hint">
+            <span class="key">A</span>/<span class="key">D</span> Lean | 
+            <span class="key">W</span> Throttle | 
+            <span class="key">Space</span> Brake | 
+            <span class="key">1</span> One-Hand | 
+            <span class="key">2</span> No-Foot | 
+            <span class="key">3</span> Nac-Nac | 
+            <span class="key">4</span> Superman | 
+            <span class="key">5</span> Coffin | 
+            <span class="key">6</span> High Chair
+        </div>
         
         <div id="game-over">
             <h2>CRASHED!</h2>
-            <p>Score: <span id="finalScore">0</span></p>
+            <p>Final Score: <span id="finalScore">0</span></p>
             <button onclick="restartGame()">TRY AGAIN</button>
         </div>
     </div>
@@ -181,30 +233,70 @@
         let gameActive = false;
         let distance = 0;
         let sceneryOffset = 0;
+        let activeTrickName = "NONE";
 
         const keys = {};
         window.addEventListener('keydown', e => {
             keys[e.code] = true;
-            if (e.code === 'Space') e.preventDefault();
+            if (['Space', 'ArrowUp', 'ArrowDown', 'Digit1', 'Digit2', 'Digit3', 'Digit4', 'Digit5', 'Digit6'].includes(e.code)) {
+                e.preventDefault();
+            }
         });
         window.addEventListener('keyup', e => keys[e.code] = false);
         window.addEventListener('blur', () => { for (let k in keys) keys[k] = false; });
 
-        // Bike specs
+        // Expanded Garage Specifications & Dynamic Physics Parameters
         const bikeConfigs = {
-            scooter: { maxSpeed: 9, accel: 0.08, leanRate: 0.0028, brakePower: 0.014, color: '#ff0055', bodyColor: '#ffffff' },
-            dirtbike: { maxSpeed: 11.5, accel: 0.1, leanRate: 0.0035, brakePower: 0.017, color: '#ffaa00', bodyColor: '#222222' },
-            sportbike: { maxSpeed: 14.5, accel: 0.12, leanRate: 0.0044, brakePower: 0.020, color: '#00ffcc', bodyColor: '#111111' }
+            scooter: { 
+                maxSpeed: 9, accel: 0.08, leanPower: 0.003, brakePower: 0.025, 
+                gravityTorque: 0.0022, sweetSpotMin: 0.4, sweetSpotMax: 1.0,
+                color: '#ff0055', accent: '#ffffff', scrapeAngle: 1.35, crashAngle: 1.58 
+            },
+            pitbike: { 
+                maxSpeed: 10, accel: 0.12, leanPower: 0.006, brakePower: 0.04, 
+                gravityTorque: 0.0035, sweetSpotMin: 0.4, sweetSpotMax: 1.1,
+                color: '#00ff66', accent: '#111111', scrapeAngle: 1.38, crashAngle: 1.62 
+            },
+            dirtbike: { 
+                maxSpeed: 12, accel: 0.1, leanPower: 0.004, brakePower: 0.03, 
+                gravityTorque: 0.0028, sweetSpotMin: 0.45, sweetSpotMax: 1.15,
+                color: '#ffaa00', accent: '#111111', scrapeAngle: 1.38, crashAngle: 1.60 
+            },
+            supermoto: { 
+                maxSpeed: 13, accel: 0.11, leanPower: 0.0042, brakePower: 0.032, 
+                gravityTorque: 0.0025, sweetSpotMin: 0.4, sweetSpotMax: 1.25,
+                color: '#7000ff', accent: '#00f0ff', scrapeAngle: 1.40, crashAngle: 1.65 
+            },
+            sportbike: { 
+                maxSpeed: 15, accel: 0.13, leanPower: 0.0048, brakePower: 0.035, 
+                gravityTorque: 0.0034, sweetSpotMin: 0.5, sweetSpotMax: 1.2,
+                color: '#00f0ff', accent: '#7000ff', scrapeAngle: 1.42, crashAngle: 1.60 
+            },
+            cruiser: { 
+                maxSpeed: 11, accel: 0.07, leanPower: 0.0028, brakePower: 0.022, 
+                gravityTorque: 0.0020, sweetSpotMin: 0.35, sweetSpotMax: 1.3,
+                color: '#e11d48', accent: '#cbd5e1', scrapeAngle: 1.30, crashAngle: 1.68 
+            },
+            hyperbike: { 
+                maxSpeed: 18, accel: 0.16, leanPower: 0.0055, brakePower: 0.04, 
+                gravityTorque: 0.0038, sweetSpotMin: 0.5, sweetSpotMax: 1.25,
+                color: '#eab308', accent: '#0f172a', scrapeAngle: 1.40, crashAngle: 1.62 
+            }
         };
 
         let currentConfig = bikeConfigs.dirtbike;
 
+        // Bike State
         const bike = {
-            x: 200,
-            angle: 0,
+            rearX: 220,
+            rearY: 380,
+            angle: 0, 
             angularVelocity: 0,
-            speed: 5,
-            groundY: 370
+            speed: 0,
+            wheelRadius: 20,
+            wheelRotation: 0,
+            frontWheelRotation: 0,
+            frameLength: 65
         };
 
         let particles = [];
@@ -212,7 +304,7 @@
         document.getElementById('startBtn').addEventListener('click', () => {
             const bikeKey = document.getElementById('bikeSelect').value;
             currentConfig = bikeConfigs[bikeKey];
-            bike.speed = currentConfig.maxSpeed * 0.5;
+            resetBikeState();
 
             document.getElementById('menu').style.display = 'none';
             document.getElementById('hud').style.display = 'block';
@@ -220,160 +312,322 @@
             gameActive = true;
         });
 
+        function resetBikeState() {
+            bike.speed = 3;
+            bike.angle = 0;
+            bike.angularVelocity = 0;
+            bike.wheelRotation = 0;
+            bike.frontWheelRotation = 0;
+            score = 0;
+            distance = 0;
+            sceneryOffset = 0;
+            particles = [];
+            activeTrickName = "NONE";
+        }
+
         function update() {
             if (!gameActive) return;
 
-            // Throttle control (W / Up Arrow)
-            if (keys['ArrowUp'] || keys['KeyW']) {
+            // 1. Throttle Logic
+            const isThrottling = keys['ArrowUp'] || keys['KeyW'];
+            if (isThrottling) {
                 bike.speed = Math.min(bike.speed + currentConfig.accel, currentConfig.maxSpeed);
+                bike.angularVelocity += (bike.speed / currentConfig.maxSpeed) * 0.0018;
             } else {
-                bike.speed += ((currentConfig.maxSpeed * 0.55) - bike.speed) * 0.035;
+                bike.speed = Math.max(bike.speed - 0.04, 2);
             }
 
-            // Lean controls (A / D or Left / Right)
-            if (keys['ArrowLeft'] || keys['KeyA']) {
-                bike.angularVelocity -= currentConfig.leanRate; // Lean back
-            }
-            if (keys['ArrowRight'] || keys['KeyD']) {
-                bike.angularVelocity += currentConfig.leanRate; // Lean forward
-            }
+            // 2. Lean Controls
+            if (keys['ArrowLeft'] || keys['KeyA']) bike.angularVelocity += currentConfig.leanPower;
+            if (keys['ArrowRight'] || keys['KeyD']) bike.angularVelocity -= currentConfig.leanPower;
 
-            // Rear Brake mechanic (Spacebar / S)
-            if (keys['Space'] || keys['KeyS']) {
-                bike.angularVelocity -= currentConfig.brakePower; // Slams nose down instantly
+            // 3. Rear Brake Mechanic
+            if (keys['Space'] || keys['KeyS'] || keys['ArrowDown']) {
+                bike.angularVelocity -= currentConfig.brakePower;
+                bike.speed *= 0.98;
             }
 
-            // Engine power lifting effect during wheelie
-            let throttleEffect = (bike.speed / currentConfig.maxSpeed) * 0.0015;
-            bike.angularVelocity += throttleEffect;
+            // 4. Gravity & Natural Weight Physics
+            if (bike.angle > 0) {
+                let gravityFactor = Math.cos(bike.angle - 0.7); 
+                bike.angularVelocity -= currentConfig.gravityTorque * (1.1 - gravityFactor);
+            }
 
-            // Physics damping & movement update
+            // Damping
             bike.angularVelocity *= 0.96;
             bike.angle += bike.angularVelocity;
 
-            // Clamp ground contact minimum
-            if (bike.angle < -0.04) {
-                bike.angle = -0.04;
+            // 5. Ground Contact & Extended Crash Detection ("Kill Zone" pushed farther back)
+            if (bike.angle <= 0) {
+                bike.angle = 0;
                 bike.angularVelocity = 0;
             }
 
-            // Scenery & Scoring calculation
-            sceneryOffset += bike.speed;
-            distance += Math.round(bike.speed);
-            score = Math.floor(distance / 10);
-            document.getElementById('score').innerText = score;
-            document.getElementById('speedDisplay').innerText = Math.round(bike.speed * 12);
+            // CRASH CONDITION: Customized per motorcycle (up to ~96 degrees / 1.68 rads)
+            if (bike.angle > currentConfig.crashAngle) {
+                gameOver();
+                return;
+            }
 
-            // Generate smoke / dust particles from rear wheel
+            // 6. EXPANDED TRICK SYSTEM
+            activeTrickName = "NONE";
+            let trickMultiplier = 1;
+
+            if (bike.angle > 0.2) {
+                if (keys['Digit1'] || keys['KeyZ']) {
+                    activeTrickName = "ONE-HANDER";
+                    trickMultiplier = 2.0;
+                } else if (keys['Digit2'] || keys['KeyX']) {
+                    activeTrickName = "NO-FOOT";
+                    trickMultiplier = 3.0;
+                } else if (keys['Digit3'] || keys['KeyC']) {
+                    activeTrickName = "NAC-NAC";
+                    trickMultiplier = 4.0;
+                } else if (keys['Digit4'] || keys['KeyV']) {
+                    activeTrickName = "SUPERMAN!";
+                    trickMultiplier = 5.0;
+                    bike.angularVelocity += 0.0004; // Balance penalty for extreme tricks
+                } else if (keys['Digit5'] || keys['KeyB']) {
+                    activeTrickName = "COFFIN LAYBACK";
+                    trickMultiplier = 6.0;
+                    bike.angularVelocity += 0.0006;
+                } else if (keys['Digit6'] || keys['KeyN']) {
+                    activeTrickName = "HIGH CHAIR";
+                    trickMultiplier = 7.0;
+                    bike.angularVelocity -= 0.0005;
+                }
+
+                // TAIL SCRAPE (Automatic when pushing past fender angle without crashing!)
+                if (bike.angle >= currentConfig.scrapeAngle && bike.angle <= currentConfig.crashAngle) {
+                    activeTrickName = "TAIL SCRAPE!! 🔥";
+                    trickMultiplier = 8.0;
+
+                    // Fender friction slightly pulls front back down to allow infinite scraping!
+                    bike.angularVelocity -= 0.0007;
+
+                    // Spark particle storm
+                    for (let i = 0; i < 4; i++) {
+                        particles.push({
+                            x: bike.rearX - 22,
+                            y: bike.rearY + bike.wheelRadius - 3,
+                            vx: -bike.speed * 0.9 - Math.random() * 5,
+                            vy: (Math.random() - 0.6) * 4,
+                            radius: Math.random() * 3.5 + 1,
+                            alpha: 1.0,
+                            color: '#ffcc00'
+                        });
+                    }
+                }
+            }
+
+            // 7. Distance & Multiplier Scoring
+            sceneryOffset += bike.speed;
+            bike.wheelRotation += bike.speed * 0.1;
+            bike.frontWheelRotation += (bike.angle === 0) ? bike.speed * 0.1 : 0.03;
+
+            let isSweetSpot = bike.angle >= currentConfig.sweetSpotMin && bike.angle <= currentConfig.sweetSpotMax;
+            let baseCombo = isSweetSpot ? 2 : (bike.angle > 0.15 ? 1.2 : 1);
+            let finalCombo = Math.round(baseCombo * trickMultiplier * 10) / 10;
+
+            distance += bike.speed * finalCombo;
+            score = Math.floor(distance / 10);
+
+            // Update HUD UI
+            document.getElementById('score').innerText = score;
+            document.getElementById('speedDisplay').innerText = Math.round(bike.speed * 8);
+            document.getElementById('comboDisplay').innerText = finalCombo + 'x';
+            document.getElementById('trickDisplay').innerText = activeTrickName;
+            document.getElementById('trickDisplay').style.color = activeTrickName === "NONE" ? "#7000ff" : "#00ff66";
+
+            const balanceBar = document.getElementById('balance-bar');
+            let balancePct = Math.min(Math.max((bike.angle / currentConfig.crashAngle) * 100, 0), 100);
+            balanceBar.style.width = balancePct + '%';
+            balanceBar.style.backgroundColor = isSweetSpot ? '#00ff66' : (bike.angle > currentConfig.scrapeAngle ? '#ff0055' : '#00f0ff');
+
+            // 8. Exhaust Smoke Particles
             if (bike.speed > 2) {
                 particles.push({
-                    x: bike.x - 26,
-                    y: bike.groundY,
-                    vx: -Math.random() * 2 - 1,
-                    vy: -Math.random() * 1.5,
+                    x: bike.rearX - 10,
+                    y: bike.rearY + bike.wheelRadius - 2,
+                    vx: -bike.speed * 0.6 - Math.random(),
+                    vy: -Math.random() * 0.8,
                     radius: Math.random() * 4 + 2,
-                    alpha: 0.6
+                    alpha: 0.4,
+                    color: '#94a3b8'
                 });
             }
 
-            // Update Particles
+            // Particle Updates
             for (let i = particles.length - 1; i >= 0; i--) {
-                particles[i].x += particles[i].vx;
-                particles[i].y += particles[i].vy;
-                particles[i].alpha -= 0.03;
-                if (particles[i].alpha <= 0) particles.splice(i, 1);
-            }
-
-            // Crash condition: Looping out backward (> 1.3 radians)
-            if (bike.angle > 1.3) {
-                gameOver();
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= 0.03;
+                if (p.alpha <= 0) particles.splice(i, 1);
             }
         }
 
         function draw() {
-            // Sky gradient background
-            ctx.fillStyle = '#3a86ff';
+            // Sky Background
+            ctx.fillStyle = '#0f172a';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Parallax Background Hills
-            ctx.fillStyle = '#2b6cb0';
-            for (let i = 0; i < 6; i++) {
-                let hillX = (i * 350 - (sceneryOffset * 0.3) % 350);
+            // Background Parallax Hills
+            ctx.fillStyle = '#1e293b';
+            for (let i = 0; i < 5; i++) {
+                let hillX = (i * 300 - (sceneryOffset * 0.25) % 300);
                 ctx.beginPath();
-                ctx.arc(hillX + 175, canvas.height - 110, 150, Math.PI, 0, false);
+                ctx.arc(hillX + 150, canvas.height - 80, 140, Math.PI, 0, false);
                 ctx.fill();
             }
 
             // Ground Road
-            ctx.fillStyle = '#1e1e2f';
-            ctx.fillRect(0, bike.groundY, canvas.width, canvas.height - bike.groundY);
+            const roadY = bike.rearY + bike.wheelRadius;
+            ctx.fillStyle = '#020617';
+            ctx.fillRect(0, roadY, canvas.width, canvas.height - roadY);
 
-            // Road Stripes
-            ctx.fillStyle = '#00ffcc';
-            let stripeWidth = 55;
-            let stripeGap = 45;
+            // Road Grid Lines
+            ctx.fillStyle = '#00f0ff';
+            let stripeWidth = 60;
+            let stripeGap = 40;
             let offset = sceneryOffset % (stripeWidth + stripeGap);
             for (let x = -offset; x < canvas.width; x += stripeWidth + stripeGap) {
-                ctx.fillRect(x, bike.groundY + 16, stripeWidth, 5);
+                ctx.fillRect(x, roadY + 14, stripeWidth, 4);
             }
 
-            // Draw Dust Particles
+            // Draw Smoke & Spark Particles
             particles.forEach(p => {
-                ctx.fillStyle = `rgba(200, 200, 220, ${p.alpha})`;
+                ctx.fillStyle = p.color === '#ffcc00' ? `rgba(255, 204, 0, ${p.alpha})` : `rgba(148, 163, 184, ${p.alpha})`;
                 ctx.beginPath();
                 ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
                 ctx.fill();
             });
 
-            // Draw Motorcycle
+            // --- DRAW MOTORCYCLE & ADVANCED TRICK POSES ---
             ctx.save();
-            ctx.translate(bike.x, bike.groundY);
-            ctx.rotate(bike.angle);
+            ctx.translate(bike.rearX, bike.rearY);
+            ctx.rotate(-bike.angle); 
 
-            // Bike Main Frame / Body
-            ctx.fillStyle = currentConfig.color;
-            ctx.fillRect(-32, -40, 66, 26);
-
-            // Seat & Tank Details
-            ctx.fillStyle = currentConfig.bodyColor;
-            ctx.fillRect(-22, -48, 36, 10);
-
-            // Rider Helmet
-            ctx.fillStyle = '#ffff00';
+            // Swingarm
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 5;
             ctx.beginPath();
-            ctx.arc(-4, -64, 11, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Rider Torso
-            ctx.fillStyle = '#2b2d42';
-            ctx.fillRect(-13, -54, 19, 23);
-
-            // Handlebars & Front Fork
-            ctx.strokeStyle = '#e2e8f0';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.moveTo(26, -30);
-            ctx.lineTo(38, -48);
+            ctx.moveTo(0, 0);
+            ctx.lineTo(25, -10);
             ctx.stroke();
 
+            // Main Body Shell
+            ctx.fillStyle = currentConfig.color;
+            ctx.beginPath();
+            ctx.roundRect(12, -35, 42, 20, 6);
+            ctx.fill();
+
+            // Seat & Tank
+            ctx.fillStyle = currentConfig.accent;
+            ctx.fillRect(4, -38, 28, 7);
+
+            // Front Forks & Handlebars
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(25, -10);
+            ctx.lineTo(bike.frameLength - 5, -42);
+            ctx.lineTo(bike.frameLength + 5, -2);
+            ctx.stroke();
+
+            // --- DYNAMIC RIDER POSES FOR ALL TRICKS ---
+            let riderTorsoX = 10, riderTorsoY = -48;
+            let riderHeadX = 18, riderHeadY = -58;
+            let legEndX = 15, legEndY = -20;
+            let armEndX = 55, armEndY = -40;
+
+            if (activeTrickName === "ONE-HANDER") {
+                armEndX = -10; armEndY = -65; // Hand high in air
+            } else if (activeTrickName === "NO-FOOT") {
+                legEndX = -30; legEndY = -55; // Both legs flared backwards
+            } else if (activeTrickName === "NAC-NAC") {
+                legEndX = -20; legEndY = -10; // Legs whipped out to side
+            } else if (activeTrickName === "SUPERMAN!") {
+                riderTorsoX = -25; riderTorsoY = -45; // Body stretched straight out horizontal
+                riderHeadX = -18; riderHeadY = -55;
+                legEndX = -60; legEndY = -45;
+            } else if (activeTrickName === "COFFIN LAYBACK") {
+                riderTorsoX = -20; riderTorsoY = -35; // Lying flat back on fender
+                riderHeadX = -32; riderHeadY = -40;
+                legEndX = 25; legEndY = -35;
+            } else if (activeTrickName === "HIGH CHAIR") {
+                riderTorsoX = 25; riderTorsoY = -50; // Sitting forward on handlebars
+                riderHeadX = 30; riderHeadY = -62;
+                legEndX = 65; legEndY = -45; // Legs up over handlebars
+            }
+
+            // Draw Rider Torso
+            ctx.fillStyle = '#1e1b4b';
+            ctx.fillRect(riderTorsoX, riderTorsoY, 16, 20);
+
+            // Rider Legs
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(riderTorsoX + 8, riderTorsoY + 15);
+            ctx.lineTo(legEndX, legEndY);
+            ctx.stroke();
+
+            // Rider Arm
+            ctx.strokeStyle = '#cbd5e1';
+            ctx.lineWidth = 3.5;
+            ctx.beginPath();
+            ctx.moveTo(riderTorsoX + 12, riderTorsoY + 5);
+            ctx.lineTo(armEndX, armEndY);
+            ctx.stroke();
+
+            // Rider Helmet
+            ctx.fillStyle = '#ffaa00';
+            ctx.beginPath();
+            ctx.arc(riderHeadX, riderHeadY, 10, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Helmet Visor
+            ctx.fillStyle = '#00f0ff';
+            ctx.fillRect(riderHeadX + 3, riderHeadY - 3, 6, 5);
+
             // Wheels
-            drawWheel(-28, 0);
-            drawWheel(34, 0);
+            drawWheel(0, 0, bike.wheelRadius, bike.wheelRotation); 
+            drawWheel(bike.frameLength, 0, bike.wheelRadius, bike.frontWheelRotation); 
 
             ctx.restore();
         }
 
-        function drawWheel(x, y) {
-            ctx.fillStyle = '#111';
-            ctx.beginPath();
-            ctx.arc(x, y, 18, 0, Math.PI * 2);
-            ctx.fill();
+        function drawWheel(x, y, radius, rotation) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(rotation);
 
-            ctx.strokeStyle = '#a0aec0';
-            ctx.lineWidth = 3;
+            // Outer Rubber Tire
+            ctx.fillStyle = '#0f172a';
             ctx.beginPath();
-            ctx.arc(x, y, 9, 0, Math.PI * 2);
+            ctx.arc(0, 0, radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 3;
             ctx.stroke();
+
+            // Rim
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, 0, radius - 6, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Spokes
+            ctx.strokeStyle = '#94a3b8';
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(-radius + 6, 0); ctx.lineTo(radius - 6, 0);
+            ctx.moveTo(0, -radius + 6); ctx.lineTo(0, radius - 6);
+            ctx.stroke();
+
+            ctx.restore();
         }
 
         function loop() {
@@ -393,13 +647,7 @@
         }
 
         function restartGame() {
-            score = 0;
-            distance = 0;
-            sceneryOffset = 0;
-            bike.angle = 0;
-            bike.angularVelocity = 0;
-            bike.speed = currentConfig.maxSpeed * 0.5;
-            particles = [];
+            resetBikeState();
             gameActive = true;
             document.getElementById('game-over').style.display = 'none';
         }

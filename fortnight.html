@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fortnite 2D - Deluxe Battle Royale</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            background: #090a0f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #fff;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        #game-container {
+            position: relative;
+        }
+
+        canvas {
+            border: 4px solid #3b82f6;
+            border-radius: 12px;
+            box-shadow: 0 0 35px rgba(59, 130, 246, 0.3);
+            background: #15803d;
+            cursor: crosshair;
+            display: block;
+        }
+
+        #hud {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            pointer-events: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+            font-size: 14px;
+            min-width: 220px;
+        }
+
+        .bar-container {
+            width: 180px;
+            height: 12px;
+            background: #334155;
+            border-radius: 6px;
+            margin: 4px 0 8px 0;
+            overflow: hidden;
+            border: 1px solid #64748b;
+        }
+
+        #health-bar { height: 100%; width: 100%; background: #22c55e; transition: width 0.1s; }
+        #shield-bar { height: 100%; width: 100%; background: #3b82f6; transition: width 0.1s; }
+
+        #inventory {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .slot {
+            width: 44px;
+            height: 44px;
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid #475569;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .slot.active {
+            border-color: #eab308;
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+        }
+
+        #minimap-container {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            border: 3px solid #3b82f6;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+        }
+
+        #controls-hint {
+            margin-top: 8px;
+            font-size: 12px;
+            color: #94a3b8;
+            text-align: center;
+        }
+
+        .key {
+            background: #334155;
+            padding: 2px 5px;
+            border-radius: 4px;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        #game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 23, 42, 0.96);
+            padding: 35px 50px;
+            border: 3px solid #ef4444;
+            border-radius: 16px;
+            display: none;
+            text-align: center;
+            z-index: 20;
+            box-shadow: 0 0 50px rgba(239, 68, 68, 0.5);
+        }
+
+        #game-over h1 { margin: 0 0 10px 0; font-size: 38px; color: #ef4444; }
+        #game-over.victory h1 { color: #eab308; text-shadow: 0 0 20px #eab308; }
+
+        button {
+            margin-top: 18px;
+            padding: 12px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            background: #3b82f6;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #1d4ed8;
+        }
+
+        button:hover { background: #2563eb; }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <canvas id="gameCanvas" width="960" height="600"></canvas>
+
+        <div id="hud">
+            Shield: <div class="bar-container"><div id="shield-bar"></div></div>
+            Health: <div class="bar-container"><div id="health-bar"></div></div>
+            Wood: <span id="matsDisplay" style="color: #eab308; font-weight: bold;">100</span> | 
+            Kills: <span id="killsDisplay" style="color: #ef4444; font-weight: bold;">0</span><br>
+            Alive: <span id="aliveDisplay" style="color: #3b82f6; font-weight: bold;">50</span> / 50
+
+            <div id="inventory">
+                <div class="slot active" id="slot-1">1<br>AR</div>
+                <div class="slot" id="slot-2">2<br>Pump</div>
+                <div class="slot" id="slot-3">3<br>Sniper</div>
+                <div class="slot" id="slot-4">4<br>Meds</div>
+            </div>
+        </div>
+
+        <div id="minimap-container">
+            <canvas id="miniMap" width="140" height="140"></canvas>
+        </div>
+
+        <div id="controls-hint">
+            <span class="key">W</span><span class="key">A</span><span class="key">S</span><span class="key">D</span> Move | 
+            <span class="key">Mouse</span> Aim/Shoot | 
+            <span class="key">1-4</span> Swap Item | 
+            <span class="key">E</span> Loot/Heal | 
+            <span class="key">Right Click</span> Build Wall
+        </div>
+
+        <div id="game-over">
+            <h1 id="endTitle">ELIMINATED!</h1>
+            <p>Placement: #<span id="finalRank">0</span></p>
+            <p>Eliminations: <span id="finalKills">0</span></p>
+            <button onclick="restartGame()">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const miniCanvas = document.getElementById('miniMap');
+        const miniCtx = miniCanvas.getContext('2d');
+
+        const WORLD_SIZE = 2500;
+        let gameActive = true;
+        let kills = 0;
+        let activeSlot = 1;
+
+        let mouseX = 0, mouseY = 0;
+        const keys = {};
+
+        window.addEventListener('keydown', e => {
+            keys[e.code] = true;
+            if (['Digit1', 'Digit2', 'Digit3', 'Digit4'].includes(e.code)) {
+                activeSlot = parseInt(e.code.replace('Digit', ''));
+                updateInventoryUI();
+            }
+            if (e.code === 'KeyE') interact();
+        });
+        window.addEventListener('keyup', e => keys[e.code] = false);
+
+        canvas.addEventListener('mousemove', e => {
+            const rect = canvas.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        });
+
+        canvas.addEventListener('mousedown', e => {
+            if (!gameActive) return;
+            if (e.button === 0) fireWeapon(player);
+            if (e.button === 2) buildWall();
+        });
+
+        canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+        const camera = { x: 0, y: 0 };
+
+        const player = {
+            x: 1250, y: 1250, radius: 16, speed: 4,
+            health: 100, shield: 50, mats: 100,
+            angle: 0, lastShot: 0,
+            inventory: {
+                1: { name: 'AR', type: 'ar', damage: 22, cooldown: 140, speed: 12, spread: 0.08 },
+                2: null, 3: null, 4: { name: 'Shield Pot', type: 'shield', count: 2 }
+            }
+        };
+
+        const storm = {
+            x: 1250, y: 1250,
+            radius: 1600,
+            minRadius: 80,
+            shrinkRate: 0.4
+        };
+
+        let bullets = [];
+        let walls = [];
+        let enemies = [];
+        let particles = [];
+        let trees = [];
+        let chests = [];
+        let groundLoot = [];
+
+        function init() {
+            gameActive = true;
+            kills = 0;
+            player.x = 1250; player.y = 1250;
+            player.health = 100; player.shield = 50; player.mats = 100;
+            storm.radius = 1600;
+
+            bullets = []; walls = []; enemies = []; particles = [];
+            trees = []; chests = []; groundLoot = [];
+
+            // World Trees
+            for (let i = 0; i < 80; i++) {
+                trees.push({
+                    x: Math.random() * (WORLD_SIZE - 200) + 100,
+                    y: Math.random() * (WORLD_SIZE - 200) + 100,
+                    radius: 26, hp: 60
+                });
+            }
+
+            // Chests
+            for (let i = 0; i < 35; i++) {
+                chests.push({
+                    x: Math.random() * (WORLD_SIZE - 200) + 100,
+                    y: Math.random() * (WORLD_SIZE - 200) + 100,
+                    opened: false
+                });
+            }
+
+            // Spawn 49 Enemy Bots across map
+            for (let i = 0; i < 49; i++) {
+                enemies.push({
+                    id: i,
+                    x: Math.random() * (WORLD_SIZE - 200) + 100,
+                    y: Math.random() * (WORLD_SIZE - 200) + 100,
+                    radius: 16, speed: 2.5 + Math.random(),
+                    health: 100, shield: Math.random() > 0.5 ? 50 : 0, angle: 0,
+                    weapon: Math.random() > 0.3 ? 
+                        { damage: 20, cooldown: 200, speed: 10, spread: 0.1 } : 
+                        { damage: 45, cooldown: 800, speed: 14, spread: 0.03 },
+                    lastShot: 0
+                });
+            }
+
+            document.getElementById('game-over').style.display = 'none';
+            document.getElementById('game-over').classList.remove('victory');
+            updateHUD();
+            updateInventoryUI();
+        }
+
+        function fireWeapon(shooter) {
+            let item = shooter === player ? player.inventory[activeSlot] : shooter.weapon;
+            if (!item || item.type === 'medkit' || item.type === 'shield') return;
+
+            let now = Date.now();
+            if (now - shooter.lastShot < item.cooldown) return;
+            shooter.lastShot = now;
+
+            let targetAngle = shooter === player ? 
+                Math.atan2((mouseY + camera.y) - shooter.y, (mouseX + camera.x) - shooter.x) : 
+                shooter.angle;
+
+            if (item.type === 'shotgun') {
+                for (let i = -2; i <= 2; i++) {
+                    bullets.push({
+                        x: shooter.x, y: shooter.y,
+                        vx: Math.cos(targetAngle + i * 0.08) * item.speed,
+                        vy: Math.sin(targetAngle + i * 0.08) * item.speed,
+                        owner: shooter, damage: item.damage / 3
+                    });
+                }
+            } else {
+                let spread = (Math.random() - 0.5) * (item.spread || 0.1);
+                bullets.push({
+                    x: shooter.x, y: shooter.y,
+                    vx: Math.cos(targetAngle + spread) * item.speed,
+                    vy: Math.sin(targetAngle + spread) * item.speed,
+                    owner: shooter, damage: item.damage
+                });
+            }
+        }
+
+        function buildWall() {
+            if (player.mats < 10) return;
+            player.mats -= 10;
+            
+            let angle = Math.atan2((mouseY + camera.y) - player.y, (mouseX + camera.x) - player.x);
+            let wx = player.x + Math.cos(angle) * 50;
+            let wy = player.y + Math.sin(angle) * 50;
+
+            walls.push({ x: wx - 20, y: wy - 20, width: 40, height: 40, hp: 150 });
+            updateHUD();
+        }
+
+        function interact() {
+            // Check Chest Interaction
+            chests.forEach(c => {
+                if (!c.opened && Math.hypot(c.x - player.x, c.y - player.y) < 50) {
+                    c.opened = true;
+                    spawnLoot(c.x, c.y);
+                }
+            });
+
+            // Check Ground Loot Pickups
+            groundLoot.forEach((loot, i) => {
+                if (Math.hypot(loot.x - player.x, loot.y - player.y) < 40) {
+                    if (loot.type === 'wood') {
+                        player.mats = Math.min(player.mats + 40, 999);
+                    } else {
+                        // Place into open slot
+                        for (let s = 1; s <= 4; s++) {
+                            if (!player.inventory[s] || player.inventory[s].type === loot.type) {
+                                player.inventory[s] = loot;
+                                break;
+                            }
+                        }
+                    }
+                    groundLoot.splice(i, 1);
+                    updateInventoryUI();
+                    updateHUD();
+                }
+            });
+
+            // Consume Meds if active slot has meds
+            let item = player.inventory[activeSlot];
+            if (item) {
+                if (item.type === 'shield' && player.shield < 100) {
+                    player.shield = Math.min(100, player.shield + 50);
+                    player.inventory[activeSlot] = null;
+                } else if (item.type === 'medkit' && player.health < 100) {
+                    player.health = 100;
+                    player.inventory[activeSlot] = null;
+                }
+                updateInventoryUI();
+                updateHUD();
+            }
+        }
+
+        function spawnLoot(x, y) {
+            const lootTable = [
+                { name: 'Pump Shotgun', type: 'shotgun', damage: 65, cooldown: 700, speed: 14, spread: 0.15 },
+                { name: 'Heavy Sniper', type: 'sniper', damage: 95, cooldown: 1100, speed: 18, spread: 0.01 },
+                { name: 'Shield Pot', type: 'shield' },
+                { name: 'Medkit', type: 'medkit' }
+            ];
+            let dropped = lootTable[Math.floor(Math.random() * lootTable.length)];
+            groundLoot.push({ ...dropped, x: x + (Math.random()-0.5)*30, y: y + (Math.random()-0.5)*30 });
+        }
+
+        function updateHUD() {
+            document.getElementById('health-bar').style.width = Math.max(0, player.health) + '%';
+            document.getElementById('shield-bar').style.width = Math.max(0, player.shield) + '%';
+            document.getElementById('matsDisplay').innerText = player.mats;
+            document.getElementById('killsDisplay').innerText = kills;
+            document.getElementById('aliveDisplay').innerText = enemies.length + (player.health > 0 ? 1 : 0);
+        }
+
+        function updateInventoryUI() {
+            for (let i = 1; i <= 4; i++) {
+                let el = document.getElementById(`slot-${i}`);
+                el.classList.toggle('active', activeSlot === i);
+                let item = player.inventory[i];
+                el.innerHTML = `${i}<br>${item ? item.name : 'Empty'}`;
+            }
+        }
+
+        function update() {
+            if (!gameActive) return;
+
+            // 1. Controls & Player Movement
+            let dx = 0, dy = 0;
+            if (keys['KeyW']) dy -= 1;
+            if (keys['KeyS']) dy += 1;
+            if (keys['KeyA']) dx -= 1;
+            if (keys['KeyD']) dx += 1;
+
+            if (dx !== 0 && dy !== 0) { dx *= 0.7071; dy *= 0.7071; }
+            player.x += dx * player.speed;
+            player.y += dy * player.speed;
+
+            // Bound to Map
+            player.x = Math.max(player.radius, Math.min(WORLD_SIZE - player.radius, player.x));
+            player.y = Math.max(player.radius, Math.min(WORLD_SIZE - player.radius, player.y));
+
+            // Camera Tracking
+            camera.x = player.x - canvas.width / 2;
+            camera.y = player.y - canvas.height / 2;
+
+            // 2. Storm Shrink & Damage
+            if (storm.radius > storm.minRadius) storm.radius -= storm.shrinkRate;
+            if (Math.hypot(player.x - storm.x, player.y - storm.y) > storm.radius) {
+                applyDamage(player, 0.4);
+            }
+
+            // 3. Bullets Physics
+            for (let i = bullets.length - 1; i >= 0; i--) {
+                let b = bullets[i];
+                b.x += b.vx; b.y += b.vy;
+
+                // Wall Hits
+                walls.forEach((w, wi) => {
+                    if (b.x > w.x && b.x < w.x + w.width && b.y > w.y && b.y < w.y + w.height) {
+                        w.hp -= b.damage;
+                        if (w.hp <= 0) walls.splice(wi, 1);
+                        bullets.splice(i, 1);
+                    }
+                });
+
+                // Hit Player
+                if (b.owner !== player && Math.hypot(b.x - player.x, b.y - player.y) < player.radius) {
+                    applyDamage(player, b.damage);
+                    bullets.splice(i, 1);
+                    continue;
+                }
+
+                // Hit Enemy
+                enemies.forEach((enemy, ei) => {
+                    if (b.owner !== enemy && Math.hypot(b.x - enemy.x, b.y - enemy.y) < enemy.radius) {
+                        applyDamage(enemy, b.damage);
+                        if (enemy.health <= 0) {
+                            spawnLoot(enemy.x, enemy.y);
+                            enemies.splice(ei, 1);
+                            if (b.owner === player) kills++;
+                            updateHUD();
+                        }
+                        bullets.splice(i, 1);
+                    }
+                });
+            }
+
+            // 4. Enemy AI Behavior
+            enemies.forEach(enemy => {
+                // Flee storm or target nearest player
+                let distToStorm = Math.hypot(enemy.x - storm.x, enemy.y - storm.y);
+                let targetX = player.x, targetY = player.y;
+
+                if (distToStorm > storm.radius) {
+                    targetX = storm.x; targetY = storm.y;
+                    applyDamage(enemy, 0.4);
+                }
+
+                let angle = Math.atan2(targetY - enemy.y, targetX - enemy.x);
+                enemy.angle = angle;
+                enemy.x += Math.cos(angle) * enemy.speed;
+                enemy.y += Math.sin(angle) * enemy.speed;
+
+                // Shoot at player if close
+                if (Math.hypot(player.x - enemy.x, player.y - enemy.y) < 350) {
+                    fireWeapon(enemy);
+                }
+            });
+
+            // Check Win condition
+            if (enemies.length === 0 && player.health > 0) endGame(true);
+        }
+
+        function applyDamage(target, dmg) {
+            if (target.shield > 0) {
+                target.shield -= dmg;
+                if (target.shield < 0) {
+                    target.health += target.shield;
+                    target.shield = 0;
+                }
+            } else {
+                target.health -= dmg;
+            }
+
+            if (target === player) {
+                updateHUD();
+                if (player.health <= 0) endGame(false);
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            ctx.translate(-camera.x, -camera.y);
+
+            // World Grid Floor
+            ctx.strokeStyle = '#166534';
+            ctx.lineWidth = 2;
+            for (let x = 0; x < WORLD_SIZE; x += 100) {
+                ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, WORLD_SIZE); ctx.stroke();
+            }
+            for (let y = 0; y < WORLD_SIZE; y += 100) {
+                ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(WORLD_SIZE, y); ctx.stroke();
+            }
+
+            // Draw Trees
+            trees.forEach(t => {
+                ctx.fillStyle = '#15803d';
+                ctx.beginPath(); ctx.arc(t.x, t.y, t.radius, 0, Math.PI * 2); ctx.fill();
+            });
+
+            // Draw Chests
+            chests.forEach(c => {
+                ctx.fillStyle = c.opened ? '#475569' : '#eab308';
+                ctx.fillRect(c.x - 12, c.y - 12, 24, 24);
+            });
+
+            // Draw Ground Loot
+            groundLoot.forEach(l => {
+                ctx.fillStyle = '#3b82f6';
+                ctx.beginPath(); ctx.arc(l.x, l.y, 8, 0, Math.PI * 2); ctx.fill();
+            });
+
+            // Draw Walls
+            walls.forEach(w => {
+                ctx.fillStyle = '#b45309';
+                ctx.fillRect(w.x, w.y, w.width, w.height);
+            });
+
+            // Draw Bullets
+            ctx.fillStyle = '#facc15';
+            bullets.forEach(b => {
+                ctx.beginPath(); ctx.arc(b.x, b.y, 4, 0, Math.PI * 2); ctx.fill();
+            });
+
+            // Draw Players & Enemies
+            drawCharacter(player.x, player.y, Math.atan2((mouseY + camera.y) - player.y, (mouseX + camera.x) - player.x), '#3b82f6');
+            enemies.forEach(e => drawCharacter(e.x, e.y, e.angle, '#ef4444'));
+
+            // Draw Storm
+            ctx.fillStyle = 'rgba(147, 51, 234, 0.35)';
+            ctx.beginPath();
+            ctx.rect(0, 0, WORLD_SIZE, WORLD_SIZE);
+            ctx.arc(storm.x, storm.y, Math.max(0, storm.radius), 0, Math.PI * 2, true);
+            ctx.fill();
+
+            ctx.strokeStyle = '#a855f7';
+            ctx.lineWidth = 6;
+            ctx.beginPath();
+            ctx.arc(storm.x, storm.y, Math.max(0, storm.radius), 0, Math.PI * 2);
+            ctx.stroke();
+
+            ctx.restore();
+
+            drawMiniMap();
+        }
+
+        function drawCharacter(x, y, angle, color) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(angle);
+            ctx.fillStyle = '#334155'; ctx.fillRect(0, -3, 22, 6); // Gun
+            ctx.fillStyle = color; ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI * 2); ctx.fill();
+            ctx.restore();
+        }
+
+        function drawMiniMap() {
+            miniCtx.fillStyle = '#15803d';
+            miniCtx.fillRect(0, 0, miniCanvas.width, miniCanvas.height);
+
+            let scale = miniCanvas.width / WORLD_SIZE;
+
+            // Safe Storm Zone MiniMap
+            miniCtx.strokeStyle = '#a855f7';
+            miniCtx.lineWidth = 2;
+            miniCtx.beginPath();
+            miniCtx.arc(storm.x * scale, storm.y * scale, Math.max(0, storm.radius * scale), 0, Math.PI * 2);
+            miniCtx.stroke();
+
+            // Player Marker
+            miniCtx.fillStyle = '#00f0ff';
+            miniCtx.beginPath();
+            miniCtx.arc(player.x * scale, player.y * scale, 3, 0, Math.PI * 2);
+            miniCtx.fill();
+        }
+
+        function loop() {
+            update();
+            draw();
+            if (gameActive) requestAnimationFrame(loop);
+        }
+
+        function endGame(victory) {
+            gameActive = false;
+            const gameOverScreen = document.getElementById('game-over');
+            const endTitle = document.getElementById('endTitle');
+            
+            let rank = enemies.length + 1;
+            document.getElementById('finalRank').innerText = victory ? 1 : rank;
+            document.getElementById('finalKills').innerText = kills;
+
+            if (victory) {
+                endTitle.innerText = "VICTORY ROYALE! 🏆";
+                gameOverScreen.classList.add('victory');
+            } else {
+                endTitle.innerText = "ELIMINATED!";
+                gameOverScreen.classList.remove('victory');
+            }
+            gameOverScreen.style.display = 'block';
+        }
+
+        function restartGame() {
+            init();
+            loop();
+        }
+
+        init();
+        loop();
+    </script>
+</body>
+</html>         
